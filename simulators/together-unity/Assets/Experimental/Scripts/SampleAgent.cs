@@ -16,7 +16,6 @@ public class SampleAgent : MonoBehaviour
 
     private void Start()
     {
-        transform.gameObject.tag = "Agent";
         Initialize();
     }
 
@@ -50,19 +49,25 @@ public class SampleAgent : MonoBehaviour
 
     void Initialize()
     {
+        // Tag the agent
+        transform.gameObject.tag = "Agent";
+
+        // Find rooms and targets
         room = GameObject.FindGameObjectWithTag("Room");
         targets = GameObject.FindGameObjectsWithTag("Target");
+
+        // Initialize tracking for distances to targets
         distances = new float[targets.Length];
     }
 
     void WalkWithin()
     {
-
+        /* TODO */
     }
 
     void WalkAround()
-    { 
-
+    {
+        /* TODO */
     }
 
     int FindClosestTarget()
