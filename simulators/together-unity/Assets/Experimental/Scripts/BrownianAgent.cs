@@ -12,8 +12,11 @@ public class BrownianAgent : MonoBehaviour
     float[] distances;
 
     float angle;
-    float speed;
+    float speed = 0.1f;
     float diffusivity; // A diffusivity constant D for the brownian model
+    float displacement;
+
+    Vector3 centerOfFriends;
 
 
     private void Awake()
@@ -27,8 +30,13 @@ public class BrownianAgent : MonoBehaviour
         Initialize();        
     }
 
-    void Update()
+    void FixedUpdate()
     {
+        if (friends.Length > 0)
+        {
+            centerOfFriends = FindCenterOfFriends();
+            Debug.Log(centerOfFriends);
+        }
         WalkAround();
     }
 
@@ -38,8 +46,20 @@ public class BrownianAgent : MonoBehaviour
     /// </summary>
     void WalkAround()
     {
+        Vector3 pos = transform.position;
+        angle = Random.Range(-Mathf.PI, Mathf.PI);
+        pos += speed * new Vector3(
+            Mathf.Cos(angle), 0f, Mathf.Sin(angle)
+        );
 
+        if (pos.x > 4f) pos.x = 4f;
+        if (pos.x < -4f) pos.x = -4f;
+        if (pos.z > 5f) pos.z = 5f;
+        if (pos.z < -5f) pos.z = -5f;
 
+        transform.position = pos;
+
+        transform.rotation = Quaternion.Euler(0f, Mathf.Rad2Deg * angle, 0f);
     }
 
     void Initialize()
@@ -76,5 +96,16 @@ public class BrownianAgent : MonoBehaviour
             }
         }
         return closestTarget;
+    }
+
+    Vector3 FindCenterOfFriends()
+    {
+        Vector3 center = Vector3.zero;
+        for (int i = 0; i < friends.Length; i++)
+        {
+            center += friends[i].transform.position;
+        }
+        center = center / friends.Length;
+        return center;
     }
 }

@@ -44,6 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97f997ea79be2c94a96ff7d7c51be6a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 7424096439414509454, guid: f1aa1c8211ffb424581fbac483f3786d, type: 3}
+  prefab: {fileID: 6932794844125051522, guid: cb60bae8cd2d47944b1912f236c25308, type: 3}
   numAgents: 49
   gizmoType: 0

@@ -10,7 +10,7 @@ public class SampleAgentGroup : MonoBehaviour
 
     [Header("Required")]
     [SerializeField]
-    SampleAgent prefab;
+    BrownianAgent prefab;
 
     /* This is an array of agents, for now, 
      * with a fixed number of agents.
@@ -27,7 +27,7 @@ public class SampleAgentGroup : MonoBehaviour
     [SerializeField]
     GizmoType gizmoType;
 
-    SampleAgent[] agents;
+    BrownianAgent[] agents;
 
     /* Reserved for later */
     // List<SampleAgent> agents;
@@ -42,7 +42,7 @@ public class SampleAgentGroup : MonoBehaviour
     void Awake()
     {
         InitializePositions();
-        agents = new SampleAgent[numAgents];
+        agents = new BrownianAgent[numAgents];
         //agents = new List<SampleAgent>();
         for (int i = 0; i < numAgents; i++)
         {
@@ -51,7 +51,7 @@ public class SampleAgentGroup : MonoBehaviour
             initialRotation = new Vector3(0f, Random.Range(-180f, 180f), 0f);
 
             // initialPositionType = (InitialPositionType)Random.Range(0, 2);
-            SampleAgent agent = Instantiate(prefab);
+            BrownianAgent agent = Instantiate(prefab);
 
             agent.gameObject.transform.position = initialPosition;
             agent.gameObject.transform.rotation = Quaternion.Euler(initialRotation);
