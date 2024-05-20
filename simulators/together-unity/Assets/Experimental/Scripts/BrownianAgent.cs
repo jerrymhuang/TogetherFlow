@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -12,10 +11,11 @@ public class BrownianAgent : MonoBehaviour
     GameObject[] friends;
     float[] distances;
 
+
     float angle;
     float speed = 0.1f;
-    float diffusivity; // A diffusivity constant D for the brownian model
-    float displacement;
+    float dA, dR; // Diffusivity constants D for the brownian model
+    float detectionDistance;
 
     Vector3 centerOfFriends;
     Vector3 direction;
@@ -66,6 +66,10 @@ public class BrownianAgent : MonoBehaviour
         Debug.DrawRay(transform.position, direction, Color.yellow);
     }
 
+
+    /// <summary>
+    /// Initialize all game objects and parameters to track.
+    /// </summary>
     void Initialize()
     {
         // Find rooms and targets
@@ -80,6 +84,15 @@ public class BrownianAgent : MonoBehaviour
         distances = new float[targets.Length];
     }
 
+
+    /// <summary>
+    /// Tracking function for the closest target for determining the drift
+    /// of the agent at any given time.
+    /// </summary>
+    /// <returns>
+    /// closestTarget   : int
+    ///     index of the closest target.
+    /// </returns>
     int FindClosestTarget()
     {
         int closestTarget = -1;
@@ -102,14 +115,33 @@ public class BrownianAgent : MonoBehaviour
         return closestTarget;
     }
 
+
+    /// <summary>
+    /// Find the center of all surrounding agents within a distance constraint.
+    /// </summary>
+    /// <returns>
+    /// center      : Vector3
+    ///     Center position of all surrounding agents within a distance.
+    /// </returns>
     Vector3 FindCenterOfFriends()
     {
-        Vector3 center = Vector3.zero;
+        Vector3 center = transform.position;
+        int numNearbyFriends = 0;
         for (int i = 0; i < friends.Length; i++)
         {
-            center += friends[i].transform.position;
+            float distance = Vector3.Distance(
+                transform.position, friends[i].transform.position
+            );
+            if (distance < detectionDistance)
+            {
+                numNearbyFriends++;
+                center += friends[i].transform.position;
+            }
         }
-        center = center / friends.Length;
+        center = center / numNearbyFriends;
         return center;
     }
+
+
+    Vector3 RelativePosition() => transform.position - room.transform.position;
 }
