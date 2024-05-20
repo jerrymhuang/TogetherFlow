@@ -92,18 +92,5 @@ public class SampleAgentGroup : MonoBehaviour
             if (candidate) initialPositions.Add(initialPosition);
         }
     }
-
-    
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.magenta;
-        if (gizmoType == GizmoType.Rotation)
-        {
-            for (int i = 0; i < numAgents; i++)
-            {
-                Gizmos.DrawLine(agents[i].transform.position, agents[i].transform.position + Vector3.one);
-            }
-        }
-    }
     
 }

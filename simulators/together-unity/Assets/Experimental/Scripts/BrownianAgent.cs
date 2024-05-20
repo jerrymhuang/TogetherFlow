@@ -8,16 +8,16 @@ public class BrownianAgent : MonoBehaviour
      * Later, this will become inherited from Agent. */
     GameObject room;
     GameObject[] targets;
-    GameObject[] friends;
+    GameObject[] neighbors;
     float[] distances;
 
 
     float angle;
     float speed = 0.1f;
     float dA, dR; // Diffusivity constants D for the brownian model
-    float detectionDistance;
+    float detectionDistance = 2f;
 
-    Vector3 centerOfFriends;
+    Vector3 centerOfNeighbors;
     Vector3 direction;
 
 
@@ -34,10 +34,11 @@ public class BrownianAgent : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (friends.Length > 0)
+        if (neighbors.Length > 0)
         {
-            centerOfFriends = FindCenterOfFriends();
-            Debug.Log(centerOfFriends);
+            Debug.Log(transform.position + " " + neighbors[0].transform.position);
+            centerOfNeighbors = CenterOfNeighbors();
+            // Debug.Log(centerOfNeighbors);
         }
         WalkAround();
     }
@@ -48,7 +49,7 @@ public class BrownianAgent : MonoBehaviour
     /// </summary>
     void WalkAround()
     {
-        Vector3 pos = transform.position;
+        Vector3 pos = transform.localPosition;
         angle = Random.Range(-Mathf.PI, Mathf.PI);
         direction = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
 
@@ -59,7 +60,7 @@ public class BrownianAgent : MonoBehaviour
         if (pos.z > 5f) pos.z = 5f;
         if (pos.z < -5f) pos.z = -5f;
         
-        transform.position = pos;
+        transform.localPosition = pos;
 
         transform.rotation = Quaternion.Euler(0f, Mathf.Rad2Deg * angle, 0f);
 
@@ -76,8 +77,8 @@ public class BrownianAgent : MonoBehaviour
         room = GameObject.FindGameObjectWithTag("Room");
         targets = GameObject.FindGameObjectsWithTag("Target");
 
-        // Find all other agents (co-occupants of the room; or friends)
-        friends = GameObject.FindGameObjectsWithTag("Agent");
+        // Find all other agents (co-occupants of the room; or Neighbors)
+        neighbors = GameObject.FindGameObjectsWithTag("Agent");
 
         // Initialize tracking for distances to targets.
         // For now, assume that all targets in the environment are tracked.
@@ -123,23 +124,61 @@ public class BrownianAgent : MonoBehaviour
     /// center      : Vector3
     ///     Center position of all surrounding agents within a distance.
     /// </returns>
-    Vector3 FindCenterOfFriends()
+    Vector3 CenterOfNeighbors()
     {
         Vector3 center = transform.position;
-        int numNearbyFriends = 0;
-        for (int i = 0; i < friends.Length; i++)
+        int numNearbyNeighbors = 0;
+        for (int i = 0; i < neighbors.Length; i++)
         {
             float distance = Vector3.Distance(
-                transform.position, friends[i].transform.position
+                transform.position, neighbors[i].transform.position
             );
             if (distance < detectionDistance)
             {
-                numNearbyFriends++;
-                center += friends[i].transform.position;
+                numNearbyNeighbors++;
+                center += neighbors[i].transform.position;
             }
         }
-        center = center / numNearbyFriends;
+        center = center / numNearbyNeighbors;
         return center;
+    }
+
+
+    float DirectionOfNeighbors()
+    {
+        float direction = transform.rotation.y;
+
+        int numNearbyNeighbors = 0;
+        for (int i = 0; i < neighbors.Length; i++)
+        {
+            float distance = Vector3.Distance(
+                transform.position, neighbors[i].transform.position
+            );
+            if (distance < detectionDistance)
+            {
+                numNearbyNeighbors++;
+                direction += neighbors[i].transform.rotation.eulerAngles.y;
+            }
+        }
+        direction = direction / numNearbyNeighbors;
+
+        return direction;
+    }
+
+
+    int NumberOfNeighbors()
+    {
+        int n = 0;
+
+        for (int i = 0; i < neighbors.Length; i++) 
+        {
+            float distance = Vector3.Distance(
+                transform.position, neighbors[i].transform.position
+            );
+
+            if (distance < detectionDistance) n++;
+        }
+        return n;
     }
 
 
