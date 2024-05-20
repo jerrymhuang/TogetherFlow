@@ -93,7 +93,7 @@ public class SampleAgentGroup : MonoBehaviour
         }
     }
 
-    /*
+    
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.magenta;
@@ -101,9 +101,9 @@ public class SampleAgentGroup : MonoBehaviour
         {
             for (int i = 0; i < numAgents; i++)
             {
-                Gizmos.DrawRay(agents[i].transform.position, agents[i].transform.rotation.eulerAngles);
+                Gizmos.DrawLine(agents[i].transform.position, agents[i].transform.position + Vector3.one);
             }
         }
     }
-    */
+    
 }

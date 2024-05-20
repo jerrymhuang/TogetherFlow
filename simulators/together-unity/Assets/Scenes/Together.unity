@@ -734,6 +734,10 @@ PrefabInstance:
       value: SampleAgentGroup
       objectReference: {fileID: 0}
     - target: {fileID: 3318584553371210039, guid: 71bee5d0636273d419ac538671abb431, type: 3}
+      propertyPath: gizmoType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3318584553371210039, guid: 71bee5d0636273d419ac538671abb431, type: 3}
       propertyPath: numAgents
       value: 4
       objectReference: {fileID: 0}

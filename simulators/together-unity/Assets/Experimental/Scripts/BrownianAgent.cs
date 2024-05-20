@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 
@@ -17,6 +18,7 @@ public class BrownianAgent : MonoBehaviour
     float displacement;
 
     Vector3 centerOfFriends;
+    Vector3 direction;
 
 
     private void Awake()
@@ -48,18 +50,20 @@ public class BrownianAgent : MonoBehaviour
     {
         Vector3 pos = transform.position;
         angle = Random.Range(-Mathf.PI, Mathf.PI);
-        pos += speed * new Vector3(
-            Mathf.Cos(angle), 0f, Mathf.Sin(angle)
-        );
+        direction = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+
+        pos += speed * direction;
 
         if (pos.x > 4f) pos.x = 4f;
         if (pos.x < -4f) pos.x = -4f;
         if (pos.z > 5f) pos.z = 5f;
         if (pos.z < -5f) pos.z = -5f;
-
+        
         transform.position = pos;
 
         transform.rotation = Quaternion.Euler(0f, Mathf.Rad2Deg * angle, 0f);
+
+        Debug.DrawRay(transform.position, direction, Color.yellow);
     }
 
     void Initialize()
