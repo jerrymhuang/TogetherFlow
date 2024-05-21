@@ -36,7 +36,7 @@ public class BrownianAgent : MonoBehaviour
     {
         if (neighbors.Length > 0)
         {
-            Debug.Log(transform.position + " " + neighbors[0].transform.position);
+            //Debug.Log(transform.position + " " + neighbors[0].transform.position);
             centerOfNeighbors = CenterOfNeighbors();
             // Debug.Log(centerOfNeighbors);
         }
@@ -49,6 +49,8 @@ public class BrownianAgent : MonoBehaviour
     /// </summary>
     void WalkAround()
     {
+        Debug.Log(GaussianRNG.Sample());
+
         Vector3 pos = transform.localPosition;
         angle = Random.Range(-Mathf.PI, Mathf.PI);
         direction = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
