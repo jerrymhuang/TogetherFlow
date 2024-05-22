@@ -7,7 +7,7 @@ public class BrownianAgent : MonoBehaviour
     /* This is a MonoBehaviour script, for now. 
      * Later, this will become inherited from Agent. */
     GameObject room;
-    GameObject[] targets;
+    GameObject[] beacons;
     GameObject[] neighbors;
     float[] distances;
 
@@ -34,13 +34,49 @@ public class BrownianAgent : MonoBehaviour
 
     void FixedUpdate()
     {
+        /*
         if (neighbors.Length > 0)
         {
             //Debug.Log(transform.position + " " + neighbors[0].transform.position);
             centerOfNeighbors = CenterOfNeighbors();
             // Debug.Log(centerOfNeighbors);
         }
-        WalkAround();
+        */
+        Simulate();
+    }
+
+
+    void Simulate(float drift = 0.5f, float scaleX = 0.1f, float scaleZ = 0.1f)
+    {   
+        // Get agent position
+        Vector3 agentPosition = transform.position;
+
+        // Get beacon position (as decision boundary for Wiener process)
+        int beaconId = FindNearestBeacon();
+        Vector3 beaconPosition = beacons[beaconId].transform.position;
+
+        Vector3 pull = Vector3.Normalize(beaconPosition - agentPosition);
+
+        if (Vector3.Distance(agentPosition, beaconPosition) > 0f)
+        {
+            agentPosition.x += drift * pull.x * Time.deltaTime + scaleX * Mathf.Sqrt(Time.deltaTime) * GaussianRNG.Sample();
+            agentPosition.z += drift * pull.z * Time.deltaTime + scaleZ * Mathf.Sqrt(Time.deltaTime) * GaussianRNG.Sample();
+        }
+
+        transform.position = agentPosition;
+        BoundPosition();
+    }
+
+    void BoundPosition()
+    {
+        Vector3 pos = transform.localPosition;
+
+        if (pos.x > 4f) pos.x = 4f;
+        if (pos.x < -4f) pos.x = -4f;
+        if (pos.z > 5f) pos.z = 5f;
+        if (pos.z < -5f) pos.z = -5f;
+
+        transform.localPosition = pos;
     }
 
 
@@ -49,7 +85,6 @@ public class BrownianAgent : MonoBehaviour
     /// </summary>
     void WalkAround()
     {
-        Debug.Log(GaussianRNG.Sample());
 
         Vector3 pos = transform.localPosition;
         angle = Random.Range(-Mathf.PI, Mathf.PI);
@@ -77,14 +112,14 @@ public class BrownianAgent : MonoBehaviour
     {
         // Find rooms and targets
         room = GameObject.FindGameObjectWithTag("Room");
-        targets = GameObject.FindGameObjectsWithTag("Target");
+        beacons = GameObject.FindGameObjectsWithTag("Beacon");
 
         // Find all other agents (co-occupants of the room; or Neighbors)
         neighbors = GameObject.FindGameObjectsWithTag("Agent");
 
         // Initialize tracking for distances to targets.
         // For now, assume that all targets in the environment are tracked.
-        distances = new float[targets.Length];
+        distances = new float[beacons.Length];
     }
 
 
@@ -96,18 +131,18 @@ public class BrownianAgent : MonoBehaviour
     /// closestTarget   : int
     ///     index of the closest target.
     /// </returns>
-    int FindClosestTarget()
+    int FindNearestBeacon()
     {
         int closestTarget = -1;
         float closestDistance;
-        for (int i = 0; i < targets.Length; i++)
+        for (int i = 0; i < beacons.Length; i++)
         {
-            distances[i] = Vector3.Distance(transform.position, targets[i].transform.position);
+            distances[i] = Vector3.Distance(transform.position, beacons[i].transform.position);
         }
 
         closestDistance = Mathf.Min(distances);
 
-        for (int i = 0; i < targets.Length; i++)
+        for (int i = 0; i < beacons.Length; i++)
         {
             if (distances[i] == closestDistance)
             {
@@ -184,5 +219,5 @@ public class BrownianAgent : MonoBehaviour
     }
 
 
-    Vector3 RelativePosition() => transform.position - room.transform.position;
+    Vector3 PositionInRoom() => transform.position - room.transform.position;
 }

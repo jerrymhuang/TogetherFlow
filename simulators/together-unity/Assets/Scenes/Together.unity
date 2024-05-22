@@ -764,6 +764,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 578157848219928374, guid: 57d874d491124974384555004fb42006, type: 3}
+      propertyPath: m_TagString
+      value: Beacon
+      objectReference: {fileID: 0}
     - target: {fileID: 1051863948207908743, guid: 57d874d491124974384555004fb42006, type: 3}
       propertyPath: m_Name
       value: Objects
@@ -776,6 +780,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 1582476338290069808, guid: 57d874d491124974384555004fb42006, type: 3}
+      propertyPath: m_TagString
+      value: Beacon
+      objectReference: {fileID: 0}
     - target: {fileID: 2399467502050448590, guid: 57d874d491124974384555004fb42006, type: 3}
       propertyPath: m_LocalPosition.x
       value: -21.2132
@@ -804,9 +812,17 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4690387088917063085, guid: 57d874d491124974384555004fb42006, type: 3}
+      propertyPath: m_TagString
+      value: Beacon
+      objectReference: {fileID: 0}
     - target: {fileID: 5578330197287361963, guid: 57d874d491124974384555004fb42006, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5578330197287361963, guid: 57d874d491124974384555004fb42006, type: 3}
+      propertyPath: m_TagString
+      value: Beacon
       objectReference: {fileID: 0}
     - target: {fileID: 5833872843658967287, guid: 57d874d491124974384555004fb42006, type: 3}
       propertyPath: m_LocalPosition.x
@@ -860,6 +876,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 7191632041901213724, guid: 57d874d491124974384555004fb42006, type: 3}
+      propertyPath: m_TagString
+      value: Beacon
+      objectReference: {fileID: 0}
     - target: {fileID: 7355427704775410249, guid: 57d874d491124974384555004fb42006, type: 3}
       propertyPath: m_LocalPosition.x
       value: 21.2132
@@ -884,13 +904,25 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8322000481712194497, guid: 57d874d491124974384555004fb42006, type: 3}
+      propertyPath: m_TagString
+      value: Beacon
+      objectReference: {fileID: 0}
     - target: {fileID: 8626650228302814161, guid: 57d874d491124974384555004fb42006, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8626650228302814161, guid: 57d874d491124974384555004fb42006, type: 3}
+      propertyPath: m_TagString
+      value: Beacon
+      objectReference: {fileID: 0}
     - target: {fileID: 9153280220874763690, guid: 57d874d491124974384555004fb42006, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9153280220874763690, guid: 57d874d491124974384555004fb42006, type: 3}
+      propertyPath: m_TagString
+      value: Beacon
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
