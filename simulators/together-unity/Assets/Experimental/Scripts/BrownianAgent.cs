@@ -14,7 +14,6 @@ public class BrownianAgent : MonoBehaviour
 
     float angle;
     float speed = 0.1f;
-    float dA, dR; // Diffusivity constants D for the brownian model
     float detectionDistance = 2f;
 
     Vector3 centerOfNeighbors;
@@ -46,7 +45,7 @@ public class BrownianAgent : MonoBehaviour
     }
 
 
-    void Simulate(float drift = 0.5f, float scaleX = 0.1f, float scaleZ = 0.1f)
+    void Simulate(float drift = 1f, float scaleX = 0.1f, float scaleZ = 0.1f)
     {   
         // Get agent position
         Vector3 agentPosition = transform.position;
@@ -57,6 +56,7 @@ public class BrownianAgent : MonoBehaviour
 
         Vector3 pull = Vector3.Normalize(beaconPosition - agentPosition);
 
+        // Drift diffusion with pull
         if (Vector3.Distance(agentPosition, beaconPosition) > 0f)
         {
             agentPosition.x += drift * pull.x * Time.deltaTime + scaleX * Mathf.Sqrt(Time.deltaTime) * GaussianRNG.Sample();
