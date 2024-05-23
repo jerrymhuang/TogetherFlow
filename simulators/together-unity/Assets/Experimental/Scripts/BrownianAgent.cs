@@ -5,19 +5,20 @@ using UnityEngine;
 public class BrownianAgent : MonoBehaviour
 {
     /* This is a MonoBehaviour script, for now. 
-     * Later, this will become inherited from Agent. */
+     * Later, this will become inherited from a more general Agent class. 
+     */
     GameObject room;
     GameObject[] beacons;
     GameObject[] neighbors;
     float[] distances;
 
 
-    bool move;      // Locomotive state of the agent
+    bool move;      // [TODO] Locomotive state of the agent
 
     float angle;
     float speed = 0.1f;
     float perceptionDistance = 2f;
-    float avoidanceDistance = 1f;
+    float avoidanceDistance = 0.3f;
 
     Vector3 centerOfNeighbors;
     Vector3 direction;
@@ -81,12 +82,17 @@ public class BrownianAgent : MonoBehaviour
         // Drift diffusion with pull
         if (Vector3.Distance(agentPosition, beaconPosition) > 0f)
         {
-            agentPosition.x += drift * pull.x * Time.deltaTime + scaleX * Mathf.Sqrt(Time.deltaTime) * GaussianRNG.Sample();
-            agentPosition.z += drift * pull.z * Time.deltaTime + scaleZ * Mathf.Sqrt(Time.deltaTime) * GaussianRNG.Sample();
+            agentPosition.x += drift * pull.x * Time.deltaTime + scaleX * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
+            agentPosition.z += drift * pull.z * Time.deltaTime + scaleZ * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
         }
 
         transform.position = agentPosition;
-        transform.LookAt(beacons[beaconId].transform.position);
+
+        // Rotate towards the new beacon
+        Vector3 relativePosition = beaconPosition - transform.position;
+        Quaternion rotation = Quaternion.LookRotation(relativePosition, Vector3.up);
+        transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.time * speed);
+
         Debug.DrawRay(agentPosition, agentRotation, Color.yellow);
 
         Flock();
@@ -98,6 +104,7 @@ public class BrownianAgent : MonoBehaviour
     void Flock()
     {
         Align();
+        Amass();
         Avoid();
     }
     
@@ -108,12 +115,45 @@ public class BrownianAgent : MonoBehaviour
     {
         Vector3 pos = transform.localPosition;
 
+        // The boundary is set to 1 meter away from the room perimeter.
         if (pos.x > 4f) pos.x = 4f;
         if (pos.x < -4f) pos.x = -4f;
         if (pos.z > 5f) pos.z = 5f;
         if (pos.z < -5f) pos.z = -5f;
 
         transform.localPosition = pos;
+    }
+
+
+    void Attend()
+    {
+        // TODO: Attention to beacons fading over time.
+    }
+
+
+    /// <summary>
+    /// Align the agent to the same heading as their neighbors.
+    /// </summary>
+    void Align()
+    {
+        var (n, c, dir) = FindNearestNeighbors();
+
+        transform.forward = dir;
+    }
+
+
+    /// <summary>
+    /// Make the agents gather together in smaller groups.
+    /// </summary>
+    void Amass()
+    {
+        var (n, c, dir) = FindNearestNeighbors();
+
+        // We want the cohesion (gathering) between agents to have a
+        // smaller influence than their attraction towards the target.
+        transform.position = Vector3.MoveTowards(
+            transform.position, c, speed * 0.1f
+        );
     }
 
 
@@ -139,20 +179,9 @@ public class BrownianAgent : MonoBehaviour
             }
         }
 
-        Debug.Log("Avoidance: " +  avoidance);
+        Debug.Log("Avoidance: " + avoidance);
         // avoidance = Vector3.Normalize(avoidance);
         transform.Translate(avoidance * scale);
-    }
-
-
-    /// <summary>
-    /// Align the agent to the same heading as their neighbors.
-    /// </summary>
-    void Align()
-    {
-        var (n, c, dir) = FindNearestNeighbors();
-
-        transform.forward = dir;
     }
 
 
@@ -199,6 +228,4 @@ public class BrownianAgent : MonoBehaviour
         return (n, center, heading);
     }
 
-
-    Vector3 PositionInRoom() => transform.position - room.transform.position;
 }
