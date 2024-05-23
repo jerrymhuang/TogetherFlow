@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using System.Linq;
 using UnityEngine;
 
 
@@ -13,10 +11,12 @@ public class BrownianAgent : MonoBehaviour
     GameObject[] neighbors;
     float[] distances;
 
-    bool move;
+
+    bool move;      // Locomotive state of the agent
+
     float angle;
     float speed = 0.1f;
-    float detectionDistance = 2f;
+    float perceptionDistance = 2f;
     float avoidanceDistance = 1f;
 
     Vector3 centerOfNeighbors;
@@ -44,7 +44,7 @@ public class BrownianAgent : MonoBehaviour
             // Debug.Log(centerOfNeighbors);
         }
         */
-        Simulate();
+        Simulate(drift: speed);
     }
 
 
@@ -71,7 +71,6 @@ public class BrownianAgent : MonoBehaviour
         // Get agent position and rotation
         Vector3 agentPosition = transform.position;
         Vector3 agentRotation = transform.forward;
-        Debug.Log(agentRotation);
 
         // Get beacon position (as decision boundary for the Wiener process)
         int beaconId = FindNearestBeacon();
@@ -89,13 +88,23 @@ public class BrownianAgent : MonoBehaviour
         transform.position = agentPosition;
         transform.LookAt(beacons[beaconId].transform.position);
         Debug.DrawRay(agentPosition, agentRotation, Color.yellow);
-        BoundPosition();
-        Separate(0.5f);
-        Align();
+
+        Flock();
+        Bound();
+        Attend();
     }
 
 
-    void BoundPosition()
+    void Flock()
+    {
+        Align();
+        Avoid();
+    }
+    
+    /// <summary>
+    /// Bound the agent so that it is moving within the room.
+    /// </summary>
+    void Bound()
     {
         Vector3 pos = transform.localPosition;
 
@@ -107,93 +116,87 @@ public class BrownianAgent : MonoBehaviour
         transform.localPosition = pos;
     }
 
-    void Separate(float scale = 1f)
+
+    /// <summary>
+    /// Separate the agent from others to avoid collision.
+    /// </summary>
+    /// <param name="scale"></param>
+    void Avoid(float scale = 1f)
     {
         Vector3 avoidance = Vector3.zero;
 
         for (int i = 0; i < neighbors.Length; i++)
         {
-            float proximity = Vector3.Distance(
-                transform.position, neighbors[i].transform.position
-            );
-            if (proximity < 0.3f)
+            float dx = transform.position.x - neighbors[i].transform.position.x;
+            float dz = transform.position.z - neighbors[i].transform.position.z;
+
+            float proximity = dx * dx + dz * dz;
+
+            if (proximity < avoidanceDistance)
             {
-                avoidance += transform.position - neighbors[i].transform.position;
+                avoidance.x += dx;
+                avoidance.z += dz;
             }
         }
 
-        avoidance = Vector3.Normalize(avoidance);
-        transform.Translate(avoidance);
+        Debug.Log("Avoidance: " +  avoidance);
+        // avoidance = Vector3.Normalize(avoidance);
+        transform.Translate(avoidance * scale);
     }
 
-    void Align()
-    {
-        // TODO: Implement alignment
-    }
 
     /// <summary>
-    /// Tracking function for the closest target for determining the drift
-    /// of the agent at any given time.
+    /// Align the agent to the same heading as their neighbors.
     /// </summary>
-    /// <returns>
-    /// closestTarget   : int
-    ///     index of the closest target.
-    /// </returns>
+    void Align()
+    {
+        var (n, c, dir) = FindNearestNeighbors();
+
+        transform.forward = dir;
+    }
+
+
     int FindNearestBeacon()
     {
-        int closestTarget = -1;
-        float closestDistance;
         for (int i = 0; i < beacons.Length; i++)
         {
-            distances[i] = Vector3.Distance(transform.position, beacons[i].transform.position);
+            distances[i] = Vector3.Distance(
+                transform.position, beacons[i].transform.position
+            );
         }
 
-        closestDistance = Mathf.Min(distances);
-
-        for (int i = 0; i < beacons.Length; i++)
-        {
-            if (distances[i] == closestDistance)
-            {
-                closestTarget = i;
-                break;
-            }
-        }
+        int closestTarget = distances.ToList().IndexOf(distances.Min());
         return closestTarget;
     }
 
 
-    /// <summary>
-    /// Find the center of all surrounding agents within a distance constraint.
-    /// </summary>
-    /// <returns>
-    /// center      : Vector3
-    ///     Center position of all surrounding agents within a distance.
-    /// </returns>
-
-    (int n, Vector3 center, float direction) Flocks()
+    (int n, Vector3 center, Vector3 heading) FindNearestNeighbors()
     {
         int n = 0;
         Vector3 center = transform.position;
-        float direction = transform.rotation.y;
+        Vector3 heading = transform.forward;
 
-        for (int i = 0; i < neighbors.Length; i++)
+        if (neighbors.Length > 0)
         {
-            float distance = Vector3.Distance(
-                transform.position, neighbors[i].transform.position
-            );
-
-            if (distance < detectionDistance)
+            for (int i = 0; i < neighbors.Length; i++)
             {
-                n++;
-                center += neighbors[i].transform.position;
-                direction += neighbors[i].transform.rotation.y;
+                float distance = Vector3.Distance(
+                    transform.position, neighbors[i].transform.position
+                );
+
+                if (distance < perceptionDistance)
+                {
+                    n++;
+                    center += neighbors[i].transform.position;
+                    heading += neighbors[i].transform.forward;
+                }
             }
         }
 
         center = center / n;
-        direction = direction / n;
+        heading = heading / n;
 
-        return (n, center, direction);
+        return (n, center, heading);
     }
 
 
