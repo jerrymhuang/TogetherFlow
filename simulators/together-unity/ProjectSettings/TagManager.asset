@@ -8,6 +8,7 @@ TagManager:
   - Room
   - Agent
   - Beacon
+  - Recording
   layers:
   - Default
   - TransparentFX

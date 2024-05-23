@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -11,10 +13,11 @@ public class BrownianAgent : MonoBehaviour
     GameObject[] neighbors;
     float[] distances;
 
-
+    bool move;
     float angle;
     float speed = 0.1f;
     float detectionDistance = 2f;
+    float avoidanceDistance = 1f;
 
     Vector3 centerOfNeighbors;
     Vector3 direction;
@@ -45,66 +48,6 @@ public class BrownianAgent : MonoBehaviour
     }
 
 
-    void Simulate(float drift = 1f, float scaleX = 0.1f, float scaleZ = 0.1f)
-    {   
-        // Get agent position
-        Vector3 agentPosition = transform.position;
-
-        // Get beacon position (as decision boundary for Wiener process)
-        int beaconId = FindNearestBeacon();
-        Vector3 beaconPosition = beacons[beaconId].transform.position;
-
-        Vector3 pull = Vector3.Normalize(beaconPosition - agentPosition);
-
-        // Drift diffusion with pull
-        if (Vector3.Distance(agentPosition, beaconPosition) > 0f)
-        {
-            agentPosition.x += drift * pull.x * Time.deltaTime + scaleX * Mathf.Sqrt(Time.deltaTime) * GaussianRNG.Sample();
-            agentPosition.z += drift * pull.z * Time.deltaTime + scaleZ * Mathf.Sqrt(Time.deltaTime) * GaussianRNG.Sample();
-        }
-
-        transform.position = agentPosition;
-        BoundPosition();
-    }
-
-    void BoundPosition()
-    {
-        Vector3 pos = transform.localPosition;
-
-        if (pos.x > 4f) pos.x = 4f;
-        if (pos.x < -4f) pos.x = -4f;
-        if (pos.z > 5f) pos.z = 5f;
-        if (pos.z < -5f) pos.z = -5f;
-
-        transform.localPosition = pos;
-    }
-
-
-    /// <summary>
-    /// Implements the active brownian particle model.
-    /// </summary>
-    void WalkAround()
-    {
-
-        Vector3 pos = transform.localPosition;
-        angle = Random.Range(-Mathf.PI, Mathf.PI);
-        direction = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-
-        pos += speed * direction;
-
-        if (pos.x > 4f) pos.x = 4f;
-        if (pos.x < -4f) pos.x = -4f;
-        if (pos.z > 5f) pos.z = 5f;
-        if (pos.z < -5f) pos.z = -5f;
-        
-        transform.localPosition = pos;
-
-        transform.rotation = Quaternion.Euler(0f, Mathf.Rad2Deg * angle, 0f);
-
-        Debug.DrawRay(transform.position, direction, Color.yellow);
-    }
-
-
     /// <summary>
     /// Initialize all game objects and parameters to track.
     /// </summary>
@@ -122,6 +65,71 @@ public class BrownianAgent : MonoBehaviour
         distances = new float[beacons.Length];
     }
 
+
+    void Simulate(float drift = 1f, float scaleX = 0.1f, float scaleZ = 0.1f)
+    {   
+        // Get agent position and rotation
+        Vector3 agentPosition = transform.position;
+        Vector3 agentRotation = transform.forward;
+        Debug.Log(agentRotation);
+
+        // Get beacon position (as decision boundary for the Wiener process)
+        int beaconId = FindNearestBeacon();
+        Vector3 beaconPosition = beacons[beaconId].transform.position;
+
+        Vector3 pull = Vector3.Normalize(beaconPosition - agentPosition);
+
+        // Drift diffusion with pull
+        if (Vector3.Distance(agentPosition, beaconPosition) > 0f)
+        {
+            agentPosition.x += drift * pull.x * Time.deltaTime + scaleX * Mathf.Sqrt(Time.deltaTime) * GaussianRNG.Sample();
+            agentPosition.z += drift * pull.z * Time.deltaTime + scaleZ * Mathf.Sqrt(Time.deltaTime) * GaussianRNG.Sample();
+        }
+
+        transform.position = agentPosition;
+        transform.LookAt(beacons[beaconId].transform.position);
+        Debug.DrawRay(agentPosition, agentRotation, Color.yellow);
+        BoundPosition();
+        Separate(0.5f);
+        Align();
+    }
+
+
+    void BoundPosition()
+    {
+        Vector3 pos = transform.localPosition;
+
+        if (pos.x > 4f) pos.x = 4f;
+        if (pos.x < -4f) pos.x = -4f;
+        if (pos.z > 5f) pos.z = 5f;
+        if (pos.z < -5f) pos.z = -5f;
+
+        transform.localPosition = pos;
+    }
+
+    void Separate(float scale = 1f)
+    {
+        Vector3 avoidance = Vector3.zero;
+
+        for (int i = 0; i < neighbors.Length; i++)
+        {
+            float proximity = Vector3.Distance(
+                transform.position, neighbors[i].transform.position
+            );
+            if (proximity < 0.3f)
+            {
+                avoidance += transform.position - neighbors[i].transform.position;
+            }
+        }
+
+        avoidance = Vector3.Normalize(avoidance);
+        transform.Translate(avoidance);
+    }
+
+    void Align()
+    {
+        // TODO: Implement alignment
+    }
 
     /// <summary>
     /// Tracking function for the closest target for determining the drift
@@ -161,61 +169,31 @@ public class BrownianAgent : MonoBehaviour
     /// center      : Vector3
     ///     Center position of all surrounding agents within a distance.
     /// </returns>
-    Vector3 CenterOfNeighbors()
-    {
-        Vector3 center = transform.position;
-        int numNearbyNeighbors = 0;
-        for (int i = 0; i < neighbors.Length; i++)
-        {
-            float distance = Vector3.Distance(
-                transform.position, neighbors[i].transform.position
-            );
-            if (distance < detectionDistance)
-            {
-                numNearbyNeighbors++;
-                center += neighbors[i].transform.position;
-            }
-        }
-        center = center / numNearbyNeighbors;
-        return center;
-    }
 
-
-    float DirectionOfNeighbors()
-    {
-        float direction = transform.rotation.y;
-
-        int numNearbyNeighbors = 0;
-        for (int i = 0; i < neighbors.Length; i++)
-        {
-            float distance = Vector3.Distance(
-                transform.position, neighbors[i].transform.position
-            );
-            if (distance < detectionDistance)
-            {
-                numNearbyNeighbors++;
-                direction += neighbors[i].transform.rotation.eulerAngles.y;
-            }
-        }
-        direction = direction / numNearbyNeighbors;
-
-        return direction;
-    }
-
-
-    int NumberOfNeighbors()
+    (int n, Vector3 center, float direction) Flocks()
     {
         int n = 0;
+        Vector3 center = transform.position;
+        float direction = transform.rotation.y;
 
-        for (int i = 0; i < neighbors.Length; i++) 
+        for (int i = 0; i < neighbors.Length; i++)
         {
             float distance = Vector3.Distance(
                 transform.position, neighbors[i].transform.position
             );
 
-            if (distance < detectionDistance) n++;
+            if (distance < detectionDistance)
+            {
+                n++;
+                center += neighbors[i].transform.position;
+                direction += neighbors[i].transform.rotation.y;
+            }
         }
-        return n;
+
+        center = center / n;
+        direction = direction / n;
+
+        return (n, center, direction);
     }
 
 
