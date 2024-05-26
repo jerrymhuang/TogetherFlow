@@ -15,7 +15,7 @@ public class BrownianAgent : MonoBehaviour
 
     bool move;      // [TODO] Locomotive state of the agent
 
-    float angle;
+    float distractionRate = 0.1f;
     float speed = 0.1f;
     float perceptionDistance = 2f;
     float avoidanceDistance = 0.3f;
@@ -80,12 +80,15 @@ public class BrownianAgent : MonoBehaviour
         Vector3 pull = Vector3.Normalize(beaconPosition - agentPosition);
 
         // Drift diffusion with pull
+        float displacement = drift * Time.deltaTime;
+ 
         if (Vector3.Distance(agentPosition, beaconPosition) > 0f)
         {
-            agentPosition.x += drift * pull.x * Time.deltaTime + scaleX * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
-            agentPosition.z += drift * pull.z * Time.deltaTime + scaleZ * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
+            agentPosition.x += displacement * pull.x + scaleX * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
+            agentPosition.z += displacement * pull.z + scaleZ * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
         }
 
+        // Move towards the new beacon
         transform.position = agentPosition;
 
         // Rotate towards the new beacon
@@ -150,7 +153,7 @@ public class BrownianAgent : MonoBehaviour
         var (n, c, dir) = FindNearestNeighbors();
 
         // We want the cohesion (gathering) between agents to have a
-        // smaller influence than their attraction towards the target.
+        // smaller influence than their attraction towards the beacon.
         transform.position = Vector3.MoveTowards(
             transform.position, c, speed * 0.1f
         );
@@ -180,7 +183,7 @@ public class BrownianAgent : MonoBehaviour
         }
 
         Debug.Log("Avoidance: " + avoidance);
-        // avoidance = Vector3.Normalize(avoidance);
+        avoidance = Vector3.Normalize(avoidance);
         transform.Translate(avoidance * scale);
     }
 
