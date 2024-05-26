@@ -12,6 +12,11 @@ public class BrownianAgent : MonoBehaviour
     GameObject[] neighbors;
     float[] distances;
 
+    Vector3 velocity;
+    Vector3 acceleration;
+    float maxForce = 2f;
+    float maxSpeed = 4f;
+
 
     bool move;      // [TODO] Locomotive state of the agent
 
@@ -28,6 +33,14 @@ public class BrownianAgent : MonoBehaviour
     {        
         // Tag the agent
         transform.gameObject.tag = "Agent";
+
+        transform.localPosition = new Vector3(
+            Random.Range(-4f, 4f), 0f, Random.Range(-5f, 5f)
+        );
+
+        float unitVelocity = Random.value * Mathf.PI * 2;
+        velocity = new Vector3(Mathf.Cos(unitVelocity), 0f, Mathf.Sin(unitVelocity));
+        acceleration = Vector3.zero;
     }
 
     private void Start()
@@ -37,6 +50,8 @@ public class BrownianAgent : MonoBehaviour
 
     void FixedUpdate()
     {
+
+
         /*
         if (neighbors.Length > 0)
         {
@@ -98,13 +113,12 @@ public class BrownianAgent : MonoBehaviour
 
         Debug.DrawRay(agentPosition, agentRotation, Color.yellow);
 
-        Flock();
-        Bound();
+        FlockWith();
         Attend();
     }
 
 
-    void Flock()
+    public void FlockWith()
     {
         Align();
         Amass();
@@ -114,7 +128,7 @@ public class BrownianAgent : MonoBehaviour
     /// <summary>
     /// Bound the agent so that it is moving within the room.
     /// </summary>
-    void Bound()
+    public void Bound()
     {
         Vector3 pos = transform.localPosition;
 
@@ -128,7 +142,7 @@ public class BrownianAgent : MonoBehaviour
     }
 
 
-    void Attend()
+    public void Attend()
     {
         // TODO: Attention to beacons fading over time.
     }
@@ -137,9 +151,9 @@ public class BrownianAgent : MonoBehaviour
     /// <summary>
     /// Align the agent to the same heading as their neighbors.
     /// </summary>
-    void Align()
+    public void Align()
     {
-        var (n, c, dir) = FindNearestNeighbors();
+        var (n, c, dir) = FindNeighbors();
 
         transform.forward = dir;
     }
@@ -148,9 +162,9 @@ public class BrownianAgent : MonoBehaviour
     /// <summary>
     /// Make the agents gather together in smaller groups.
     /// </summary>
-    void Amass()
+    public void Amass()
     {
-        var (n, c, dir) = FindNearestNeighbors();
+        var (n, c, dir) = FindNeighbors();
 
         // We want the cohesion (gathering) between agents to have a
         // smaller influence than their attraction towards the beacon.
@@ -164,7 +178,7 @@ public class BrownianAgent : MonoBehaviour
     /// Separate the agent from others to avoid collision.
     /// </summary>
     /// <param name="scale"></param>
-    void Avoid(float scale = 1f)
+    public void Avoid(float scale = 1f)
     {
         Vector3 avoidance = Vector3.zero;
 
@@ -197,12 +211,12 @@ public class BrownianAgent : MonoBehaviour
             );
         }
 
-        int closestTarget = distances.ToList().IndexOf(distances.Min());
-        return closestTarget;
+        int nearestBeacon = distances.ToList().IndexOf(distances.Min());
+        return nearestBeacon;
     }
 
 
-    (int n, Vector3 center, Vector3 heading) FindNearestNeighbors()
+    (int n, Vector3 center, Vector3 heading) FindNeighbors()
     {
         int n = 0;
         Vector3 center = transform.position;

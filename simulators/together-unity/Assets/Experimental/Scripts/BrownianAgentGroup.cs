@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SampleAgentGroup : MonoBehaviour
+public class BrownianAgentGroup : MonoBehaviour
 {
 
 
@@ -27,7 +27,7 @@ public class SampleAgentGroup : MonoBehaviour
     [SerializeField]
     GizmoType gizmoType;
 
-    BrownianAgent[] agents;
+    List<BrownianAgent> agents;
 
     /* Reserved for later */
     // List<SampleAgent> agents;
@@ -42,20 +42,13 @@ public class SampleAgentGroup : MonoBehaviour
     void Awake()
     {
         InitializePositions();
-        agents = new BrownianAgent[numAgents];
-        //agents = new List<SampleAgent>();
+        agents = new List<BrownianAgent>();
+
         for (int i = 0; i < numAgents; i++)
         {
-            initialPosition = initialPositions[i];
-
-            initialRotation = new Vector3(0f, Random.Range(-180f, 180f), 0f);
-
-            // initialPositionType = (InitialPositionType)Random.Range(0, 2);
             BrownianAgent agent = Instantiate(prefab);
-
-            agent.gameObject.transform.position = initialPosition;
-            agent.gameObject.transform.rotation = Quaternion.Euler(initialRotation);
             agent.gameObject.transform.parent = transform;
+            agents.Add(agent);
         }
 
     }
