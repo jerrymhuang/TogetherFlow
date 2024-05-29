@@ -8,17 +8,17 @@ public class AgentGroup : MonoBehaviour
     int numAgents = 24;
 
     [SerializeField]
-    FlockingAgent prefab;
+    Agent prefab;
 
-    List<FlockingAgent> agents;
+    List<Agent> agents;
 
     void Awake()
     {
-        agents = new List<FlockingAgent>();
+        agents = new List<Agent>();
 
         for (int i = 0; i < numAgents; i++)
         {
-            FlockingAgent agent = Instantiate(prefab);
+            Agent agent = Instantiate(prefab);
             agent.gameObject.transform.parent = transform;
             agents.Add(agent);
         }
@@ -26,7 +26,7 @@ public class AgentGroup : MonoBehaviour
 
     private void Update()
     {
-        foreach (FlockingAgent agent in agents)
+        foreach (Agent agent in agents)
         {
             agent.Bound();
             agent.FlockWith(agents);
