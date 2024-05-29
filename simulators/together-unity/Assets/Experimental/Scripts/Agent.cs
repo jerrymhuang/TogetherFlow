@@ -11,7 +11,6 @@ public class Agent : MonoBehaviour
     public Vector3 acceleration;
     public float maxForce = 2f;
     public float maxSpeed = 4f;
-    public bool isAttentive = true;
 
 
     void Awake()
