@@ -23,6 +23,7 @@ public class AttentionalAgent : Agent
     {
         if (isAttentive)
         {
+            nearestBeacon = FindNearestBeacon();
             AttendTo(nearestBeacon);
         }
         else UnattendFrom(nearestBeacon, distractability);
