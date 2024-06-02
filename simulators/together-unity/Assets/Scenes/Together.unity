@@ -898,7 +898,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1051863948207908743, guid: 57d874d491124974384555004fb42006, type: 3}
       propertyPath: m_Name
-      value: Objects
+      value: Beacons
       objectReference: {fileID: 0}
     - target: {fileID: 1221730562047290695, guid: 57d874d491124974384555004fb42006, type: 3}
       propertyPath: m_Mesh

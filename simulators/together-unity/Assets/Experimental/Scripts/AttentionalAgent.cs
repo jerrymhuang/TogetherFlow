@@ -12,10 +12,14 @@ public class AttentionalAgent : Agent
     float[] distancesToBeacons;
     int nearestBeacon;
 
+    Vector3 orientation;
+    float reorientationSpeed;
+
 
     void Start()
     {
-        (beacons, distancesToBeacons) = InitializeBeacons();
+        var (beacons, distancesToBeacons) = InitializeBeacons();
+        Debug.Log(beacons.Length);
     }
 
 
@@ -24,7 +28,7 @@ public class AttentionalAgent : Agent
         if (isAttentive)
         {
             nearestBeacon = FindNearestBeacon();
-            AttendTo(nearestBeacon);
+            // AttendTo(nearestBeacon);
         }
         else UnattendFrom(nearestBeacon, distractability);
     }
@@ -32,6 +36,15 @@ public class AttentionalAgent : Agent
     void AttendTo(int beaconId)
     {
         /* TODO */
+        Vector3 beaconLocation = 
+            beacons[beaconId].transform.position - transform.position;
+
+        orientation = Vector3.RotateTowards(
+            transform.forward, beaconLocation, reorientationSpeed * Time.deltaTime, 0f
+        );
+
+        transform.rotation = Quaternion.LookRotation( orientation );
+    
     }
 
     private void UnattendFrom(int beaconId, float distractability)

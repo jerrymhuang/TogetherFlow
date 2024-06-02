@@ -69,7 +69,7 @@ public class Agent : MonoBehaviour
         Vector3 dir = Vector3.zero;
         int neighbors = 0;
 
-        foreach (FlockingAgent agent in agentGroup)
+        foreach (Agent agent in agentGroup)
         {
             Vector3 agentPosition = agent.transform.localPosition;
             float distance = Vector3.Distance(transform.localPosition, agentPosition);
@@ -106,7 +106,7 @@ public class Agent : MonoBehaviour
         Vector3 dir = Vector3.zero;
         int neighbors = 0;
 
-        foreach (FlockingAgent agent in agentGroup)
+        foreach (Agent agent in agentGroup)
         {
             Vector3 agentPosition = agent.transform.localPosition;
             float distance = Vector3.Distance(transform.localPosition, agentPosition);
@@ -144,7 +144,7 @@ public class Agent : MonoBehaviour
         Vector3 dir = Vector3.zero;
         int neighbors = 0;
 
-        foreach (FlockingAgent agent in agentGroup)
+        foreach (Agent agent in agentGroup)
         {
             Vector3 agentPosition = agent.transform.localPosition;
             float distance = Vector3.Distance(transform.localPosition, agentPosition);
