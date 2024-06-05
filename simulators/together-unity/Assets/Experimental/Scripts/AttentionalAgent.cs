@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 public class AttentionalAgent : Agent
@@ -28,9 +30,14 @@ public class AttentionalAgent : Agent
         if (isAttentive)
         {
             nearestBeacon = FindNearestBeacon();
-            // AttendTo(nearestBeacon);
+            AttendTo(nearestBeacon);
         }
         else UnattendFrom(nearestBeacon, distractability);
+    }
+
+    public override void FlockWith(List<Agent> agentGroup)
+    {
+        //base.FlockWith(agentGroup);
     }
 
     void AttendTo(int beaconId)
@@ -39,11 +46,15 @@ public class AttentionalAgent : Agent
         Vector3 beaconLocation = 
             beacons[beaconId].transform.position - transform.position;
 
+        
+
         orientation = Vector3.RotateTowards(
             transform.forward, beaconLocation, reorientationSpeed * Time.deltaTime, 0f
         );
 
-        transform.rotation = Quaternion.LookRotation( orientation );
+        Debug.DrawRay(transform.position, orientation, Color.red);
+
+        transform.localRotation = Quaternion.LookRotation( orientation );
     
     }
 

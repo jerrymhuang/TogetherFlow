@@ -35,7 +35,7 @@ public class Agent : MonoBehaviour
         acceleration *= 0f;
 
         // For visualization only
-        Debug.DrawRay(transform.position, transform.forward);
+        // Debug.DrawRay(transform.position, transform.forward);
     }
 
 
