@@ -11,6 +11,7 @@ public class Agent : MonoBehaviour
     public Vector3 acceleration;
     public float maxForce = 2f;
     public float maxSpeed = 4f;
+    public Vector3 weights;
 
 
     void Awake()
@@ -18,10 +19,11 @@ public class Agent : MonoBehaviour
         transform.localPosition = new Vector3(
             Random.Range(-4f, 4f), 0f, Random.Range(-5f, 5f)
         );
-
+        
         float unitVelocity = Random.value * Mathf.PI * 2;
         velocity = new Vector3(Mathf.Cos(unitVelocity), 0f, Mathf.Sin(unitVelocity));
         acceleration = Vector3.zero;
+        weights = new Vector3(0.5f, 0.3f, 0.2f);
     }
 
     // Update is called once per frame
@@ -88,7 +90,7 @@ public class Agent : MonoBehaviour
                 if (dir.magnitude > maxForce) dir = dir.normalized * maxForce;
             }
         }
-        return dir;
+        return weights.x * dir;
     }
 
 
@@ -126,7 +128,7 @@ public class Agent : MonoBehaviour
                 if (dir.magnitude > maxForce) dir = dir.normalized * maxForce;
             }
         }
-        return dir;
+        return weights.y * dir;
     }
 
 
@@ -166,7 +168,7 @@ public class Agent : MonoBehaviour
                 if (dir.magnitude > maxForce) dir = dir.normalized * maxForce;
             }
         }
-        return dir;
+        return weights.z * dir;
     }
 
 

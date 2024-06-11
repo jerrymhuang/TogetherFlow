@@ -47,7 +47,7 @@ public class AttentionalAgent : Agent
         
 
         orientation = Vector3.RotateTowards(
-            transform.forward, beaconLocation, reorientationSpeed * Time.deltaTime, 0f
+            transform.forward, beaconLocation, reorientationSpeed * Time.deltaTime, 1f
         );
 
         Debug.DrawRay(transform.position, orientation, Color.red);
