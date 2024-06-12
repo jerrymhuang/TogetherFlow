@@ -6,7 +6,6 @@ using UnityEngine;
 public class AttentionalAgent : Agent
 {
 
-    float distractability = 0.5f;
     bool isAttentive = true;
 
     GameObject[] beacons;
@@ -14,7 +13,7 @@ public class AttentionalAgent : Agent
     int nearestBeacon;
 
     private Vector3 orientation;
-    float reorientationSpeed;
+    float reorientationSpeed = 0.01f;
 
 
     void Start()
@@ -26,40 +25,59 @@ public class AttentionalAgent : Agent
 
     private void Update()
     {
+        
         if (isAttentive)
         {
             nearestBeacon = FindNearestBeacon();
-            Debug.Log(nearestBeacon);
-            AttendTo(nearestBeacon);
+            Debug.Log(beacons[nearestBeacon].name);
+            transform.forward += AttendTo(nearestBeacon);
         }
-        else UnattendFrom(nearestBeacon, distractability);
+
+        for (int i = 0; i < beacons.Length; i++)
+        {
+            Debug.DrawLine(transform.position, beacons[i].transform.position, Color.cyan);
+        }
+
+        Debug.DrawRay(transform.position, transform.forward, Color.red);
     }
 
-    public override void FlockWith(List<Agent> agentGroup)
+
+    public override void FlockWith(List<Agent> agents)
     {
         //base.FlockWith(agentGroup);
     }
 
-    private void AttendTo(int beaconId)
+
+    public override Vector3 Align(List<Agent> agents, float visualDistance = 1f)
+    {
+        return Vector3.zero;
+    }
+
+
+    public override Vector3 Amass(List<Agent> agents, float visualDistance = 1f)
+    {
+        return Vector3.zero;
+    }
+
+
+    public override Vector3 Avoid(List<Agent> agents, float visualDistance = 1f)
+    {
+        return Vector3.zero;
+    }
+
+
+    private Vector3 AttendTo(int beaconId)
     {
         Vector3 beaconLocation = 
             beacons[beaconId].transform.position - transform.position;
         
 
-        orientation = Vector3.RotateTowards(
-            transform.forward, beaconLocation, reorientationSpeed * Time.deltaTime, 1f
+        return Vector3.RotateTowards(
+            transform.forward, beaconLocation, 
+            0.01f, 0f
         );
-
-        Debug.DrawRay(transform.position, orientation, Color.red);
-
-        transform.localRotation = Quaternion.LookRotation( orientation );
-    
     }
 
-    private void UnattendFrom(int beaconId, float distractability)
-    {
-        /* TODO */
-    }
 
     (GameObject[] beacons, float[] distancesToBeacons) InitializeBeacons()
     {
@@ -83,7 +101,7 @@ public class AttentionalAgent : Agent
 
     public override void Bound()
     {
-
+        base.Bound();
     }
 
 }

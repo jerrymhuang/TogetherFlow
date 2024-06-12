@@ -22,6 +22,7 @@ public class Agent : MonoBehaviour
         
         float unitVelocity = Random.value * Mathf.PI * 2;
         velocity = new Vector3(Mathf.Cos(unitVelocity), 0f, Mathf.Sin(unitVelocity));
+        //velocity = Vector3.zero;
         acceleration = Vector3.zero;
         weights = new Vector3(0.5f, 0.3f, 0.2f);
     }

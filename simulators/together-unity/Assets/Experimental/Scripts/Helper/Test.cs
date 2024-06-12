@@ -28,9 +28,9 @@ public class Test : MonoBehaviour
         Debug.DrawRay(transform.position, transform.forward);
     }
 
-    void LookTowards(GameObject beacon)
+    void LookTowards(GameObject beacon, float radialSpeed = 0.01f, float magnitudeDelta = 0f)
     {
         Vector3 relativePosition = beacon.transform.position - transform.position;
-        transform.forward = Vector3.RotateTowards(transform.forward, relativePosition, 0.01f, 0.01f);
+        transform.forward = Vector3.RotateTowards(transform.forward, relativePosition, 0.01f, 0f);
     }
 }
