@@ -34,7 +34,7 @@ public class Agent : MonoBehaviour
         velocity += acceleration * Time.deltaTime;
         if (velocity.magnitude > maxSpeed)
             velocity = velocity.normalized * maxSpeed;
-        transform.forward = velocity;
+        transform.forward += velocity;
         acceleration *= 0f;
 
         // For visualization only
