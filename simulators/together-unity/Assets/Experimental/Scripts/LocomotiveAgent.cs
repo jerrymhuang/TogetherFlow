@@ -1,14 +1,12 @@
-using System;
 using UnityEngine;
-using System.Linq;
-using Random = UnityEngine.Random;
 
-public class LocomotiveAgent : MonoBehaviour
+public class LocomotiveAgent : Agent
 {
 
-    private GameObject beacon;
+    GameObject beacon;
+    float attentionDistance = 50f;
+    float distanceToBeacon;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         transform.localPosition = Vector3.right * Random.Range(-4f, 4f) + 
@@ -19,10 +17,11 @@ public class LocomotiveAgent : MonoBehaviour
     }
 
 
-    // Update is called once per frame
     void FixedUpdate()
     {
-        AttendTo(beacon);
+        distanceToBeacon = Distance2D(transform.position, beacon.transform.position);
+        if (distanceToBeacon < attentionDistance) AttendTo(beacon);
+        else UnattendFrom(beacon);
     }
 
 
@@ -30,11 +29,12 @@ public class LocomotiveAgent : MonoBehaviour
     /// Implements the 2D Euler-Maruyama scheme for random walk with distance-dependent drift.
     /// </summary>
     /// <param name="beacon"></param>
-    void AttendTo(GameObject beacon, float baseDrift = 0.01f, float decay = 0.01f, float scale = 1f)
+    void AttendTo(GameObject beacon, float baseDrift = 0.5f, float decay = 0.01f, float scale = 0.1f)
     {
+
         Vector3 position = transform.localPosition;
         Vector3 direction = Vector3.Normalize(beacon.transform.position - transform.position);
-        float distanceToBeacon = Distance2D(position, beacon.transform.position);
+        float distanceToBeacon = Distance2D(transform.position, beacon.transform.position);
         float drift = baseDrift * distanceToBeacon * decay;
         float displacement = drift * Time.deltaTime;
         position.x += displacement * direction.x + scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
@@ -47,12 +47,22 @@ public class LocomotiveAgent : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Reorient to a random location within the room.
+    /// </summary>
+    /// <param name="beacon"></param>
+    void UnattendFrom(GameObject beacon)
+    {
+        //TODO
+    }
+
+
     Vector3 Bound(Vector3 position)
     {
-        if (position.x < -4f) position.x = -4f + RNG.Gaussian(0f, 0.01f);
-        if (position.x > 4f) position.x = 4f + RNG.Gaussian(0f, 0.01f);
-        if (position.z < -5f) position.x = -5f + RNG.Gaussian(0f, 0.01f);
-        if (position.z > 5f) position.x = 5f + RNG.Gaussian(0f, 0.01f);
+        if (position.x < -4f) position.x = -4f + Random.Range(-0.01f, 0.01f);
+        if (position.x > 4f) position.x = 4f + Random.Range(-0.01f, 0.01f);
+        if (position.z < -5f) position.z = -5f + Random.Range(-0.01f, 0.01f);
+        if (position.z > 5f) position.z = 5f + Random.Range(-0.01f, 0.01f);
         return position;
 
     }
