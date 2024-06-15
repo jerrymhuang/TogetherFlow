@@ -53,7 +53,9 @@ public class LocomotiveAgent : Agent
     /// <param name="beacon"></param>
     void UnattendFrom(GameObject beacon)
     {
-        //TODO
+        // TODO (still not quite right)
+        Vector3 direction = Vector3.forward * Random.Range(-5f, 5f) + Vector3.right * Random.Range(-4f, 4f);
+        transform.forward = Vector3.RotateTowards(transform.forward, direction, 0.01f, 0f);
     }
 
 
