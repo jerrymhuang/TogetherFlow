@@ -29,13 +29,13 @@ public class LocomotiveAgent : Agent
     /// Implements the 2D Euler-Maruyama scheme for random walk with distance-dependent drift.
     /// </summary>
     /// <param name="beacon"></param>
-    void AttendTo(GameObject beacon, float baseDrift = 0.5f, float decay = 0.01f, float scale = 0.1f)
+    void AttendTo(GameObject beacon, float baseDrift = 0.5f, float scale = 0.1f)
     {
 
         Vector3 position = transform.localPosition;
         Vector3 direction = Vector3.Normalize(beacon.transform.position - transform.position);
         float distanceToBeacon = Distance2D(transform.position, beacon.transform.position);
-        float drift = baseDrift * distanceToBeacon * decay;
+        float drift = baseDrift * distanceToBeacon;
         float displacement = drift * Time.deltaTime;
         position.x += displacement * direction.x + scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
         position.z += displacement * direction.z + scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
