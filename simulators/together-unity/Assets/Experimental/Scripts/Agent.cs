@@ -31,15 +31,20 @@ public class Agent : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        UpdateVelocity();
+        // For visualization only
+        // Debug.DrawRay(transform.position, transform.forward);
+    }
+
+
+    public virtual void UpdateVelocity()
+    {
         transform.localPosition += velocity * Time.deltaTime;
         velocity += acceleration * Time.deltaTime;
         if (velocity.magnitude > maxSpeed)
             velocity = velocity.normalized * maxSpeed;
         transform.forward += velocity;
         acceleration *= 0f;
-
-        // For visualization only
-        // Debug.DrawRay(transform.position, transform.forward);
     }
 
 
