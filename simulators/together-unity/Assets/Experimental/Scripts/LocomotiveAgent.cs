@@ -1,31 +1,36 @@
 using UnityEngine;
+using System.Linq;
 
 public class LocomotiveAgent : Agent
 {
 
-    GameObject beacon;
+    GameObject[] beacons;
     float attentionDistance = 10f;
     float distanceToBeacon;
 
+    GameObject beacon;
     Vector3 position;
     Vector3 positionToBeacon;
     Vector3 direction;
 
     bool visualize = true;
 
+
     void Start()
     {
         transform.localPosition = Vector3.right * Random.Range(-4f, 4f) + 
                                   Vector3.forward * Random.Range(-5f, 5f);
-        beacon = GameObject.FindGameObjectWithTag("Beacon");
-        Debug.Log(beacon.name);
+        beacons = GameObject.FindGameObjectsWithTag("Beacon");
+        
     }
 
 
     void FixedUpdate()
     {
+        beacon = FindNearestBeacon();
+        Debug.Log(beacon.name);
+
         distanceToBeacon = Distance2D(transform.position, beacon.transform.position);
-        Debug.Log(distanceToBeacon);
         if (distanceToBeacon < attentionDistance) 
             AttendTo(beacon);
         else UnattendFrom(beacon);
@@ -80,6 +85,19 @@ public class LocomotiveAgent : Agent
     }
 
 
+    GameObject FindNearestBeacon()
+    {
+        GameObject beacon;
+        float[] distances = new float[beacons.Length];
+        
+        for (int i = 0; i < beacons.Length; i++) distances[i] = 
+            Distance2D(transform.position, beacons[i].transform.position);
+
+        beacon = beacons[System.Array.IndexOf(distances, distances.Min())];
+        return beacon;
+    }
+
+
     float Distance2D(Vector3 start, Vector3 end)
     {
         float d;
@@ -88,6 +106,7 @@ public class LocomotiveAgent : Agent
         d = Mathf.Sqrt(x * x + z * z);
         return d;
     }
+
 
     void Visualize()
     {
