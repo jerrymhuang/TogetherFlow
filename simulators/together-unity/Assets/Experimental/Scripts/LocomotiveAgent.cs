@@ -4,14 +4,19 @@ public class LocomotiveAgent : Agent
 {
 
     GameObject beacon;
-    float attentionDistance = 50f;
+    float attentionDistance = 10f;
     float distanceToBeacon;
+
+    Vector3 position;
+    Vector3 positionToBeacon;
+    Vector3 direction;
+
+    bool visualize = true;
 
     void Start()
     {
         transform.localPosition = Vector3.right * Random.Range(-4f, 4f) + 
                                   Vector3.forward * Random.Range(-5f, 5f);
-        Debug.Log(transform.localPosition);
         beacon = GameObject.FindGameObjectWithTag("Beacon");
         Debug.Log(beacon.name);
     }
@@ -20,8 +25,12 @@ public class LocomotiveAgent : Agent
     void FixedUpdate()
     {
         distanceToBeacon = Distance2D(transform.position, beacon.transform.position);
-        if (distanceToBeacon < attentionDistance) AttendTo(beacon);
+        Debug.Log(distanceToBeacon);
+        if (distanceToBeacon < attentionDistance) 
+            AttendTo(beacon);
         else UnattendFrom(beacon);
+
+        if (visualize) Visualize();
     }
 
 
@@ -29,18 +38,19 @@ public class LocomotiveAgent : Agent
     /// Implements the 2D Euler-Maruyama scheme for random walk with distance-dependent drift.
     /// </summary>
     /// <param name="beacon"></param>
-    void AttendTo(GameObject beacon, float baseDrift = 0.5f, float scale = 0.1f)
+    void AttendTo(GameObject beacon, float baseDrift = 0.1f, float scale = 0.1f)
     {
 
-        Vector3 position = transform.localPosition;
-        Vector3 direction = Vector3.Normalize(beacon.transform.position - transform.position);
-        float distanceToBeacon = Distance2D(transform.position, beacon.transform.position);
+        position = transform.localPosition;
+        direction = Vector3.Normalize(beacon.transform.position - transform.position);
+
         float drift = baseDrift * distanceToBeacon;
         float displacement = drift * Time.deltaTime;
-        position.x += displacement * direction.x + scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
-        position.z += displacement * direction.z + scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
+        position.x += displacement * direction.x + 
+            scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
+        position.z += displacement * direction.z + 
+            scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
 
-        Debug.DrawRay(transform.position, direction, Color.red);
 
         transform.localPosition = Bound(position);
         transform.forward = Vector3.RotateTowards(transform.forward, beacon.transform.position, 0.01f, 0f);
@@ -75,7 +85,13 @@ public class LocomotiveAgent : Agent
         float d;
         float x = start.x - end.x;
         float z = start.z - end.z;
-        d = x * x + z * z;
+        d = Mathf.Sqrt(x * x + z * z);
         return d;
+    }
+
+    void Visualize()
+    {
+        Debug.DrawRay(transform.position, direction, Color.red);
+        Debug.DrawRay(transform.position, transform.forward, Color.green);
     }
 }
