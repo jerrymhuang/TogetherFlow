@@ -5,20 +5,20 @@ public class AgentGroup : MonoBehaviour
 {
 
     [SerializeField]
-    int numAgents = 24;
+    int numAgents = 6;
 
     [SerializeField]
-    GameObject prefab;
+    Agent prefab;
 
-    List<GameObject> agents;
+    List<Agent> agents;
 
     void Awake()
     {
-        agents = new List<GameObject>();
+        agents = new List<Agent>();
 
         for (int i = 0; i < numAgents; i++)
         {
-            GameObject agent = Instantiate(prefab);
+            Agent agent = Instantiate(prefab);
             agent.gameObject.transform.parent = transform;
             agents.Add(agent);
         }
@@ -26,7 +26,7 @@ public class AgentGroup : MonoBehaviour
 
     private void Update()
     {
-        foreach (GameObject agent in agents)
+        foreach (Agent agent in agents)
         {
             if (agent.GetComponent<Agent>() != null)
             {

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Agent : MonoBehaviour
 {
@@ -205,6 +206,17 @@ public class Agent : MonoBehaviour
         }
 
         transform.localPosition = pos;
-
     }
+    
+
+
+    public virtual Vector3 Bounded(Vector3 position)
+    {
+        if (position.x < -4f) position.x = -4f + Random.Range(-0.01f, 0.01f);
+        if (position.x > 4f) position.x = 4f + Random.Range(-0.01f, 0.01f);
+        if (position.z < -5f) position.z = -5f + Random.Range(-0.01f, 0.01f);
+        if (position.z > 5f) position.z = 5f + Random.Range(-0.01f, 0.01f);
+        return position;
+    }
+
 }

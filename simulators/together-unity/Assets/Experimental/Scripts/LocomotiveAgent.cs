@@ -5,7 +5,7 @@ public class LocomotiveAgent : Agent
 {
 
     GameObject[] beacons;
-    float attentionDistance = 10f;
+    float attentionDistance;
     float distanceToBeacon;
 
     GameObject beacon;
@@ -21,6 +21,9 @@ public class LocomotiveAgent : Agent
         transform.localPosition = Vector3.right * Random.Range(-4f, 4f) + 
                                   Vector3.forward * Random.Range(-5f, 5f);
         beacons = GameObject.FindGameObjectsWithTag("Beacon");
+
+        // Sample attention distance individually
+        attentionDistance = Random.Range(10f, 25f);
         
     }
 
@@ -49,6 +52,7 @@ public class LocomotiveAgent : Agent
         position = transform.localPosition;
         direction = Vector3.Normalize(beacon.transform.position - transform.position);
 
+
         float drift = baseDrift * distanceToBeacon;
         float displacement = drift * Time.deltaTime;
         position.x += displacement * direction.x + 
@@ -57,7 +61,7 @@ public class LocomotiveAgent : Agent
             scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
 
 
-        transform.localPosition = Bound(position);
+        transform.localPosition = Bounded(position);
         transform.forward = Vector3.RotateTowards(transform.forward, beacon.transform.position, 0.01f, 0f);
     }
 
@@ -74,6 +78,7 @@ public class LocomotiveAgent : Agent
     }
 
 
+    /*
     Vector3 Bound(Vector3 position)
     {
         if (position.x < -4f) position.x = -4f + Random.Range(-0.01f, 0.01f);
@@ -81,9 +86,8 @@ public class LocomotiveAgent : Agent
         if (position.z < -5f) position.z = -5f + Random.Range(-0.01f, 0.01f);
         if (position.z > 5f) position.z = 5f + Random.Range(-0.01f, 0.01f);
         return position;
-
     }
-
+    */
 
     GameObject FindNearestBeacon()
     {

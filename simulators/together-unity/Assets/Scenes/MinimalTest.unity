@@ -406,7 +406,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numAgents: 6
-  prefab: {fileID: 6486698716232646252, guid: 7904d34ea1ab5114b8d3172b436c6ffe, type: 3}
+  prefab: {fileID: -5693697262905044492, guid: 7904d34ea1ab5114b8d3172b436c6ffe, type: 3}
 --- !u!1 &2137355057
 GameObject:
   m_ObjectHideFlags: 0
