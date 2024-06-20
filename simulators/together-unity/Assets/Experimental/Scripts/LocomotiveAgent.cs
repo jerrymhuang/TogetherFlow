@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Linq;
+using System.Net;
 
 public class LocomotiveAgent : Agent
 {
@@ -10,11 +11,13 @@ public class LocomotiveAgent : Agent
     float distanceToBeacon;
 
     GameObject beacon;
-    Vector3 position;
+    Vector3 positionToRoom;
     Vector3 positionToBeacon;
     Vector3 direction;
 
     bool visualize = true;
+    float timer = 0f;
+    float maxAttentionTime = 3f;
 
 
     void Start()
@@ -35,12 +38,27 @@ public class LocomotiveAgent : Agent
         UpdateVelocity();
 
         beacon = FindNearestBeacon();
-        Debug.Log(beacon.name);
-
         distanceToBeacon = Distance2D(transform.position, beacon.transform.position);
-        if (distanceToBeacon < maxAttentionDistance && distanceToBeacon > minAttentionDistance) 
+
+        if (distanceToBeacon < maxAttentionDistance &&
+            distanceToBeacon > minAttentionDistance)
+        {
+            // Debug.Log("Attending");
+
             AttendTo(beacon);
-        else UnattendFrom(beacon);
+            timer += Time.deltaTime;
+            Debug.Log(timer);
+            
+            if (timer > maxAttentionTime)
+            {
+                Debug.Log("Losing Attention");
+                Unattend();
+            }
+        }
+        else
+        {
+            // Debug.Log("Unattending");
+        }
 
         if (visualize) Visualize();
     }
@@ -50,35 +68,46 @@ public class LocomotiveAgent : Agent
     /// Implements the 2D Euler-Maruyama scheme for random walk with distance-dependent drift.
     /// </summary>
     /// <param name="beacon"></param>
-    void AttendTo(GameObject beacon, float baseDrift = 0.1f, float scale = 0.1f)
+    void AttendTo(GameObject beacon, float baseDrift = 0.125f, float scale = 0.1f)
     {
 
-        position = transform.localPosition;
-        direction = Vector3.Normalize(beacon.transform.position - transform.position);
-        Debug.Log("Direction: " + direction);
+        positionToRoom = transform.localPosition;
+        positionToBeacon = beacon.transform.position - transform.position;
+        direction = Vector3.Normalize(positionToBeacon);
+        // Debug.Log("Direction: " + direction);
 
         float drift = baseDrift * distanceToBeacon;
         float displacement = drift * Time.deltaTime;
-        position.x += displacement * direction.x + 
+        positionToRoom.x += displacement * direction.x + 
             scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
-        position.z += displacement * direction.z + 
+        positionToRoom.z += displacement * direction.z + 
             scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
 
 
-        transform.localPosition = Bounded(position);
-        transform.forward = Vector3.RotateTowards(transform.forward, beacon.transform.position, 0.01f, 0f);
+        transform.localPosition = Bounded(positionToRoom);
+        transform.forward = Vector3.RotateTowards(
+            transform.forward, positionToBeacon, 0.05f, 0f
+        );
     }
+
+
 
 
     /// <summary>
     /// Reorient to a random location within the room.
     /// </summary>
     /// <param name="beacon"></param>
-    void UnattendFrom(GameObject beacon)
+    void Unattend()
     {
-        // TODO (still not quite right)
-        Vector3 direction = Vector3.forward * Random.Range(-5f, 5f) + Vector3.right * Random.Range(-4f, 4f);
-        transform.forward = Vector3.RotateTowards(transform.forward, direction, 0.01f, 0f);
+        float drift = RNG.Gaussian();
+        float scale = 0.05f;
+        transform.Rotate(Vector3.up * (drift * Time.deltaTime + scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian()));
+        /*
+        Vector3 direction = 
+            Vector3.forward * Random.Range(-5f, 5f) + 
+            Vector3.right * Random.Range(-4f, 4f);
+        transform.forward = Vector3.RotateTowards(transform.forward, direction, 0.05f, 0f);
+        */
     }
 
 
@@ -108,6 +137,22 @@ public class LocomotiveAgent : Agent
     void Visualize()
     {
         Debug.DrawRay(transform.position, direction, Color.red);
-        Debug.DrawRay(transform.position, transform.forward, Color.green);
+        //Debug.DrawRay(transform.position, transform.forward, Color.green);
+    }
+
+
+    public override Vector3 Bounded(Vector3 position)
+    {
+        if (position.x < -4f) position.x = -4f + Random.Range(-0.01f, 0.01f);
+        if (position.x > 4f) position.x = 4f + Random.Range(-0.01f, 0.01f);
+        if (position.z < -5f) position.z = -5f + Random.Range(-0.01f, 0.01f);
+        if (position.z > 5f) position.z = 5f + Random.Range(-0.01f, 0.01f);
+        return position;
+    }
+
+
+    public override void Bound()
+    {
+        
     }
 }

@@ -3,24 +3,44 @@ using UnityEngine;
 
 public class AgentGroup : MonoBehaviour
 {
+    [SerializeField]
+    bool isAgentic = true;
 
     [SerializeField]
     int numAgents = 6;
 
     [SerializeField]
-    Agent prefab;
+    Agent agentPrefab;
+
+    [SerializeField]
+    GameObject prefab;
 
     List<Agent> agents;
+    List<GameObject> a;
 
     void Awake()
     {
-        agents = new List<Agent>();
-
-        for (int i = 0; i < numAgents; i++)
+        if (isAgentic)
         {
-            Agent agent = Instantiate(prefab);
-            agent.gameObject.transform.parent = transform;
-            agents.Add(agent);
+            agents = new List<Agent>();
+
+            for (int i = 0; i < numAgents; i++)
+            {
+                Agent agent = Instantiate(agentPrefab);
+                agent.gameObject.transform.parent = transform;
+                agents.Add(agent);
+            }
+        }
+        else
+        {
+            a = new List<GameObject>();
+
+            for (int i = 0; i < numAgents; i++)
+            {
+                GameObject agent = Instantiate(prefab);
+                agent.gameObject.transform.parent = transform;
+                a.Add(agent);
+            }
         }
     }
 
@@ -30,8 +50,8 @@ public class AgentGroup : MonoBehaviour
         {
             if (agent.GetComponent<Agent>() != null)
             {
-                agent.GetComponent<Agent>().Bound();
-                //agent.GetComponent<Agent>().FlockWith(agents);
+                //agent.GetComponent<Agent>().Bound();
+                agent.GetComponent<Agent>().FlockWith(agents);
             }
         }
     }

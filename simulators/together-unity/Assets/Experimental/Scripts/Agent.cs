@@ -25,7 +25,7 @@ public class Agent : MonoBehaviour
         velocity = new Vector3(Mathf.Cos(unitVelocity), 0f, Mathf.Sin(unitVelocity));
         //velocity = Vector3.zero;
         acceleration = Vector3.zero;
-        weights = new Vector3(0.5f, 0.3f, 0.2f);
+        weights = new Vector3(0.1f, 0.075f, 0.2f);
     }
 
     // Update is called once per frame
@@ -43,7 +43,7 @@ public class Agent : MonoBehaviour
         velocity += acceleration * Time.deltaTime;
         if (velocity.magnitude > maxSpeed)
             velocity = velocity.normalized * maxSpeed;
-        transform.forward += velocity;
+        //transform.forward += velocity;
         acceleration *= 0f;
     }
 

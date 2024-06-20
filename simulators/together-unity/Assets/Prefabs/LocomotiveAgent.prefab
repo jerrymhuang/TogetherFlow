@@ -45,6 +45,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a35aa64fe54648046b2365ba67ff18f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  visualDistance: 4
+  motorDistance: 1
+  socialDistance: 1
+  velocity: {x: 0, y: 0, z: 0}
+  acceleration: {x: 0, y: 0, z: 0}
+  maxForce: 2
+  maxSpeed: 4
+  weights: {x: 0, y: 0, z: 0}
 --- !u!1 &7600692771044651667
 GameObject:
   m_ObjectHideFlags: 0
@@ -110,7 +118,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 52c03e48bc679fb43aa20adb797af1f4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
