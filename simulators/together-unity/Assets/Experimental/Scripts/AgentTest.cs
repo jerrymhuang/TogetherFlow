@@ -56,7 +56,6 @@ public class AgentTest : MonoBehaviour
         if (Vector3.Angle(transform.forward, Vector3.right) == 0f)
         {
             count = false;
-            t = 0f;
         }
 
     }

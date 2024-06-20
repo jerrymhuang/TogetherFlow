@@ -1,18 +1,21 @@
 using UnityEngine;
 using System.Linq;
-using System.Net;
+using System.Collections.Generic;
+using UnityEngine.UIElements;
 
 public class LocomotiveAgent : Agent
 {
 
     GameObject[] beacons;
-    float minAttentionDistance;
+    float attentionDistance;
     float maxAttentionDistance;
     float distanceToBeacon;
 
-    GameObject beacon;
     Vector3 positionToRoom;
     Vector3 positionToBeacon;
+
+
+    GameObject attendedBeacon;
     Vector3 direction;
 
     bool visualize = true;
@@ -27,9 +30,7 @@ public class LocomotiveAgent : Agent
         beacons = GameObject.FindGameObjectsWithTag("Beacon");
 
         // Sample attention distance individually
-        minAttentionDistance = Random.Range(5f, 10f);
-        maxAttentionDistance = Random.Range(minAttentionDistance + 20f, minAttentionDistance + 40f);
-        
+        attentionDistance = Random.Range(5f, maxAttentionDistance);
     }
 
 
@@ -38,29 +39,32 @@ public class LocomotiveAgent : Agent
         UpdateVelocity();
 
         beacon = FindNearestBeacon();
-        distanceToBeacon = Distance2D(transform.position, beacon.transform.position);
+        distanceToBeacon = Distance2D(transform.position, attendedBeacon.transform.position);
 
-        if (distanceToBeacon < maxAttentionDistance &&
-            distanceToBeacon > minAttentionDistance)
+        if (distanceToBeacon < maxAttentionDistance)
         {
             // Debug.Log("Attending");
 
             AttendTo(beacon);
             timer += Time.deltaTime;
             Debug.Log(timer);
-            
-            if (timer > maxAttentionTime)
-            {
-                Debug.Log("Losing Attention");
-                Unattend();
-            }
         }
-        else
+        if (timer > maxAttentionTime)
         {
-            // Debug.Log("Unattending");
+            Debug.Log("Losing Attention");
+            Unattend();
         }
 
         if (visualize) Visualize();
+    }
+
+
+    public override void FlockWith(List<Agent> agentGroup)
+    {
+        base.FlockWith(agentGroup);
+
+        Vector3 attention = Attend(attendedBeacon, attentionDistance);
+        acceleration += attention;
     }
 
 
@@ -90,6 +94,34 @@ public class LocomotiveAgent : Agent
         );
     }
 
+
+    Vector3 Attend(
+        GameObject beacon, 
+        float attentionDistance, 
+        float baseDrift = 0.125f, 
+        float scale = 0.1f, 
+        float rotationSpeed = 0.05f
+    )
+    {
+        Vector3 dir = Vector3.zero;
+
+        positionToRoom = transform.localPosition;
+        positionToBeacon = beacon.transform.position - transform.position;
+        direction = Vector3.Normalize(positionToBeacon);
+
+        float drift = baseDrift * distanceToBeacon;
+        float displacement = drift * Time.deltaTime;
+        positionToRoom.x += displacement * direction.x +
+            scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
+        positionToRoom.z += displacement * direction.z +
+            scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
+
+        transform.localPosition = Bounded(positionToRoom);
+        dir = Vector3.RotateTowards(
+            transform.forward, positionToBeacon, rotationSpeed, 0f
+        );
+        return selfAttentionWeight * dir;
+    }
 
 
 

@@ -8,15 +8,24 @@ public class Agent : MonoBehaviour
     public float visualDistance = 4f;
     public float motorDistance = 1f;
     public float socialDistance = 1f;
+
+    public float selfAttentionWeight = 0.5f;
+    public float jointAttentionWeight = 0.5f;
+
+    public float visualWeight;
+    public float motorWeight;
+    public float socialWeight;
+
     public Vector3 velocity;
     public Vector3 acceleration;
     public float maxForce = 2f;
     public float maxSpeed = 4f;
-    public Vector3 weights;
 
 
     void Awake()
     {
+        CheckWeights();
+
         transform.localPosition = new Vector3(
             Random.Range(-4f, 4f), 0f, Random.Range(-5f, 5f)
         );
@@ -25,7 +34,6 @@ public class Agent : MonoBehaviour
         velocity = new Vector3(Mathf.Cos(unitVelocity), 0f, Mathf.Sin(unitVelocity));
         //velocity = Vector3.zero;
         acceleration = Vector3.zero;
-        weights = new Vector3(0.1f, 0.075f, 0.2f);
     }
 
     // Update is called once per frame
@@ -39,11 +47,11 @@ public class Agent : MonoBehaviour
 
     public virtual void UpdateVelocity()
     {
-        transform.localPosition += velocity * Time.deltaTime;
-        velocity += acceleration * Time.deltaTime;
+        transform.localPosition += velocity * Time.deltaTime;   // x = v dt
+        velocity += acceleration * Time.deltaTime;              // v = a dt
         if (velocity.magnitude > maxSpeed)
             velocity = velocity.normalized * maxSpeed;
-        //transform.forward += velocity;
+        // transform.forward += velocity;
         acceleration *= 0f;
     }
 
@@ -97,7 +105,7 @@ public class Agent : MonoBehaviour
                 if (dir.magnitude > maxForce) dir = dir.normalized * maxForce;
             }
         }
-        return weights.x * dir;
+        return jointAttentionWeight * visualWeight * dir;
     }
 
 
@@ -135,7 +143,7 @@ public class Agent : MonoBehaviour
                 if (dir.magnitude > maxForce) dir = dir.normalized * maxForce;
             }
         }
-        return weights.y * dir;
+        return jointAttentionWeight * motorWeight * dir;
     }
 
 
@@ -175,7 +183,7 @@ public class Agent : MonoBehaviour
                 if (dir.magnitude > maxForce) dir = dir.normalized * maxForce;
             }
         }
-        return weights.z * dir;
+        return jointAttentionWeight * socialWeight * dir;
     }
 
 
@@ -222,6 +230,13 @@ public class Agent : MonoBehaviour
         if (position.z < -5f) position.z = -5f + Random.Range(-0.01f, 0.01f);
         if (position.z > 5f) position.z = 5f + Random.Range(-0.01f, 0.01f);
         return position;
+    }
+
+
+    public virtual void CheckWeights()
+    {
+        Debug.LogAssertion(selfAttentionWeight + jointAttentionWeight == 1f);
+        Debug.LogAssertion(visualWeight + motorWeight + socialWeight == 1f);
     }
 
 }
