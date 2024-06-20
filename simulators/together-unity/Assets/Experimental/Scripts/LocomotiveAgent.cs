@@ -38,14 +38,14 @@ public class LocomotiveAgent : Agent
     {
         UpdateVelocity();
 
-        beacon = FindNearestBeacon();
+        attendedBeacon = FindNearestBeacon();
         distanceToBeacon = Distance2D(transform.position, attendedBeacon.transform.position);
 
         if (distanceToBeacon < maxAttentionDistance)
         {
             // Debug.Log("Attending");
 
-            AttendTo(beacon);
+            Vector3 attention = Attend(attendedBeacon, attentionDistance);
             timer += Time.deltaTime;
             Debug.Log(timer);
         }
