@@ -12,8 +12,8 @@ public class AttentionalAgent : Agent
     float[] distancesToBeacons;
     int nearestBeacon;
 
-    private Vector3 orientation;
-    float reorientationSpeed = 0.01f;
+    // private Vector3 orientation;
+    // float reorientationSpeed = 0.01f;
 
 
     void Start()

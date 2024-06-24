@@ -4,17 +4,20 @@ using UnityEngine.UIElements;
 
 public class Agent : MonoBehaviour
 {
-    
+    public float selfAttentionWeight = 0f;
+    public float jointAttentionWeight = 1f;
+
     public float visualDistance = 4f;
     public float motorDistance = 1f;
     public float socialDistance = 1f;
 
-    public float selfAttentionWeight = 0.5f;
-    public float jointAttentionWeight = 0.5f;
+    public float visualWeight = 0.1f;
+    public float motorWeight = 0.1f;
+    public float socialWeight = 0.8f;
 
-    public float visualWeight;
-    public float motorWeight;
-    public float socialWeight;
+    public Vector3 alignment;
+    public Vector3 cohesion;
+    public Vector3 separation;
 
     public Vector3 velocity;
     public Vector3 acceleration;
@@ -48,10 +51,11 @@ public class Agent : MonoBehaviour
     public virtual void UpdateVelocity()
     {
         transform.localPosition += velocity * Time.deltaTime;   // x = v dt
+        Bound();
         velocity += acceleration * Time.deltaTime;              // v = a dt
         if (velocity.magnitude > maxSpeed)
             velocity = velocity.normalized * maxSpeed;
-        // transform.forward += velocity;
+        transform.forward += velocity;
         acceleration *= 0f;
     }
 
@@ -62,13 +66,16 @@ public class Agent : MonoBehaviour
     /// <param name="agentGroup">Group of all neighboring agents</param>
     public virtual void FlockWith(List<Agent> agentGroup)
     {
-        Vector3 alignment = Align(agentGroup, visualDistance);
-        Vector3 cohesion = Amass(agentGroup, motorDistance);
-        Vector3 separation = Avoid(agentGroup, socialDistance);
+        alignment = Align(agentGroup, visualDistance);
+        cohesion = Amass(agentGroup, motorDistance);
+        separation = Avoid(agentGroup, socialDistance);
+
 
         acceleration += alignment;
         acceleration += cohesion;
         acceleration += separation;
+
+        Debug.Log(acceleration.magnitude);
     }
 
 
@@ -183,6 +190,7 @@ public class Agent : MonoBehaviour
                 if (dir.magnitude > maxForce) dir = dir.normalized * maxForce;
             }
         }
+
         return jointAttentionWeight * socialWeight * dir;
     }
 
@@ -218,6 +226,8 @@ public class Agent : MonoBehaviour
             velocity = Vector3.Reflect(velocity, Vector3.back);
         }
 
+        if (pos.y != 0f) pos.y = 0f;
+
         transform.localPosition = pos;
     }
     
@@ -229,14 +239,30 @@ public class Agent : MonoBehaviour
         if (position.x > 4f) position.x = 4f + Random.Range(-0.01f, 0.01f);
         if (position.z < -5f) position.z = -5f + Random.Range(-0.01f, 0.01f);
         if (position.z > 5f) position.z = 5f + Random.Range(-0.01f, 0.01f);
+        
+        if (position.y != 0f) position.y = 0f;
+        
         return position;
+    }
+
+
+    public float Distance2D(Vector3 start, Vector3 end)
+    {
+        float d;
+        float x = start.x - end.x;
+        float z = start.z - end.z;
+        d = Mathf.Sqrt(x * x + z * z);
+
+        return d;
     }
 
 
     public virtual void CheckWeights()
     {
-        Debug.LogAssertion(selfAttentionWeight + jointAttentionWeight == 1f);
-        Debug.LogAssertion(visualWeight + motorWeight + socialWeight == 1f);
+        if (selfAttentionWeight + jointAttentionWeight != 1f)
+            Debug.LogWarning("Self-attention and joint attention do not sum up to 1.");
+        if (visualWeight + motorWeight + socialWeight != 1f)
+            Debug.LogWarning("Elements of joint attention do not sum up to 1.");
     }
 
 }

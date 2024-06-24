@@ -10,8 +10,7 @@ public class AgentTest : MonoBehaviour
     float t = 0f;
     float T = 3f;
 
-    bool count = false;
-
+    bool count = true;
 
     private void Start()
     {
@@ -50,7 +49,6 @@ public class AgentTest : MonoBehaviour
         if (Vector3.Angle(transform.forward, relativePosition) == 0f)
         {
             count = true;
-            t += Time.deltaTime;
         }
 
         if (Vector3.Angle(transform.forward, Vector3.right) == 0f)
@@ -58,6 +56,10 @@ public class AgentTest : MonoBehaviour
             count = false;
         }
 
+        if (count)
+        {
+            t += Time.deltaTime;
+        }
     }
 
 }

@@ -14,13 +14,13 @@ public class BrownianAgent : MonoBehaviour
 
     Vector3 velocity;
     Vector3 acceleration;
-    float maxForce = 2f;
-    float maxSpeed = 4f;
+    //float maxForce = 2f;
+    //float maxSpeed = 4f;
 
 
     bool move;      // [TODO] Locomotive state of the agent
 
-    float distractionRate = 0.1f;
+    //float distractionRate = 0.1f;
     float speed = 0.1f;
     float perceptionDistance = 2f;
     float avoidanceDistance = 0.3f;

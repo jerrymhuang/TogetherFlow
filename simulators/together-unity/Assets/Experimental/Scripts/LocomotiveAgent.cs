@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
-using UnityEngine.UIElements;
 
 public class LocomotiveAgent : Agent
 {
@@ -46,6 +45,7 @@ public class LocomotiveAgent : Agent
             // Debug.Log("Attending");
 
             Vector3 attention = Attend(attendedBeacon, attentionDistance);
+            
             timer += Time.deltaTime;
             Debug.Log(timer);
         }
@@ -156,19 +156,19 @@ public class LocomotiveAgent : Agent
     }
 
 
-    float Distance2D(Vector3 start, Vector3 end)
-    {
-        float d;
-        float x = start.x - end.x;
-        float z = start.z - end.z;
-        d = Mathf.Sqrt(x * x + z * z);
-        return d;
-    }
-
-
     void Visualize()
     {
-        Debug.DrawRay(transform.position, direction, Color.red);
+        Debug.DrawRay(transform.position, direction, Color.green);
+        Debug.DrawRay(transform.position, alignment, Color.magenta);
+        Debug.DrawRay(transform.position, cohesion, Color.cyan);
+        Debug.DrawRay(transform.position, separation, Color.yellow);
+
+        Debug.Log(
+            "direction: " + direction + " | " + 
+            "alignment: " + alignment + " | " +
+            "cohesion: "  + cohesion  + " | " +
+            "separation: " + separation
+        );
         //Debug.DrawRay(transform.position, transform.forward, Color.green);
     }
 
@@ -182,9 +182,4 @@ public class LocomotiveAgent : Agent
         return position;
     }
 
-
-    public override void Bound()
-    {
-        
-    }
 }

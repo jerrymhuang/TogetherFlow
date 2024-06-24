@@ -20,7 +20,7 @@ namespace EMPACResearch.Core.Singletons
             {
                 if (instance == null)
                 {
-                    var objs = FindObjectsOfType(typeof(T)) as T[];
+                    var objs = FindObjectsByType(typeof(T), FindObjectsSortMode.None) as T[];
                     if (objs.Length > 0)
                     {
                         instance = objs[0];
