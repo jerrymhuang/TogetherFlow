@@ -7,16 +7,16 @@ public class Agent : MonoBehaviour
 
     [Header("Distance Thresholds")]
     public float visualDistance = 4f;
-    public float motorDistance = 1f;
+    public float motorDistance = 2f;
     public float socialDistance = 1f;
 
     [Header("Weights")]
     public float selfAttentionWeight = 0f;
     public float jointAttentionWeight = 1f;
 
-    public float visualWeight = 0.1f;
-    public float motorWeight = 0.1f;
-    public float socialWeight = 0.8f;
+    public float visualWeight = 0f;
+    public float motorWeight = 0.5f;
+    public float socialWeight = 0.5f;
 
     [Header("Physical Properties")]
     public float maxForce = 2f;
@@ -90,7 +90,7 @@ public class Agent : MonoBehaviour
         acceleration += separation;
 
         Debug.Log(transform.gameObject.name + ": " + acceleration);
-        Debug.DrawRay(transform.position, Vector3.Normalize(acceleration), Color.red);
+        Debug.DrawRay(transform.position, Vector3.Normalize(acceleration), Color.green);
     }
 
 
@@ -128,7 +128,11 @@ public class Agent : MonoBehaviour
             }
         }
 
-        if (visualize) VisualizeDistance(visualDistance, Color.cyan);
+        if (visualize)
+        {
+            VisualizeDistance(visualDistance, Color.cyan);
+        }
+
         return jointAttentionWeight * visualWeight * dir;
     }
 
@@ -168,7 +172,11 @@ public class Agent : MonoBehaviour
             }
         }
 
-        if (visualize) VisualizeDistance(motorDistance, Color.yellow);
+        if (visualize)
+        {
+            VisualizeDistance(motorDistance, Color.yellow);
+        }
+
         return jointAttentionWeight * motorWeight * dir;
     }
 
@@ -210,7 +218,12 @@ public class Agent : MonoBehaviour
             }
         }
 
-        if (visualize) VisualizeDistance(socialDistance, Color.magenta, 24);
+        if (visualize)
+        {
+            VisualizeDistance(socialDistance, Color.magenta, 24);
+            VisualizeDirection(dir, Color.magenta);
+        }
+
         return jointAttentionWeight * socialWeight * dir;
     }
 
@@ -301,5 +314,11 @@ public class Agent : MonoBehaviour
 
             Debug.DrawLine(pos + a, pos + b, c);
         }
+    }
+
+
+    public virtual void VisualizeDirection(Vector3 dir, Color c)
+    {
+        Debug.DrawRay(transform.position, Vector3.Normalize(dir), c);
     }
 }
