@@ -575,7 +575,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1837340493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -718,7 +718,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isAgentic: 1
-  numAgents: 1
+  numAgents: 2
   agentPrefab: {fileID: 8363327320584630263, guid: a68629ca3bf77674e86aad56272e0c7e, type: 3}
   prefab: {fileID: 6486698716232646252, guid: 7904d34ea1ab5114b8d3172b436c6ffe, type: 3}
 --- !u!1 &2137355057

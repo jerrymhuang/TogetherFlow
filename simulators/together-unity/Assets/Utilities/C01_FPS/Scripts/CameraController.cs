@@ -1,7 +1,6 @@
 using Cinemachine;
 using UnityEngine;
 
-using EMPACResearch.Core.Singletons;
 
 /// <summary>
 /// class CameraController : Singleton<CameraController>

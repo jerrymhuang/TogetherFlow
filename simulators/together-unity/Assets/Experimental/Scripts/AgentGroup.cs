@@ -27,6 +27,7 @@ public class AgentGroup : MonoBehaviour
             for (int i = 0; i < numAgents; i++)
             {
                 Agent agent = Instantiate(agentPrefab);
+                agent.gameObject.name = "A" + i.ToString();
                 agent.gameObject.transform.parent = transform;
                 agents.Add(agent);
             }

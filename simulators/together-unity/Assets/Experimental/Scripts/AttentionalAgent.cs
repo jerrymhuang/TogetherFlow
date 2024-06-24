@@ -48,19 +48,19 @@ public class AttentionalAgent : Agent
     }
 
 
-    public override Vector3 Align(List<Agent> agents, float visualDistance = 1f)
+    public override Vector3 Align(List<Agent> agents, float visualDistance = 1f, bool visualize = false)
     {
         return Vector3.zero;
     }
 
 
-    public override Vector3 Amass(List<Agent> agents, float visualDistance = 1f)
+    public override Vector3 Amass(List<Agent> agents, float motorDistance = 1f, bool visualize = false)
     {
         return Vector3.zero;
     }
 
 
-    public override Vector3 Avoid(List<Agent> agents, float visualDistance = 1f)
+    public override Vector3 Avoid(List<Agent> agents, float socislDistance = 1f, bool visualize = false)
     {
         return Vector3.zero;
     }
