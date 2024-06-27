@@ -11,8 +11,8 @@ public class Agent : MonoBehaviour
     public float socialDistance = 1f;
 
     [Header("Weights")]
-    public float selfAttentionWeight = 0f;
-    public float jointAttentionWeight = 1f;
+    public float selfAttentionWeight = 0.2f;
+    public float jointAttentionWeight;
 
     public float visualWeight = 0f;
     public float motorWeight = 0.5f;
@@ -56,9 +56,18 @@ public class Agent : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+
         UpdateVelocity();
         // For visualization only
         // Debug.DrawRay(transform.position, transform.forward);
+
+        UpdateAttentionWeights();
+    }
+
+
+    void UpdateAttentionWeights()
+    {
+        jointAttentionWeight = 1f - selfAttentionWeight;
     }
 
 
@@ -130,7 +139,7 @@ public class Agent : MonoBehaviour
 
         if (visualize)
         {
-            VisualizeDistance(visualDistance, Color.cyan);
+            // VisualizeDistance(visualDistance, Color.cyan);
         }
 
         return jointAttentionWeight * visualWeight * dir;
@@ -174,7 +183,7 @@ public class Agent : MonoBehaviour
 
         if (visualize)
         {
-            VisualizeDistance(motorDistance, Color.yellow);
+            // VisualizeDistance(motorDistance, Color.yellow);
         }
 
         return jointAttentionWeight * motorWeight * dir;
@@ -292,8 +301,6 @@ public class Agent : MonoBehaviour
 
     public virtual void CheckWeights()
     {
-        if (selfAttentionWeight + jointAttentionWeight != 1f)
-            Debug.LogWarning("Self-attention and joint attention do not sum up to 1.");
         if (visualWeight + motorWeight + socialWeight - 1f > 0.00001f)
             Debug.LogWarning("Elements of joint attention do not sum up to 1.");
     }

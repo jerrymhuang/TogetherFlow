@@ -7,6 +7,7 @@ public class LocomotiveAgent : Agent
 
     GameObject[] beacons;
     float attentionDistance;
+    float attentionProbability;
     float maxAttentionDistance;
     float distanceToBeacon;
 
@@ -24,8 +25,6 @@ public class LocomotiveAgent : Agent
 
     void Start()
     {
-        transform.localPosition = Vector3.right * Random.Range(-4f, 4f) + 
-                                  Vector3.forward * Random.Range(-5f, 5f);
         beacons = GameObject.FindGameObjectsWithTag("Beacon");
 
         // Sample attention distance individually
@@ -44,8 +43,9 @@ public class LocomotiveAgent : Agent
         {
             // Debug.Log("Attending");
 
-            Vector3 attention = Attend(attendedBeacon, attentionDistance);
-            
+            //Vector3 attention = Attend(attendedBeacon, attentionDistance);
+            //acceleration += attention;
+
             timer += Time.deltaTime;
             Debug.Log(timer);
         }
@@ -55,6 +55,9 @@ public class LocomotiveAgent : Agent
             Unattend();
         }
 
+
+        Vector3 attention = Attend(attendedBeacon, attentionDistance);
+        acceleration += attention;
         if (visualize) Visualize();
     }
 
@@ -64,7 +67,7 @@ public class LocomotiveAgent : Agent
         base.FlockWith(agentGroup);
 
         Vector3 attention = Attend(attendedBeacon, attentionDistance);
-        acceleration += attention;
+
     }
 
 
@@ -92,6 +95,7 @@ public class LocomotiveAgent : Agent
         transform.forward = Vector3.RotateTowards(
             transform.forward, positionToBeacon, 0.05f, 0f
         );
+
     }
 
 
@@ -120,6 +124,7 @@ public class LocomotiveAgent : Agent
         dir = Vector3.RotateTowards(
             transform.forward, positionToBeacon, rotationSpeed, 0f
         );
+
         return selfAttentionWeight * dir;
     }
 

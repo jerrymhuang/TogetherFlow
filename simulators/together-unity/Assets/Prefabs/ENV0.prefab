@@ -150,7 +150,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7020456766889475608}
   m_Layer: 0
-  m_Name: MinimalEnvironment
+  m_Name: ENV0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
