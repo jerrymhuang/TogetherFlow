@@ -74,7 +74,8 @@ public class Agent : MonoBehaviour
     public virtual void UpdateVelocity()
     {
         transform.localPosition += velocity * Time.deltaTime;   // x = v dt
-        Bound();
+        transform.localPosition = Bounded(transform.localPosition);
+
         velocity += acceleration * Time.deltaTime;              // v = a dt
         if (velocity.magnitude > maxSpeed)
             velocity = velocity.normalized * maxSpeed;
@@ -240,6 +241,8 @@ public class Agent : MonoBehaviour
     /// <summary>
     /// Define boundary condition for the agent.
     /// </summary>
+    /// 
+    /*
     public virtual void Bound()
     {
         Vector3 pos = transform.localPosition;
@@ -272,7 +275,7 @@ public class Agent : MonoBehaviour
 
         transform.localPosition = pos;
     }
-    
+    */
 
 
     public virtual Vector3 Bounded(Vector3 position)

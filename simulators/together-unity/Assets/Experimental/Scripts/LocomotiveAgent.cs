@@ -34,7 +34,7 @@ public class LocomotiveAgent : Agent
 
     void FixedUpdate()
     {
-        UpdateVelocity();
+        // UpdateVelocity();
 
         attendedBeacon = FindNearestBeacon();
         distanceToBeacon = Distance2D(transform.position, attendedBeacon.transform.position);
