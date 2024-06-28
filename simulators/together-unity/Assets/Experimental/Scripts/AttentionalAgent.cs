@@ -57,7 +57,7 @@ public class AttentionalAgent : Agent
 
 
         Vector3 attention = Attend(attendedBeacon, attentionDistance);
-        acceleration += attention;
+        transform.forward = attention;
         if (visualize) Visualize();
     }
 
@@ -104,11 +104,9 @@ public class AttentionalAgent : Agent
         float attentionDistance,
         float baseDrift = 0.125f,
         float scale = 0.1f,
-        float rotationSpeed = 0.05f
+        float rotationSpeed = 1f
     )
     {
-        Vector3 dir = Vector3.zero;
-
         positionToRoom = transform.localPosition;
         positionToBeacon = beacon.transform.position - transform.position;
         direction = Vector3.Normalize(positionToBeacon);
@@ -121,7 +119,7 @@ public class AttentionalAgent : Agent
             scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
 
         transform.localPosition = Bounded(positionToRoom);
-        dir = Vector3.RotateTowards(
+        Vector3 dir = Vector3.RotateTowards(
             transform.forward, positionToBeacon, rotationSpeed, 0f
         );
 
@@ -163,10 +161,11 @@ public class AttentionalAgent : Agent
 
     void Visualize()
     {
-        Debug.DrawRay(transform.position, direction, Color.green);
-        Debug.DrawRay(transform.position, alignment, Color.magenta);
-        Debug.DrawRay(transform.position, cohesion, Color.cyan);
-        Debug.DrawRay(transform.position, separation, Color.yellow);
+        Debug.DrawRay(transform.position, transform.forward, Color.red);
+        //Debug.DrawRay(transform.position, direction, Color.green);
+        //Debug.DrawRay(transform.position, alignment, Color.magenta);
+        //Debug.DrawRay(transform.position, cohesion, Color.cyan);
+        //Debug.DrawRay(transform.position, separation, Color.yellow);
 
         Debug.Log(
             "direction: " + direction + " | " +

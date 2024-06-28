@@ -99,8 +99,8 @@ public class Agent : MonoBehaviour
         acceleration += cohesion;
         acceleration += separation;
 
-        Debug.Log(transform.gameObject.name + ": " + acceleration);
-        Debug.DrawRay(transform.position, Vector3.Normalize(acceleration), Color.green);
+        //Debug.Log(transform.gameObject.name + ": " + acceleration);
+        //Debug.DrawRay(transform.position, Vector3.Normalize(acceleration), Color.green);
     }
 
 
