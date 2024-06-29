@@ -23,6 +23,7 @@ public class Agent : MonoBehaviour
     public float maxSpeed = 4f;
 
 
+    // Component vectors of joint attention
     [HideInInspector]
     public Vector3 alignment;
 
@@ -32,6 +33,8 @@ public class Agent : MonoBehaviour
     [HideInInspector]
     public Vector3 separation;
 
+
+    // Agent motion vectors
     [HideInInspector]
     public Vector3 velocity;
 
@@ -41,42 +44,57 @@ public class Agent : MonoBehaviour
 
     void Awake()
     {
+        // Check if the weights add up to be 1
         CheckWeights();
 
-        transform.localPosition = new Vector3(
-            Random.Range(-4f, 4f), 0f, Random.Range(-5f, 5f)
-        );
-        
-        float unitVelocity = Random.value * Mathf.PI * 2;
-        velocity = new Vector3(Mathf.Cos(unitVelocity), 0f, Mathf.Sin(unitVelocity));
-        //velocity = Vector3.zero;
-        acceleration = Vector3.zero;
+        // Initialize an agent position
+        InitializePosition();
+
+        // Initialize agent motion vectors
+        InitializeMotionVector();
     }
 
-    // Update is called once per frame
+
     void FixedUpdate()
     {
-
+        // Update velocity motion vector
         UpdateVelocity();
-        // For visualization only
-        // Debug.DrawRay(transform.position, transform.forward);
 
+        // Update attention weights
         UpdateAttentionWeights();
     }
 
 
-    void UpdateAttentionWeights()
+    public virtual void InitializePosition()
     {
-        jointAttentionWeight = 1f - selfAttentionWeight;
+        transform.localPosition = new Vector3(
+            Random.Range(-4f, 4f), 0f, Random.Range(-5f, 5f)
+        );
     }
 
 
+    public virtual void InitializeMotionVector()
+    {
+        float unitVelocity = Random.value * Mathf.PI * 2;
+        velocity = new Vector3(
+            Mathf.Cos(unitVelocity), 0f, Mathf.Sin(unitVelocity)
+        );
+        // velocity = Vector3.zero;
+        acceleration = Vector3.zero;
+    }
+
+
+    /// <summary>
+    /// Update velocity based upon the calculation of 
+    /// </summary>
     public virtual void UpdateVelocity()
     {
-        transform.localPosition += velocity * Time.deltaTime;   // x = v dt
+        // x = v dt
+        transform.localPosition += velocity * Time.deltaTime;   
         transform.localPosition = Bounded(transform.localPosition);
 
-        velocity += acceleration * Time.deltaTime;              // v = a dt
+        // v = a dt
+        velocity += acceleration * Time.deltaTime;
         if (velocity.magnitude > maxSpeed)
             velocity = velocity.normalized * maxSpeed;
         transform.forward += velocity;
@@ -85,22 +103,30 @@ public class Agent : MonoBehaviour
 
 
     /// <summary>
+    /// Updates the weight between joint attention and self attention.
+    /// </summary>
+    void UpdateAttentionWeights()
+    {
+        jointAttentionWeight = 1f - selfAttentionWeight;
+    }
+
+
+
+    /// <summary>
     /// Combine all agent-based components for acceleration updating.
     /// </summary>
     /// <param name="agentGroup">Group of all neighboring agents</param>
     public virtual void FlockWith(List<Agent> agentGroup)
     {
+        // Update joint attention components
         alignment = Align(agentGroup, visualDistance);
         cohesion = Amass(agentGroup, motorDistance);
         separation = Avoid(agentGroup, socialDistance, true);
-
-
+        
+        // Add to acceleration
         acceleration += alignment;
         acceleration += cohesion;
         acceleration += separation;
-
-        //Debug.Log(transform.gameObject.name + ": " + acceleration);
-        //Debug.DrawRay(transform.position, Vector3.Normalize(acceleration), Color.green);
     }
 
 
@@ -109,11 +135,16 @@ public class Agent : MonoBehaviour
     /// </summary>
     /// <param name="agentGroup">All neighboring agents</param>
     /// <param name="visualDistance">Distance threshold for alignment</param>
+    /// <param name="visualize">Optional boolean to visualize</param>
     /// <returns>
     /// dir     : Vector3
     ///     3D motion vector component for influence of alignment.
     /// </returns>
-    public virtual Vector3 Align(List<Agent> agentGroup, float visualDistance = 2f, bool visualize = false)
+    public virtual Vector3 Align(
+        List<Agent> agentGroup, 
+        float visualDistance = 2f, 
+        bool visualize = false
+    )
     {
         Vector3 dir = Vector3.zero;
         int neighbors = 0;
@@ -121,7 +152,8 @@ public class Agent : MonoBehaviour
         foreach (Agent agent in agentGroup)
         {
             Vector3 agentPosition = agent.transform.localPosition;
-            float distance = Vector3.Distance(transform.localPosition, agentPosition);
+            float distance = 
+                Vector3.Distance(transform.localPosition, agentPosition);
 
             if (distance < visualDistance && agent != this)
             {
@@ -152,11 +184,16 @@ public class Agent : MonoBehaviour
     /// </summary>
     /// <param name="agentGroup">All neighboring agents</param>
     /// <param name="motorDistance">Distance threshold for cohesion</param>
+    /// <param name="visualize">Optional boolean to visualize</param>
     /// <returns>
     /// dir     : Vector3
     ///     3D motion vector component for influence of cohesion.
     /// </returns>
-    public virtual Vector3 Amass(List<Agent> agentGroup, float motorDistance = 2f, bool visualize = false)
+    public virtual Vector3 Amass(
+        List<Agent> agentGroup, 
+        float motorDistance = 2f, 
+        bool visualize = false
+    )
     {
         Vector3 dir = Vector3.zero;
         int neighbors = 0;
@@ -164,7 +201,8 @@ public class Agent : MonoBehaviour
         foreach (Agent agent in agentGroup)
         {
             Vector3 agentPosition = agent.transform.localPosition;
-            float distance = Vector3.Distance(transform.localPosition, agentPosition);
+            float distance = 
+                Vector3.Distance(transform.localPosition, agentPosition);
 
             if (distance < motorDistance && agent != this)
             {
@@ -196,11 +234,16 @@ public class Agent : MonoBehaviour
     /// </summary>
     /// <param name="agentGroup">All neighboring agents</param>
     /// <param name="socialDistance">Distance threshold for separation</param>
+    /// <param name="visualize">Optional boolean to visualize</param>
     /// <returns>
     /// dir     : Vector3
     ///     3D motion vector component for influence of separation.
     /// </returns>
-    public virtual Vector3 Avoid(List<Agent> agentGroup, float socialDistance = 0.5f, bool visualize = false)
+    public virtual Vector3 Avoid(
+        List<Agent> agentGroup, 
+        float socialDistance = 0.5f, 
+        bool visualize = false
+    )
     {
         Vector3 dir = Vector3.zero;
         int neighbors = 0;
@@ -208,12 +251,14 @@ public class Agent : MonoBehaviour
         foreach (Agent agent in agentGroup)
         {
             Vector3 agentPosition = agent.transform.localPosition;
-            float distance = Vector3.Distance(transform.localPosition, agentPosition);
+            float distance = 
+                Vector3.Distance(transform.localPosition, agentPosition);
 
             if (distance < socialDistance && agent != this)
             {
-                Vector3 socialPosition =
-                    (transform.position - agent.transform.position) / socialDistance;
+                Vector3 socialPosition = 
+                    transform.position - agent.transform.position;
+                socialPosition = socialPosition / socialDistance;
 
                 dir += socialPosition;
                 neighbors++;
@@ -237,7 +282,7 @@ public class Agent : MonoBehaviour
         return jointAttentionWeight * socialWeight * dir;
     }
 
-
+    /*
     /// <summary>
     /// Define boundary condition for the agent.
     /// </summary>
@@ -278,6 +323,15 @@ public class Agent : MonoBehaviour
     */
 
 
+    
+    /// <summary>
+    /// Bound the agent within the room.
+    /// </summary>
+    /// <param name="position">Unbounded agent position</param>
+    /// <returns>
+    /// position        : Vector3
+    ///     Bounded agent position
+    /// </returns>
     public virtual Vector3 Bounded(Vector3 position)
     {
         if (position.x < -4f) position.x = -4f + Random.Range(-0.01f, 0.01f);
@@ -291,6 +345,15 @@ public class Agent : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Calculate distance between two points in the XZ plane
+    /// </summary>
+    /// <param name="start">Starting point</param>
+    /// <param name="end">Ending point</param>
+    /// <returns>
+    /// d       : float
+    ///     Distance between starting point and end point.
+    /// </returns>
     public float Distance2D(Vector3 start, Vector3 end)
     {
         float d;
@@ -302,13 +365,25 @@ public class Agent : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// Check if the weights sum up to 1.
+    /// If not, a warning is logged.
+    /// </summary>
     public virtual void CheckWeights()
     {
         if (visualWeight + motorWeight + socialWeight - 1f > 0.00001f)
-            Debug.LogWarning("Elements of joint attention do not sum up to 1.");
+            Debug.LogWarning(
+                "Elements of joint attention do not sum up to 1."
+            );
     }
 
 
+    /// <summary>
+    /// Visualize the distance setting for any agent as a circle.
+    /// </summary>
+    /// <param name="d">Distance setting</param>
+    /// <param name="c">Color used for visualization</param>
+    /// <param name="segments"># of segments for the visualized circle.</param>
     public virtual void VisualizeDistance(float d, Color c, int segments = 12)
     {
         Vector3 pos = transform.position;
@@ -319,14 +394,19 @@ public class Agent : MonoBehaviour
         {
             a0 = Mathf.PI * 2f * i / segments;
             a1 = Mathf.PI * 2f * (i + 1) / segments;
-            a = (Vector3.right * Mathf.Cos(a0) + Vector3.forward * Mathf.Sin(a0)) * d;
-            b = (Vector3.right * Mathf.Cos(a1) + Vector3.forward * Mathf.Sin(a1)) * d;
+            a = new Vector3(Mathf.Cos(a0), 0f, Mathf.Sin(a0)) * d;
+            b = new Vector3(Mathf.Cos(a1), 0f, Mathf.Sin(a1)) * d;
 
             Debug.DrawLine(pos + a, pos + b, c);
         }
     }
 
 
+    /// <summary>
+    /// Visualize the direction of the agent
+    /// </summary>
+    /// <param name="dir">Direction to visualize</param>
+    /// <param name="c">Color for the visualization</param>
     public virtual void VisualizeDirection(Vector3 dir, Color c)
     {
         Debug.DrawRay(transform.position, Vector3.Normalize(dir), c);
