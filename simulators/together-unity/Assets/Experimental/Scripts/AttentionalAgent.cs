@@ -103,7 +103,6 @@ public class AttentionalAgent : Agent
 
     Vector3 Attend(
         GameObject beacon,
-        float attentionDistance,
         float baseDrift = 0.125f,
         float scale = 0.1f,
         float rotationSpeed = 1f
@@ -111,7 +110,7 @@ public class AttentionalAgent : Agent
     {
 
         Vector3 dir = Approach(beacon, baseDrift, scale);
-        transform.forward = Advert();
+        transform.forward = Advert(rotationSpeed);
 
         return dir;
 
@@ -158,13 +157,9 @@ public class AttentionalAgent : Agent
     {
         float drift = RNG.Gaussian();
         float scale = 0.05f;
-        transform.Rotate(Vector3.up * (drift * Time.deltaTime + scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian()));
-        /*
-        Vector3 direction = 
-            Vector3.forward * Random.Range(-5f, 5f) + 
-            Vector3.right * Random.Range(-4f, 4f);
-        transform.forward = Vector3.RotateTowards(transform.forward, direction, 0.05f, 0f);
-        */
+        transform.Rotate(
+            Vector3.up * (drift * Time.deltaTime + scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian())
+        );
     }
 
 
