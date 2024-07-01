@@ -50,6 +50,9 @@ public class Agent : MonoBehaviour
         // Initialize an agent position
         InitializePosition();
 
+        // Initialize distance thresholds
+        InitializeDistance();
+
         // Initialize agent motion vectors
         InitializeMotionVector();
     }
@@ -70,6 +73,17 @@ public class Agent : MonoBehaviour
         transform.localPosition = new Vector3(
             Random.Range(-4f, 4f), 0f, Random.Range(-5f, 5f)
         );
+    }
+
+
+    /// <summary>
+    /// Sample agent distance thresholds in hierarchical manner.
+    /// </summary>
+    public virtual void InitializeDistance()
+    {
+        visualDistance = Random.Range(0.25f, 6f);
+        motorDistance = Random.Range(0.25f, visualDistance);
+        socialDistance = Random.Range(0.25f, motorDistance);
     }
 
 

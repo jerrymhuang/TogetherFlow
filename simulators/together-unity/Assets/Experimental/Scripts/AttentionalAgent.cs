@@ -4,17 +4,17 @@ using System.Collections.Generic;
 
 public class AttentionalAgent : Agent
 {
-
+    // Beacons to keep track of
+    GameObject room;
     GameObject[] beacons;
-    float attentionDistance;
-    float attentionProbability;
-    float maxAttentionDistance;
     float distanceToBeacon;
+
+    // Additional properties for attentional agent
+    float attentionDistance;
+    float maxAttentionDistance;
 
     Vector3 positionToRoom;
     Vector3 positionToBeacon;
-
-
     GameObject attendedBeacon;
     Vector3 direction;
 
@@ -25,10 +25,11 @@ public class AttentionalAgent : Agent
 
     void Start()
     {
+        room = GameObject.FindGameObjectWithTag("Room");
         beacons = GameObject.FindGameObjectsWithTag("Beacon");
 
         // Sample attention distance individually
-        attentionDistance = Random.Range(5f, maxAttentionDistance);
+        attentionDistance = Random.Range(visualDistance, maxAttentionDistance);
     }
 
 
@@ -41,10 +42,10 @@ public class AttentionalAgent : Agent
 
         if (distanceToBeacon < maxAttentionDistance)
         {
-            // Debug.Log("Attending");
+            Debug.Log("Attending");
 
-            //Vector3 attention = Attend(attendedBeacon, attentionDistance);
-            //acceleration += attention;
+            // attention = Attend(attendedBeacon, attentionDistance);
+            // acceleration += attention;
 
             timer += Time.deltaTime;
             Debug.Log(timer);
@@ -67,6 +68,7 @@ public class AttentionalAgent : Agent
         base.FlockWith(agentGroup);
 
         Vector3 attention = Attend(attendedBeacon, attentionDistance);
+        acceleration += attention;
 
     }
 
@@ -107,9 +109,22 @@ public class AttentionalAgent : Agent
         float rotationSpeed = 1f
     )
     {
+
+        Vector3 dir = Approach(beacon, baseDrift, scale);
+        transform.forward = Advert();
+
+        return dir;
+
+    }
+
+
+    Vector3 Approach(GameObject beacon, float baseDrift = 0.125f, float scale = 0.1f)
+    {
+        Vector3 dir;
+
         positionToRoom = transform.localPosition;
         positionToBeacon = beacon.transform.position - transform.position;
-        direction = Vector3.Normalize(positionToBeacon);
+        dir = Vector3.Normalize(positionToBeacon);
 
         float drift = baseDrift * distanceToBeacon;
         float displacement = drift * Time.deltaTime;
@@ -119,11 +134,18 @@ public class AttentionalAgent : Agent
             scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
 
         transform.localPosition = Bounded(positionToRoom);
+        
+        return selfAttentionWeight * dir;
+    }
+
+
+    Vector3 Advert(float rotationSpeed = 1f)
+    {
         Vector3 dir = Vector3.RotateTowards(
             transform.forward, positionToBeacon, rotationSpeed, 0f
         );
 
-        return selfAttentionWeight * dir;
+        return dir;
     }
 
 
