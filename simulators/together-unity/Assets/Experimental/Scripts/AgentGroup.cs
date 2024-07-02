@@ -45,14 +45,17 @@ public class AgentGroup : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        foreach (Agent agent in agents)
+        if (isAgentic && agents.Count > 1)
         {
-            if (agent.GetComponent<Agent>() != null)
+            foreach (Agent agent in agents)
             {
-                //agent.GetComponent<Agent>().Bound();
-                agent.GetComponent<Agent>().FlockWith(agents);
+                if (agent.GetComponent<Agent>() != null)
+                {
+                    //agent.GetComponent<Agent>().Bound();
+                    agent.GetComponent<Agent>().FlockWith(agents);
+                }
             }
         }
     }

@@ -3,12 +3,20 @@ using UnityEngine;
 public class AgentTest : MonoBehaviour
 {
 
-    [SerializeField] GameObject obj;
+    [SerializeField] 
+    GameObject obj;
 
     float t = 0f;
     float T = 3f;
 
+    float attentionSwitchingThreshold = 0.5f;
+
     bool count = true;
+    bool attend = true;
+
+
+
+
 
     private void Start()
     {
@@ -18,13 +26,15 @@ public class AgentTest : MonoBehaviour
 
     void Update()
     {
-        TestAttend();
-        Debug.Log(t);
+        // TestAttend();
+        TestAttentionSwitching();
     }
 
 
     void TestAttend()
     {
+        attend = Random.Range(0f, 1f) < attentionSwitchingThreshold;
+
         Vector3 relativePosition = obj.transform.position - transform.position;
         
         if (t <= T)
@@ -58,6 +68,22 @@ public class AgentTest : MonoBehaviour
         {
             t += Time.deltaTime;
         }
+    }
+
+
+    void TestAttentionSwitching()
+    {
+        // If a beacon is switched, then attention goes back to 1.
+
+
+        // Otherwise, attention decreases to 0 nonlinearly.
+
+
+        // When unttend, the agent random-walks to anywhere in the room.
+
+
+        // A beacon is attended to when it is within a certain distance
+        // from the agent.
     }
 
 }

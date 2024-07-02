@@ -117,7 +117,11 @@ public class AttentionalAgent : Agent
     }
 
 
-    Vector3 Approach(GameObject beacon, float baseDrift = 0.125f, float scale = 0.1f)
+    Vector3 Approach(
+        GameObject beacon, 
+        float baseDrift = 0.125f, 
+        float scale = 0.1f
+    )
     {
         Vector3 dir;
 
@@ -158,7 +162,9 @@ public class AttentionalAgent : Agent
         float drift = RNG.Gaussian();
         float scale = 0.05f;
         transform.Rotate(
-            Vector3.up * (drift * Time.deltaTime + scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian())
+            Vector3.up * (drift * Time.deltaTime + 
+            scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian()
+            )
         );
     }
 
