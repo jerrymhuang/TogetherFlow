@@ -38,7 +38,8 @@ public class AttentionalAgent : Agent
         // UpdateVelocity();
 
         attendedBeacon = FindNearestBeacon();
-        distanceToBeacon = Distance2D(transform.position, attendedBeacon.transform.position);
+        distanceToBeacon = 
+            Distance2D(transform.position, attendedBeacon.transform.position);
 
         if (distanceToBeacon < maxAttentionDistance)
         {
@@ -74,7 +75,8 @@ public class AttentionalAgent : Agent
 
 
     /// <summary>
-    /// Implements the 2D Euler-Maruyama scheme for random walk with distance-dependent drift.
+    /// Implements the 2D Euler-Maruyama scheme for random walk 
+    /// with distance-dependent drift.
     /// </summary>
     /// <param name="beacon"></param>
     void AttendTo(GameObject beacon, float baseDrift = 0.125f, float scale = 0.1f)

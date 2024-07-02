@@ -187,17 +187,4 @@ public class IndependentAgent : MonoBehaviour
         return position;
     }
 
-
-    public Vector3 Advert(Vector3 position, float buffer)
-    {
-        Vector3 dir = Vector3.zero;
-
-        if (Mathf.Abs(position.x) >= 4f - buffer || 
-            Mathf.Abs(position.z) <= 5f - buffer)
-        {
-            
-        }
-        return dir;
-    }
-
 }
