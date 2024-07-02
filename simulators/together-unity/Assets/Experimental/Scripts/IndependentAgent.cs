@@ -38,6 +38,7 @@ public class IndependentAgent : MonoBehaviour
         {
             attendedBeacon = FindNearestBeacon(distancesToBeacon);
             attendedBeaconId = attendedBeacon.name;
+            Debug.Log(attendedBeaconId);
             transform.forward = Vector3.RotateTowards(
                 transform.forward, Approach(attendedBeacon), 0.1f, 0f
             );
@@ -49,9 +50,6 @@ public class IndependentAgent : MonoBehaviour
         // Debug.Log(attendedBeacon.name);
         // Debug.DrawRay(transform.position, transform.forward, Color.yellow);
     }
-
-
-    
 
 
     Vector3 Approach(
@@ -101,9 +99,8 @@ public class IndependentAgent : MonoBehaviour
         );
         dir = Vector3.Normalize(positionToRoom);
 
-        positionToRoom = transform.localPosition;
         transform.forward = Vector3.RotateTowards(
-            transform.forward, Approach(room), reorientationSpeed, 0f
+            transform.forward, room.transform.position, reorientationSpeed, 0f
         );
 
         return dir;
