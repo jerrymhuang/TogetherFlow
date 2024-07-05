@@ -10,10 +10,6 @@ public class Agent : MonoBehaviour
     public float motorDistance = 2f;
     public float socialDistance = 1f;
 
-    [Header("Weights")]
-    public float selfAttentionWeight = 0.2f;
-    public float jointAttentionWeight;
-
     public float visualWeight = 0f;
     public float motorWeight = 0.5f;
     public float socialWeight = 0.5f;
@@ -21,7 +17,6 @@ public class Agent : MonoBehaviour
     [Header("Physical Properties")]
     public float maxForce = 2f;
     public float maxSpeed = 4f;
-
 
     // Component vectors of joint attention
     [HideInInspector]
@@ -40,6 +35,7 @@ public class Agent : MonoBehaviour
 
     [HideInInspector]
     public Vector3 acceleration;
+
 
 
     void Awake()
@@ -116,15 +112,6 @@ public class Agent : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// Updates the weight between joint attention and self attention.
-    /// </summary>
-    void UpdateAttentionWeights()
-    {
-        jointAttentionWeight = 1f - selfAttentionWeight;
-    }
-
-
 
     /// <summary>
     /// Combine all agent-based components for acceleration updating.
@@ -189,7 +176,7 @@ public class Agent : MonoBehaviour
             // VisualizeDistance(visualDistance, Color.cyan);
         }
 
-        return jointAttentionWeight * visualWeight * dir;
+        return visualWeight * dir;
     }
 
 
@@ -239,7 +226,7 @@ public class Agent : MonoBehaviour
             // VisualizeDistance(motorDistance, Color.yellow);
         }
 
-        return jointAttentionWeight * motorWeight * dir;
+        return motorWeight * dir;
     }
 
 
@@ -293,50 +280,8 @@ public class Agent : MonoBehaviour
             VisualizeDirection(dir, Color.magenta);
         }
 
-        return jointAttentionWeight * socialWeight * dir;
+        return socialWeight * dir;
     }
-
-    /*
-    /// <summary>
-    /// Define boundary condition for the agent.
-    /// </summary>
-    /// 
-    /*
-    public virtual void Bound()
-    {
-        Vector3 pos = transform.localPosition;
-
-        if (transform.localPosition.x < -4f)
-        {
-            pos.x = -4f;
-            velocity = Vector3.Reflect(velocity, Vector3.right);
-        }
-
-        if (transform.localPosition.x >= 4f)
-        {
-            pos.x = 4f;
-            velocity = Vector3.Reflect(velocity, Vector3.left);
-        }
-
-        if (transform.localPosition.z <= -5f)
-        {
-            pos.z = -5f;
-            velocity = Vector3.Reflect(velocity, Vector3.forward);
-        }
-
-        if (transform.localPosition.z >= 5f)
-        {
-            pos.z = 5f;
-            velocity = Vector3.Reflect(velocity, Vector3.back);
-        }
-
-        if (pos.y != 0f) pos.y = 0f;
-
-        transform.localPosition = pos;
-    }
-    */
-
-
     
     /// <summary>
     /// Bound the agent within the room.

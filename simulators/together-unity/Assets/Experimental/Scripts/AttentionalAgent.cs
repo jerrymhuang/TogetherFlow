@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 public class AttentionalAgent : Agent
 {
+    // Attention weights
+    float selfAttentionWeight = 0.2f;
+    float jointAttentionWeight;
+
     // Beacons to keep track of
     GameObject room;
     GameObject[] beacons;
@@ -30,6 +34,21 @@ public class AttentionalAgent : Agent
 
         // Sample attention distance individually
         attentionDistance = Random.Range(visualDistance, maxAttentionDistance);
+    }
+
+
+    private void Update()
+    {
+        UpdateAttentionWeights();
+    }
+
+
+    /// <summary>
+    /// Updates the weight between joint attention and self attention.
+    /// </summary>
+    public virtual void UpdateAttentionWeights()
+    {
+        jointAttentionWeight = 1f - selfAttentionWeight;
     }
 
 
