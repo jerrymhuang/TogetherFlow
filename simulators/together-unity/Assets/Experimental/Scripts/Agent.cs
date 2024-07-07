@@ -54,13 +54,15 @@ public class Agent : MonoBehaviour
     }
 
 
+    void Update()
+    {
+        Visualize();    
+    }
+
     void FixedUpdate()
     {
         // Update velocity motion vector
         UpdateVelocity();
-
-        // Update attention weights
-        UpdateAttentionWeights();
     }
 
 
@@ -122,7 +124,7 @@ public class Agent : MonoBehaviour
         // Update joint attention components
         alignment = Align(agentGroup, visualDistance);
         cohesion = Amass(agentGroup, motorDistance);
-        separation = Avoid(agentGroup, socialDistance, true);
+        separation = Avoid(agentGroup, socialDistance);
         
         // Add to acceleration
         acceleration += alignment;
@@ -143,8 +145,7 @@ public class Agent : MonoBehaviour
     /// </returns>
     public virtual Vector3 Align(
         List<Agent> agentGroup, 
-        float visualDistance = 2f, 
-        bool visualize = false
+        float visualDistance = 2f
     )
     {
         Vector3 dir = Vector3.zero;
@@ -171,11 +172,6 @@ public class Agent : MonoBehaviour
             }
         }
 
-        if (visualize)
-        {
-            // VisualizeDistance(visualDistance, Color.cyan);
-        }
-
         return visualWeight * dir;
     }
 
@@ -192,8 +188,7 @@ public class Agent : MonoBehaviour
     /// </returns>
     public virtual Vector3 Amass(
         List<Agent> agentGroup, 
-        float motorDistance = 2f, 
-        bool visualize = false
+        float motorDistance = 5f
     )
     {
         Vector3 dir = Vector3.zero;
@@ -221,11 +216,6 @@ public class Agent : MonoBehaviour
             }
         }
 
-        if (visualize)
-        {
-            // VisualizeDistance(motorDistance, Color.yellow);
-        }
-
         return motorWeight * dir;
     }
 
@@ -242,8 +232,7 @@ public class Agent : MonoBehaviour
     /// </returns>
     public virtual Vector3 Avoid(
         List<Agent> agentGroup, 
-        float socialDistance = 0.5f, 
-        bool visualize = false
+        float socialDistance = 0.5f
     )
     {
         Vector3 dir = Vector3.zero;
@@ -272,12 +261,6 @@ public class Agent : MonoBehaviour
                 dir -= velocity;
                 if (dir.magnitude > maxForce) dir = dir.normalized * maxForce;
             }
-        }
-
-        if (visualize)
-        {
-            VisualizeDistance(socialDistance, Color.magenta, 24);
-            VisualizeDirection(dir, Color.magenta);
         }
 
         return socialWeight * dir;
@@ -334,6 +317,17 @@ public class Agent : MonoBehaviour
             Debug.LogWarning(
                 "Elements of joint attention do not sum up to 1."
             );
+    }
+
+
+    void Visualize()
+    {
+        if (Input.GetKeyDown(KeyCode.A)) 
+            VisualizeDistance(visualDistance, Color.magenta);
+        if (Input.GetKeyDown(KeyCode.C)) 
+            VisualizeDistance(motorDistance, Color.yellow);
+        if (Input.GetKeyDown(KeyCode.S)) 
+            VisualizeDistance(socialDistance, Color.cyan);
     }
 
 

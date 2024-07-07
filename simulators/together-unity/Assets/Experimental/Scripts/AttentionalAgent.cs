@@ -5,26 +5,30 @@ using System.Collections.Generic;
 public class AttentionalAgent : Agent
 {
     // Attention weights
-    float selfAttentionWeight = 0.2f;
-    float jointAttentionWeight;
-
-    // Beacons to keep track of
-    GameObject room;
-    GameObject[] beacons;
-    float distanceToBeacon;
+    float selfAttentionWeight = 0.5f;
+    float jointAttentionWeight = 0.5f;
 
     // Additional properties for attentional agent
     float attentionDistance;
-    float maxAttentionDistance;
+    float maxAttentionDistance = 30f;
 
-    Vector3 positionToRoom;
-    Vector3 positionToBeacon;
-    GameObject attendedBeacon;
-    Vector3 direction;
+    // Spatial information to keep track of
+    GameObject room;
+    GameObject[] beacons;
+    GameObject currentBeacon, previousBeacon;
+    float distanceToBeacon;
+    Vector3 relativePositionToRoom;
+    Vector3 relativePositionToBeacon;
+    Vector3 beaconDirection;
+
+    // Tracking variables
+    bool attend = false;            // Agent state of attention onset
+    bool advert = false;            // Agent state of attention switching
+    float timer = 0f;
+    float attentionSpan = 3f;       // Duration of individual fixation
+    float switchingTime = 0.5f;     // Duration of arousal and depletion
 
     bool visualize = true;
-    float timer = 0f;
-    float maxAttentionTime = 3f;
 
 
     void Start()
@@ -33,7 +37,8 @@ public class AttentionalAgent : Agent
         beacons = GameObject.FindGameObjectsWithTag("Beacon");
 
         // Sample attention distance individually
-        attentionDistance = Random.Range(visualDistance, maxAttentionDistance);
+        attentionDistance = 
+            Random.Range(visualDistance * 2f, maxAttentionDistance);
     }
 
 
@@ -54,31 +59,20 @@ public class AttentionalAgent : Agent
 
     void FixedUpdate()
     {
-        // UpdateVelocity();
+        UpdateVelocity();
 
-        attendedBeacon = FindNearestBeacon();
-        distanceToBeacon = 
-            Distance2D(transform.position, attendedBeacon.transform.position);
+        currentBeacon = FindNearestBeacon();
+        attend = (currentBeacon != previousBeacon);
 
-        if (distanceToBeacon < maxAttentionDistance)
+        if (attend)
         {
-            Debug.Log("Attending");
-
-            // attention = Attend(attendedBeacon, attentionDistance);
-            // acceleration += attention;
-
-            timer += Time.deltaTime;
-            Debug.Log(timer);
-        }
-        if (timer > maxAttentionTime)
-        {
-            Debug.Log("Losing Attention");
-            Unattend();
+            distanceToBeacon = Distance2D(
+                transform.position, currentBeacon.transform.position
+            );
         }
 
-
-        Vector3 attention = Attend(attendedBeacon, attentionDistance);
-        transform.forward = attention;
+        Vector3 attention = Attend(currentBeacon, attentionDistance);
+        // transform.forward = attention;
         if (visualize) Visualize();
     }
 
@@ -87,7 +81,7 @@ public class AttentionalAgent : Agent
     {
         base.FlockWith(agentGroup);
 
-        Vector3 attention = Attend(attendedBeacon, attentionDistance);
+        Vector3 attention = Attend(currentBeacon, attentionDistance);
         acceleration += attention;
 
     }
@@ -101,22 +95,24 @@ public class AttentionalAgent : Agent
     void AttendTo(GameObject beacon, float baseDrift = 0.125f, float scale = 0.1f)
     {
 
-        positionToRoom = transform.localPosition;
-        positionToBeacon = beacon.transform.position - transform.position;
-        direction = Vector3.Normalize(positionToBeacon);
-        // Debug.Log("Direction: " + direction);
+        relativePositionToRoom = transform.localPosition;
+        relativePositionToBeacon = RelativePosition2D(
+            beacon.transform.position, transform.position
+        );
+        beaconDirection = Vector3.Normalize(relativePositionToBeacon);
+        // Debug.Log("beaconDirection: " + beaconDirection);
 
         float drift = baseDrift * distanceToBeacon;
         float displacement = drift * Time.deltaTime;
-        positionToRoom.x += displacement * direction.x +
+        relativePositionToRoom.x += displacement * beaconDirection.x +
             scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
-        positionToRoom.z += displacement * direction.z +
+        relativePositionToRoom.z += displacement * beaconDirection.z +
             scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
 
 
-        transform.localPosition = Bounded(positionToRoom);
+        transform.localPosition = Bounded(relativePositionToRoom);
         transform.forward = Vector3.RotateTowards(
-            transform.forward, positionToBeacon, 0.05f, 0f
+            transform.forward, relativePositionToBeacon, 0.05f, 0f
         );
 
     }
@@ -126,7 +122,7 @@ public class AttentionalAgent : Agent
         GameObject beacon,
         float baseDrift = 0.125f,
         float scale = 0.1f,
-        float rotationSpeed = 1f
+        float rotationSpeed = 0.01f
     )
     {
 
@@ -146,32 +142,33 @@ public class AttentionalAgent : Agent
     {
         Vector3 dir;
 
-        positionToRoom = transform.localPosition;
-        positionToBeacon = beacon.transform.position - transform.position;
-        dir = Vector3.Normalize(positionToBeacon);
+        relativePositionToRoom = transform.localPosition;
+        relativePositionToBeacon = RelativePosition2D(
+            beacon.transform.position, transform.position
+        );
+        dir = Vector3.Normalize(relativePositionToBeacon);
 
         float drift = baseDrift * distanceToBeacon;
         float displacement = drift * Time.deltaTime;
-        positionToRoom.x += displacement * direction.x +
+        relativePositionToRoom.x += displacement * beaconDirection.x +
             scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
-        positionToRoom.z += displacement * direction.z +
+        relativePositionToRoom.z += displacement * beaconDirection.z +
             scale * Mathf.Sqrt(Time.deltaTime) * RNG.Gaussian();
 
-        transform.localPosition = Bounded(positionToRoom);
+        transform.localPosition = Bounded(relativePositionToRoom);
         
         return selfAttentionWeight * dir;
     }
 
 
-    Vector3 Advert(float rotationSpeed = 1f)
+    Vector3 Advert(float rotationSpeed = 0.01f)
     {
         Vector3 dir = Vector3.RotateTowards(
-            transform.forward, positionToBeacon, rotationSpeed, 0f
+            transform.forward, relativePositionToBeacon, rotationSpeed, 0f
         );
 
         return dir;
     }
-
 
 
     /// <summary>
@@ -206,13 +203,13 @@ public class AttentionalAgent : Agent
     void Visualize()
     {
         Debug.DrawRay(transform.position, transform.forward, Color.red);
-        //Debug.DrawRay(transform.position, direction, Color.green);
+        //Debug.DrawRay(transform.position, beaconDirection, Color.green);
         //Debug.DrawRay(transform.position, alignment, Color.magenta);
         //Debug.DrawRay(transform.position, cohesion, Color.cyan);
         //Debug.DrawRay(transform.position, separation, Color.yellow);
 
         Debug.Log(
-            "direction: " + direction + " | " +
+            "beaconDirection: " + beaconDirection + " | " +
             "alignment: " + alignment + " | " +
             "cohesion: " + cohesion + " | " +
             "separation: " + separation
@@ -220,6 +217,9 @@ public class AttentionalAgent : Agent
         //Debug.DrawRay(transform.position, transform.forward, Color.green);
     }
 
+
+    public Vector3 RelativePosition2D(Vector3 a, Vector3 b)
+    => new Vector3(a.x - b.x, 0f, a.z - b.z);
 
     public override Vector3 Bounded(Vector3 position)
     {

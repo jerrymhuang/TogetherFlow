@@ -615,8 +615,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 914f3b8d8fe1c1b409701f9fbc21783b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAgentic: 0
-  numAgents: 1
+  isAgentic: 1
+  numAgents: 6
   agentPrefab: {fileID: 7550557164741280690, guid: 8f96dd059dbfefe449bb74046d85fe99, type: 3}
   prefab: {fileID: 4793608006329806315, guid: 1f31833ff9760d648baef97316e46fd9, type: 3}
 --- !u!1 &2137355057

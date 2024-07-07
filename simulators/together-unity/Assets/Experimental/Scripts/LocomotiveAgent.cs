@@ -125,7 +125,7 @@ public class LocomotiveAgent : Agent
             transform.forward, positionToBeacon, rotationSpeed, 0f
         );
 
-        return selfAttentionWeight * dir;
+        return dir;
     }
 
 
