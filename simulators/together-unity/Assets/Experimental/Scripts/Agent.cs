@@ -6,13 +6,13 @@ public class Agent : MonoBehaviour
 {
 
     [Header("Distance Thresholds")]
-    public float visualDistance = 4f;
-    public float motorDistance = 2f;
+    public float visualDistance = 2f;
+    public float motorDistance = 5f;
     public float socialDistance = 1f;
 
-    public float visualWeight = 0f;
-    public float motorWeight = 0.5f;
-    public float socialWeight = 0.5f;
+    public float visualWeight = 1f;
+    public float motorWeight = 1f;
+    public float socialWeight = 1f;
 
     [Header("Physical Properties")]
     public float maxForce = 2f;
@@ -37,6 +37,11 @@ public class Agent : MonoBehaviour
     public Vector3 acceleration;
 
 
+    bool visualizeVisualDistance = false;
+    bool visualizeMotorDistance = false;
+    bool visualizeSocialDistance = false;
+
+
 
     void Awake()
     {
@@ -56,13 +61,15 @@ public class Agent : MonoBehaviour
 
     void Update()
     {
-        Visualize();    
+        Visualize();
     }
 
     void FixedUpdate()
     {
         // Update velocity motion vector
         UpdateVelocity();
+
+
     }
 
 
@@ -79,9 +86,9 @@ public class Agent : MonoBehaviour
     /// </summary>
     public virtual void InitializeDistance()
     {
-        visualDistance = Random.Range(0.25f, 6f);
-        motorDistance = Random.Range(0.25f, visualDistance);
-        socialDistance = Random.Range(0.25f, motorDistance);
+        visualDistance = Random.Range(4f, 8f);
+        motorDistance = Random.Range(2f, 8f);
+        socialDistance = Random.Range(1f, 8f);
     }
 
 
@@ -232,7 +239,7 @@ public class Agent : MonoBehaviour
     /// </returns>
     public virtual Vector3 Avoid(
         List<Agent> agentGroup, 
-        float socialDistance = 0.5f
+        float socialDistance = 1f
     )
     {
         Vector3 dir = Vector3.zero;
@@ -320,14 +327,21 @@ public class Agent : MonoBehaviour
     }
 
 
-    void Visualize()
+    public virtual void Visualize()
     {
-        if (Input.GetKeyDown(KeyCode.A)) 
-            VisualizeDistance(visualDistance, Color.magenta);
-        if (Input.GetKeyDown(KeyCode.C)) 
-            VisualizeDistance(motorDistance, Color.yellow);
-        if (Input.GetKeyDown(KeyCode.S)) 
-            VisualizeDistance(socialDistance, Color.cyan);
+        if (Input.GetKeyDown(KeyCode.V))
+            visualizeVisualDistance = !visualizeVisualDistance;
+        if (Input.GetKeyDown(KeyCode.M))
+            visualizeMotorDistance = !visualizeMotorDistance;
+        if (Input.GetKeyDown(KeyCode.N))
+            visualizeSocialDistance = !visualizeSocialDistance;
+
+        if (visualizeVisualDistance)
+            VisualizeDistance(visualDistance, new Color(128f / 255f, 0f, 0f));
+        if (visualizeMotorDistance)
+            VisualizeDistance(motorDistance, new Color(78f / 255f, 42f / 255f, 132f / 155f));
+        if (visualizeSocialDistance)
+            VisualizeDistance(socialDistance, new Color(62f / 255f, 177f / 255f, 200f / 255f));
     }
 
 
@@ -337,7 +351,7 @@ public class Agent : MonoBehaviour
     /// <param name="d">Distance setting</param>
     /// <param name="c">Color used for visualization</param>
     /// <param name="segments"># of segments for the visualized circle.</param>
-    public virtual void VisualizeDistance(float d, Color c, int segments = 12)
+    public virtual void VisualizeDistance(float d, Color c, int segments = 24)
     {
         Vector3 pos = transform.position;
         float a0, a1;

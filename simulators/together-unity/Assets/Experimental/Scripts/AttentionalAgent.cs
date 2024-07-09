@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class AttentionalAgent : Agent
 {
     // Attention weights
+    float[] attentionWeights;
     float selfAttentionWeight = 0.5f;
     float jointAttentionWeight = 0.5f;
 
@@ -15,6 +16,7 @@ public class AttentionalAgent : Agent
     // Spatial information to keep track of
     GameObject room;
     GameObject[] beacons;
+    List<GameObject> beaconsInRange;
     GameObject currentBeacon, previousBeacon;
     float distanceToBeacon;
     Vector3 relativePositionToRoom;
@@ -28,7 +30,7 @@ public class AttentionalAgent : Agent
     float attentionSpan = 3f;       // Duration of individual fixation
     float switchingTime = 0.5f;     // Duration of arousal and depletion
 
-    bool visualize = true;
+    bool diagnose = true;
 
 
     void Start()
@@ -36,24 +38,42 @@ public class AttentionalAgent : Agent
         room = GameObject.FindGameObjectWithTag("Room");
         beacons = GameObject.FindGameObjectsWithTag("Beacon");
 
+        beaconsInRange = new List<GameObject>();
+ 
         // Sample attention distance individually
-        attentionDistance = 
-            Random.Range(visualDistance * 2f, maxAttentionDistance);
+        attentionDistance = maxAttentionDistance;
+        //Random.Range(visualDistance * 2f, maxAttentionDistance);
+        attentionWeights = new float[2] { 
+            selfAttentionWeight, 
+            jointAttentionWeight 
+        };
     }
 
-
-    private void Update()
-    {
-        UpdateAttentionWeights();
-    }
 
 
     /// <summary>
     /// Updates the weight between joint attention and self attention.
     /// </summary>
-    public virtual void UpdateAttentionWeights()
+    public virtual float[] UpdateAttentionWeights()
     {
+        if (attend)
+        {
+            if (timer < attentionSpan + switchingTime)
+            {
+                selfAttentionWeight = Mathf.SmoothStep(selfAttentionWeight, 1f, switchingTime);
+                timer += Time.deltaTime;
+            }
+            else
+            {
+                selfAttentionWeight = Mathf.SmoothStep(selfAttentionWeight, 0f, switchingTime);
+                timer = 0f;
+            }
+        }
+
         jointAttentionWeight = 1f - selfAttentionWeight;
+        attentionWeights[0] = selfAttentionWeight;
+        attentionWeights[1] = jointAttentionWeight;
+        return attentionWeights;
     }
 
 
@@ -61,19 +81,23 @@ public class AttentionalAgent : Agent
     {
         UpdateVelocity();
 
+        UpdateAttentionWeights();
+
         currentBeacon = FindNearestBeacon();
-        attend = (currentBeacon != previousBeacon);
+        attend = Attend();
 
         if (attend)
         {
             distanceToBeacon = Distance2D(
                 transform.position, currentBeacon.transform.position
             );
+            Vector3 attention = 
+                RespondTo(currentBeacon, attentionDistance);
+            acceleration += attention;
         }
 
-        Vector3 attention = Attend(currentBeacon, attentionDistance);
-        // transform.forward = attention;
-        if (visualize) Visualize();
+
+        if (diagnose) Diagnose();
     }
 
 
@@ -81,7 +105,9 @@ public class AttentionalAgent : Agent
     {
         base.FlockWith(agentGroup);
 
-        Vector3 attention = Attend(currentBeacon, attentionDistance);
+        //jointAttentionWeight = attentionWeights[1];
+
+        Vector3 attention = RespondTo(currentBeacon, attentionDistance);
         acceleration += attention;
 
     }
@@ -118,7 +144,15 @@ public class AttentionalAgent : Agent
     }
 
 
-    Vector3 Attend(
+    bool Attend()
+    {
+        // If any beacons are within the range of the agent's attention,
+        // then the agent would inevitably attend to one of them.
+        return beaconsInRange.Count > 0;
+    }
+
+
+    Vector3 RespondTo(
         GameObject beacon,
         float baseDrift = 0.125f,
         float scale = 0.1f,
@@ -200,13 +234,20 @@ public class AttentionalAgent : Agent
     }
 
 
-    void Visualize()
+    float[] TrackBeaconDistances(List<GameObject> beacons)
+    {
+        float[] distances = new float[beacons.Count];
+
+        for (int i = 0; i < beacons.Count; i++) distances[i] =
+            Distance2D(transform.position, beacons[i].transform.position);
+
+        return distances;
+    }
+
+
+    void Diagnose(bool debug = false)
     {
         Debug.DrawRay(transform.position, transform.forward, Color.red);
-        //Debug.DrawRay(transform.position, beaconDirection, Color.green);
-        //Debug.DrawRay(transform.position, alignment, Color.magenta);
-        //Debug.DrawRay(transform.position, cohesion, Color.cyan);
-        //Debug.DrawRay(transform.position, separation, Color.yellow);
 
         Debug.Log(
             "beaconDirection: " + beaconDirection + " | " +
@@ -214,12 +255,12 @@ public class AttentionalAgent : Agent
             "cohesion: " + cohesion + " | " +
             "separation: " + separation
         );
-        //Debug.DrawRay(transform.position, transform.forward, Color.green);
     }
 
 
     public Vector3 RelativePosition2D(Vector3 a, Vector3 b)
     => new Vector3(a.x - b.x, 0f, a.z - b.z);
+
 
     public override Vector3 Bounded(Vector3 position)
     {

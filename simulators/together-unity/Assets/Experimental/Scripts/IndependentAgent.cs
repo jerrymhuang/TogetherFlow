@@ -20,7 +20,6 @@ public class IndependentAgent : MonoBehaviour
     bool isAttending;
 
 
-
     void Start()
     {
         room = GameObject.FindGameObjectWithTag("Room");
