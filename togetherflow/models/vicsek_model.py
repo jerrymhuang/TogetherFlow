@@ -36,9 +36,9 @@ class VicsekModel:
         rho_j = rng.gamma(2, 1)
         mu_j = rng.uniform(0, np.pi)
 
-        return alpha_j, beta_j, rho_j, mu_j
+        return np.array([alpha_j, beta_j, rho_j, mu_j]).astype(np.float32)
 
-    def prior(self, hyperprior=None, rng=None):
+    def prior(self, hyperprior=None, rng=None, ):
 
         if rng is None:
             rng = np.random.default_rng()
@@ -53,7 +53,7 @@ class VicsekModel:
         v = rng.gamma(alpha_j, beta_j)
         eta = rng.uniform(0, mu_j)
 
-        return np.array([r, v, eta, alpha_j, beta_j, rho_j, mu_j])
+        return np.array([r, v, eta]).astype(np.float32)
 
     def observation_model(self, params: np.ndarray = None):
 
