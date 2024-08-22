@@ -58,8 +58,8 @@ public class Agent : MonoBehaviour
         InitializeMotionVector();
 
         // Initialize agent proximity visualizer
-        proximityVisualizer = gameObject.AddComponent<LineRenderer>();
-        proximityVisualizer.enabled = false;
+        InitializeProximityVisualizer();
+
     }
 
 
@@ -104,6 +104,15 @@ public class Agent : MonoBehaviour
         );
         // velocity = Vector3.zero;
         acceleration = Vector3.zero;
+    }
+
+
+    public virtual void InitializeProximityVisualizer()
+    {
+        proximityVisualizer = gameObject.AddComponent<LineRenderer>();
+        proximityVisualizer.enabled = false;
+        proximityVisualizer.startWidth = 0.25f;
+        proximityVisualizer.loop = true;
     }
 
 
@@ -339,6 +348,8 @@ public class Agent : MonoBehaviour
             visualizeMotorDistance = !visualizeMotorDistance;
         if (Input.GetKeyDown(KeyCode.N))
             visualizeSocialDistance = !visualizeSocialDistance;
+        if (Input.GetKeyDown(KeyCode.B))
+            visualizeAgentProximity = !visualizeAgentProximity;
 
         if (visualizeVisualDistance)
             VisualizeDistance(visualDistance, new Color(128f / 255f, 0f, 0f));
@@ -346,9 +357,9 @@ public class Agent : MonoBehaviour
             VisualizeDistance(motorDistance, new Color(78f / 255f, 42f / 255f, 132f / 155f));
         if (visualizeSocialDistance)
             VisualizeDistance(socialDistance, new Color(62f / 255f, 177f / 255f, 200f / 255f));
-
-        if (Input.GetKeyDown(KeyCode.B))
+        if (visualizeAgentProximity)
             VisualizeAgentProximity(proximityVisualizer);
+
     }
 
 
@@ -389,11 +400,11 @@ public class Agent : MonoBehaviour
 
     public virtual void VisualizeAgentProximity(
         LineRenderer proximityRenderer, 
-        int vertexCount = 24
+        int vertexCount = 24,
+        float personalRadius = 0.5f
     )
     {
         proximityRenderer.enabled = true;
-        proximityRenderer.loop = true;
         proximityRenderer.positionCount = vertexCount;
 
         Vector3[] vertices = new Vector3[vertexCount];
@@ -401,7 +412,9 @@ public class Agent : MonoBehaviour
         for (int i = 0; i < vertexCount; i++)
         {
             float a = Mathf.PI * 2f * i / vertexCount;
-            vertices[i] = new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a));
+            vertices[i] = transform.position + new Vector3(
+                Mathf.Cos(a), 0f, Mathf.Sin(a)
+            ) * personalRadius;
         }
 
         proximityRenderer.SetPositions(vertices);
