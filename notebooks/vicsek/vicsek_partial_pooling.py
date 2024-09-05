@@ -27,10 +27,10 @@ def prior_fun():
     Sampled priors as a NumPy array.
     """
 
-    r = np.random.beta(2., 5.)
-    v = np.random.beta(2., 2.)
+    alpha_r = np.random.uniform(1., 5.,)
+    beta_r = np.random.uniform(1., 5.,)
 
-    return np.array([r, v], dtype=np.float32)
+    return np.array([alpha_r, beta_r], dtype=np.float32)
 
 
 @njit
@@ -62,7 +62,12 @@ def initialize_agents(
     theta = np.empty((num_agents, 2), dtype=np.float32)
 
     for i in range(num_agents):
-        theta[i] = prior_fun()
+        priors = prior_fun()
+        r = np.random.beta(priors[0], priors[1])
+        v = np.random.beta(2., 2.)
+
+        theta[i,0] = r
+        theta[i,1] = v
 
     return positions, directions, theta
 
@@ -101,11 +106,9 @@ def simulator_fun(
     positions, directions, theta = initialize_agents(num_agents, boundary_size)
 
     r, v = theta[:, 0], theta[:, 1]
-    print(v)
 
     # Scale radius with half of boundary size (for realism)
     radius = r * boundary_size * 0.5
-    print(radius)
 
     # Store trajectories and headings
     paths = np.zeros((num_timesteps + 1, num_agents, 2))
@@ -152,17 +155,20 @@ def simulator_fun(
 
 if __name__ == '__main__':
 
+
+    # param_names = [r"$\alpha_r", r"$\beta_r"]
+
     # positions, directions, theta = initialize_agents()
     # print(theta)
 
-    data = simulator_fun(num_agents=12, num_timesteps=100)
+    # data = simulator_fun(num_agents=12, num_timesteps=100)
 
-    # prior = Prior(prior_fun=prior_fun)
-    # simulator = Simulator(simulator_fun=simulator_fun)
-    #
-    # model = GenerativeModel(
-    #     prior=prior,
-    #     simulator=simulator,
-    #     simulator_is_batched=False,
-    #     name="Vicsek_Partial_Pooling"
-    # )
+    prior = Prior(prior_fun=prior_fun)
+    simulator = Simulator(simulator_fun=simulator_fun)
+
+    model = GenerativeModel(
+        prior=prior,
+        simulator=simulator,
+        simulator_is_batched=False,
+        name="Vicsek_Partial_Pooling"
+    )
