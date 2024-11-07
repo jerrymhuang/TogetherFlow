@@ -8,7 +8,7 @@
             <JupyterConnectionParameters>
               <option name="argv" value="notebook" />
               <option name="managed" value="true" />
-              <option name="sdkName" value="" />
+              <option name="sdkName" value="Python 3.10 (TogetherFlow)" />
             </JupyterConnectionParameters>
           </value>
         </entry>
