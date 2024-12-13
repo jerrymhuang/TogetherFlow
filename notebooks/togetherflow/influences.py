@@ -1,116 +1,46 @@
 import numpy as np
+from numba import njit
 
 
-def internal_influence(
-        beacon_position,
+@njit
+def external_influence(
         agent_position,
-        agent_rotation,
-        movement_speed=1.,
-        rotation_speed=0.1,
-        noise_level=0.1,
-        dt=0.1
+        beacon_position,
+        noise_amplitude=0.01
 ):
     """
-    Internally influence the agent's position and direction for a single time step
-    given the target position and rotation speeds.
+    Generate a drift-diffusion vector in 2D space for a single agent
+    based on a target location (in this case, the position of a beacon).
 
     Parameters
     ----------
-    target_position : np.ndarray of shape (2,)
-        Position of the agent's target.
-    agent_position : np.ndarray of shape (2,)
-        Position of the agent.
-    agent_rotation : float
-        Orientation of the agent.
-    movement_speed : float
-        Speed of the agent's movement.
-    rotation_speed : float
-        Speed of the agent's rotation.
-    noise_level : float
-        Rotational noise level of the agent.
-    dt : float, default: 1.
-        Time step of the simulation.
+    agent_position : np.ndarray
+        The position of the agent.
+    target_position : np.ndarray
+        The position of the target beacon.
+    focus : float, optional
+        The dispersion of a von Mises distribution for rotational noise influenced by the neighbors.
+        The higher the value is, the less perturbation there would be.
+    noise: bool, optional
+        Whether the focus is interpreted as noise amplitude.
 
     Returns
     -------
-    new_position : np.ndarray of shape (2,)
-        Updated position of the agent.
-    new_rotation : float
-        Updated orientation of the agent.
+    np.ndarray
+        A 2D vector representing the drift-diffusion process towards the target (beacon).
     """
-
-    # Declare new agent positions and rotation
-    new_position = agent_position
-    new_rotation = agent_rotation
-
-    # Compute relative orientation between the agent and the look-at target
-    beacon_orientation = np.arctan2(
+    # Calculate the angle towards the beacon (in radian)
+    beacon_direction = np.arctan2(
         beacon_position[1] - agent_position[1],
         beacon_position[0] - agent_position[0]
     )
 
-    # Calculate drift rate and noise
-    drift = rotation_speed * (beacon_position - agent_rotation) * dt
-    noise = np.random.vonmises(mu=0, kappa=1 / (noise_level * noise_level))
+    # Generate a random direction with drift around the target angle
+    direction = beacon_direction + (np.random.random() - 0.5) * noise_amplitude
+    # direction = beacon_direction + np.random.vonmises(0., 8.) * noise_amplitude
 
-    # Update and normalize agent rotation
-    new_rotation += drift + noise
-    new_rotation = (new_rotation + np.pi) % (2 * np.pi) - np.pi
+    # Convert the angle to a unit vector in 2D space
+    v = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
 
-    # Update agent position
-    new_position[0] += movement_speed * np.cos(new_rotation.item()) * dt
-    new_position[1] += movement_speed * np.sin(new_rotation.item()) * dt
-
-    return new_position, new_rotation
-
-
-def external_influence(
-        agent_positions,
-        agent_rotations,
-        neighbor_positions,
-        neighbor_rotations,
-        dt=0.1
-):
-    """
-    Externally influence the agent's position and direction for a single time step
-    given the neighboring agent's position and orientation.
-
-    Parameters
-    ----------
-    agent_position : np.ndarray of shape (2,)
-        Position of the agent.
-    agent_rotation : float
-        Orientation of the agent.
-    neighbor_positions : np.ndarray of shape (2,)
-        Positions of the neighboring agent.
-    neighbor_rotation : float
-        Orientations of the neighboring agent.
-    dt : float, default: 1.
-        Time step of the simulation.
-
-    Returns
-    -------
-    new_position : np.ndarray of shape (2,)
-        Updated position of the agent.
-    new_rotation : float
-        Updated orientation of the agent.
-    """
-    assert len(neighbor_positions) == len(neighbor_rotations), \
-        f"Number of neighboring agents' positions ({len(neighbor_positions)}) " + \
-        f"does not match number of their rotations ({len(neighbor_rotations)})."
-
-    new_position = agent_positions
-    new_rotation = agent_rotations
-
-    # Compute average positions and rotations for neighbors
-    average_neighbor_position = np.mean(neighbor_positions)
-    # average_neighbor_rotation = np.mean(neighbor_rotations)
-
-    # Update position and rotation
-    new_rotation += average_neighbor_position
-
-    new_position[0] += np.cos(new_rotation.item()) * dt
-    new_position[1] += np.sin(new_rotation.item()) * dt
-
-    return new_position, new_rotation
+    return v
 
