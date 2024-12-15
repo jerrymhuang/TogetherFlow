@@ -33,3 +33,28 @@ def initialize_agents(
     rotations = np.random.random(size=(num_agents, 1)).astype(np.float32) * np.pi * 2
 
     return positions, rotations
+
+
+@njit
+def initialize_beacons(
+        num_beacons=10,
+        room_sensing_range=50.
+):
+    """
+    Initialize beacons following a uniform distribution scaled to the room's sensing boundary
+
+    Parameters
+    ----------
+    num_beacons : int, default: 10
+        Number of beacons to initialize.
+    room_sensing_range : float, default: 50.0
+        Sensing distance of the room for the beacons to matter.
+
+    Returns
+    -------
+    beacons      : np.ndarray of shape (num_beacons, 2)
+        Initial positions of the beacons.
+    """
+
+    beacons = (np.random.random(size=(num_beacons, 2)) - 0.5) * room_sensing_range
+    return beacons.astype(np.float32)

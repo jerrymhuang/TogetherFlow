@@ -4,7 +4,7 @@ from numba import njit
 
 
 @njit
-def prior_fun():
+def complete_pooling_prior_fun():
     weight = np.random.beta(2, 5)
     radius = np.random.gamma(2, 2)
     v = np.random.beta(2, 2)
