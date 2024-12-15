@@ -6,6 +6,72 @@ from matplotlib.patches import FancyArrowPatch
 from IPython.display import HTML
 
 
+def set_layout(num_total: int, num_row: int = None, num_col: int = None, stacked: bool = False):
+    """
+    Determine the number of rows and columns in diagnostics visualizations.
+
+    Parameters
+    ----------
+    num_total     : int
+        Total number of parameters
+    num_row       : int, default = None
+        Number of rows for the visualization layout
+    num_col       : int, default = None
+        Number of columns for the visualization layout
+    stacked     : bool, default = False
+        Boolean that determines whether to stack the plot or not.
+
+    Returns
+    -------
+    num_row       : int
+        Number of rows for the visualization layout
+    num_col       : int
+        Number of columns for the visualization layout
+    """
+    if stacked:
+        num_row, num_col = 1, 1
+    else:
+        if num_row is None and num_col is None:
+            num_row = int(np.ceil(num_total / 6))
+            num_col = int(np.ceil(num_total / num_row))
+        elif num_row is None and num_col is not None:
+            num_row = int(np.ceil(num_total / num_col))
+        elif num_row is not None and num_col is None:
+            num_col = int(np.ceil(num_total / num_row))
+
+    return num_row, num_col
+
+
+def make_figure(num_row: int = None, num_col: int = None, figsize: tuple = None):
+    """
+    Initialize a set of figures
+
+    Parameters
+    ----------
+    num_row       : int
+        Number of rows in a figure
+    num_col       : int
+        Number of columns in a figure
+    figsize       : tuple
+        Size of the figure adjusting to the display resolution
+        or the user's choice
+
+    Returns
+    -------
+    f, axes
+        Initialized figures
+    """
+    if num_row == 1 and num_col == 1:
+        f, axes = plt.subplots(1, 1, figsize=figsize)
+    else:
+        if figsize is None:
+            figsize = (int(5 * num_col), int(5 * num_row))
+
+        f, axes = plt.subplots(num_row, num_col, figsize=figsize)
+
+    return f, axes
+
+
 def animate(positions, rotations):
     """
     Animates N agents with given positions and rotations over T timesteps.
