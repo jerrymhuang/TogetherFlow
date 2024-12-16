@@ -1,37 +1,48 @@
+import numpy as np
 import matplotlib.pyplot as plt
-from utils import make_figure, set_layout
 
 
-def plot_direction(n, A, B):
-    fig, axs = plt.subplots(n, 1, figsize=(n, 1))
+def plot_external_influence(
+        num_agents,
+        agent_positions,
+        agent_rotations,
+        beacon_positions,
+        external_influence
+):
+    from matplotlib.patches import FancyBboxPatch
 
-    if n == 1:  # If only one subplot, make sure axs is iterable
-        axs = [axs]
+    num_col = int(num_agents / 3)
+    num_row = 3
 
-    for i in range(n):
-        ax = axs[i]
+    fig, axes = plt.subplots(num_row, num_col, figsize=(num_col * 3, num_row * 3))
 
-        # Plot point A
-        ax.scatter(A[i,0], A[i,1], color='blue', label='Point A', zorder=5)
+    for i, ax in enumerate(axes.flat):
+        room = FancyBboxPatch(
+            (-5., -6.), 10., 12.,
+            boxstyle="round, pad=0.5, rounding_size=1.5",
+            alpha=0.1
+        )
+        ax.add_patch(room)
 
-        # Plot point B
-        ax.scatter(B[0], B[1], color='red', label='Point B', zorder=5)
+        ax.quiver(
+            agent_positions[i, 0], agent_positions[i, 1],
+            external_influence[i, 0], external_influence[i, 1],
+            scale=0.25, angles='xy', scale_units='xy', color="r"
+        )
+        ax.quiver(
+            agent_positions[i, 0], agent_positions[i, 1],
+            np.cos(agent_rotations[i]), np.sin(agent_rotations[i]),
+            scale=0.25, angles='xy', scale_units='xy', color="b"
+        )
 
-        # Calculate the direction vector from A to B
-        dx = B[0] - A[i,0]
-        dy = B[1] - A[i,1]
+        ax.scatter(x=agent_positions[i, 0], y=agent_positions[i, 1], c='b', marker='o')
+        ax.scatter(x=beacon_positions[0, 0], y=beacon_positions[0, 1], c='r', marker='o')
 
-        # Plot direction as an arrow
-        ax.quiver(A[i,0], A[i,1], dx, dy, angles='xy', scale_units='xy', scale=1, color='black', width=0.005,
-                  label='Direction', zorder=4)
-
-        # Adding labels and grid
-        ax.set_xlim(min(A[i,0], B[0]) - 1, max(A[i,0], B[0]) + 1)
-        ax.set_ylim(min(A[i,1], B[1]) - 1, max(A[i,1], B[1]) + 1)
-        ax.set_title(f'Subplot {i + 1}')
+        ax.set_xlim(-15., 15.)
+        ax.set_ylim(-15., 15.)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
-        ax.grid(True)
+        ax.set_aspect("equal")
 
     fig.tight_layout()
     return fig
