@@ -29,10 +29,10 @@ def initialize_agents(
     y = (np.random.random(size=num_agents).astype(np.float32) - 0.5) * room_size[1]
     positions = np.vstack((x, y)).T
 
-    # Generate random orientations (angles in radians between 0 and 2*pi)
-    rotations = np.random.random(size=(num_agents, 1)).astype(np.float32) * np.pi * 2
+    # Generate random orientations (angles in radians between -pi and pi)
+    rotations = (np.random.random(size=(num_agents, 1)) - 0.5) * np.pi * 2
 
-    return positions, rotations
+    return positions.astype(np.float32), rotations.astype(np.float32)
 
 
 @njit

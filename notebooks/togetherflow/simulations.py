@@ -1,184 +1,187 @@
 import numpy as np
-from .influences import internal_influence
 
-def initialize_agents(
-        num_agents: int = 100,
-        boundary_size: float = 100.0
-) -> tuple[np.ndarray, np.ndarray]:
+from numba import njit
+from influences import external_influence
+
+
+@njit
+def look_at_beacon(
+        agent_rotation,
+        beacon_influence,
+        dt=0.1,
+        drift_rate=0.1,
+        noise_amplitude=0.001,
+        timesteps=100
+):
     """
-    Generate random positions and orientations for agents.
+    Simulate reorientation as influenced by the relative position
+    between an agent and its target beacon.
 
     Parameters
     ----------
-    num_agents : int, optional
-        Number of agents to generate (default is 100).
-    boundary_size : float, optional
-        The size of the boundary within which positions are generated (default is 100.0).
+    agent_rotation : np.ndarray or float
+        Rotation of the agent
+    beacon_influence : np.ndarray or float
+        Influence of the beacon
+    dt : float
+        Time interval per time step
+    drift_rate : float
+        Rotational drift rate of the agent, interpreted as the speed of head movement
+    noise_amplitude : float
+        Noise amplitude of the agent's rotation
+    timesteps : int
+        Number of time steps to simulate
 
     Returns
     -------
-    tuple of np.ndarray
-        A tuple containing the positions (np.ndarray) and orientations (np.ndarray) of the agents.
+    np.ndarray or float
+        Time series of agent rotation influenced by the beacon
     """
 
-    # Generate random positions within the boundary size centered at 0
-    positions = np.random.uniform(-boundary_size * 0.5, boundary_size * 0.5, (num_agents, 2))
+    # Revert orientation vector to angular value
+    # beacon_orientation = np.arctan2(beacon_influence[1], beacon_influence[0])
 
-    # Generate random orientations (angles in radians between 0 and 2*pi)
-    orientations = np.random.uniform(0, 2 * np.pi, num_agents)
+    # Initialize time series of the agent's rotation
+    rotations = np.zeros((timesteps, 1), dtype=np.float32)
+    rotations[0] = agent_rotation
 
-    return positions, orientations
+    # Initialize the agent as not being in a steady state (i.e., not fixated to a beacon)
+    steady_state = False
+
+    for t in range(1, timesteps):
+        # Calculate the relative angle between the agent's current orientation and
+        # the direction of the beacon relative to the agent
+        rotation_diff = (beacon_influence - rotations[t - 1]) % (2 * np.pi) - np.pi
+
+        # Calculate the angle to rotate based upon the relative angle
+        reorientation_angle = drift_rate * rotation_diff
+
+        # If steady state is reached, then the agent will only be influenced by noise.
+        # Otherwise, the reorientation happens until the steady state is reached.
+        if steady_state:
+            rotations[t] = beacon_influence + (np.random.random() - 0.5) * noise_amplitude
+        else:
+            rotations[t] = rotations[t - 1] + reorientation_angle * dt + noise_amplitude * np.random.randn()
+
+            if np.abs(rotation_diff) < noise_amplitude:
+                steady_state = True
+
+    return rotations
 
 
-def initialize_beacons(
-        num_beacons=10,
-        room_sensing_range=50.
+@njit
+def walk_to_beacon(
+        agent_position,
+        beacon_position,
+        beacon_influence=None,
+        drift_rate=0.5,
+        dt=0.1,
+        noise_amplitude=None,
+        timesteps=1001,
+        bounded=False,
+        room_size=(8., 10.),
 ):
     """
-    Initialize beacons following a uniform distribution scaled to the room's sensing boundary
+    Simulate an agent's locomotion pattern influenced by a beacon.
 
     Parameters
     ----------
-    num_beacons : int, default: 10
-        Number of beacons to initialize.
-    environment_size : float, default: 50.0
-        Size of the environment for the generation of beacons.
+    agent_position : np.ndarray
+        The starting position of the agent.
+    beacon_position : np.ndarray
+        The position of the beacon.
+    beacon_influence : np.ndarray
+        The influence of the beacon.
+    drift_rate : float
+        The drift rate of the agent.
+    dt : float
+        The time interval per time step for the simulation.
+    noise_amplitude : float
+        The amplitude of the noise.
+    timesteps : int
+        The number of timesteps to simulate.
+    bounded : bool
+        Whether the agent is bounded.
+    room_size : tuple
+        The size of the room.
 
     Returns
     -------
-    beacons      : np.ndarray of shape (num_beacons, 2)
-        Initial positions of the beacons.
+    positions : np.ndarray
+        The positions of the agent's locomotion pattern as time series influenced by a beacon.
     """
 
-    beacons = np.random.uniform(-room_sensing_range * 0.5, room_sensing_range * 0.5, size=(num_beacons, 2))
-    return beacons
+    # Initialize a numpy array for the position time series
+    positions = np.zeros((timesteps, 2), dtype=np.float32)
+    positions[0] = agent_position
+    steady_state = False
+    steady_state_position = np.empty(2, dtype=np.float32)
 
+    # Calculate the influence of beacons if there is none
+    if beacon_influence is None:
+        beacon_influence = external_influence(agent_position, beacon_position)
 
-def simulate_internal_influence(
-        num_agents: int = 1,
-        num_beacons: int = 1,
-        num_timesteps: int = 1001
-):
-    """
-    Simulate the influence of the agents' internal influence only.
+    for t in range(1, timesteps):
+        # Calculate noise for each timestep
+        noise = noise_amplitude * (np.random.random(size=2) - 0.5)
 
-    Parameters
-    ----------
-    num_agents      : int, default: 12
-        Number of agents to simulate.
-    num_beacons      : int, default: 10
-        Number of beacons to simulate.
-    num_timesteps     : int, default: 1001
-        Number of timesteps to simulate.
-    """
-
-    agent_positions = np.zeros((num_timesteps, num_agents, 2))
-    agent_rotations = np.zeros((num_timesteps, num_agents, 1))
-
-    beacon_positions = initialize_beacons(num_beacons=num_beacons)
-
-    agent_positions[0], agent_rotations[0] = initialize_agents(num_agents=num_agents)
-
-    for i in range(1, num_timesteps):
-        old_position = agent_positions[i - 1].copy()
-        old_rotation = agent_rotations[i - 1].copy()
-        for j in range(num_agents):
-            beacon_orientation = np.arctan2(
-                beacon_positions[0, 1] - old_position[j, 1],
-                beacon_positions[0, 0] - old_position[j, 0]
-            )
-
-            new_position, new_rotation = internal_influence(
-                beacon_positions[0],  # Set only one beacon to test, for now.
-                old_position[j],
-                old_rotation[j]
-            )
-
-            if np.abs(new_rotation - beacon_orientation) < np.pi * 0.01:
-                break
-
-            agent_positions[i, j] = new_position
-            agent_rotations[i, j] = new_rotation
-
-    return agent_positions, agent_rotations, beacon_positions
-
-
-def simulate_external_influence(
-        theta,
-        num_agents=12,
-        num_timesteps=100,
-        boundary_size=10.0,
-):
-    """
-    Simulate the movement trajectory of the agent,
-    as governed by the Vicsek model.
-
-    Parameters
-    ----------
-    theta : np.ndarray of shape (2, )
-        Sampled priors for the model, including the
-        base sensing radius (r) and walking speed (v)
-        of the agents.
-    num_agents     : int, default: 12
-        Number of agents to simulate.
-    num_timesteps   : int, default: 100
-        Number of timesteps to simulate.
-    boundary_size   : float, default: 10.0
-        Size of the simulation boundary (in meters).
-
-    Returns
-    -------
-    A concatenated NumPy array of combined trajectory
-    and direction of the agents as timeseries.
-    """
-
-    # Unpack priors
-    r, v = theta[0], theta[1]
-
-    # Scale radius with half of boundary size (for realism)
-    sensing_radius = r * boundary_size * 0.5
-
-    # Store trajectories and headings
-    agent_positions = np.zeros((num_timesteps, num_agents, 2))
-    agent_rotations = np.zeros((num_timesteps, num_agents, 1))
-
-    # Initialize positions and directions for each agent
-    agent_positions[0], agent_rotations[0] = initialize_agents(num_agents, boundary_size)
-
-    # Loop over each timestep
-    for t in range(1, num_timesteps):
-        # Get previous positions and rotations
-        old_positions = agent_positions[t - 1].copy()
-        old_rotations = agent_rotations[t - 1].copy()
-
-        # For each timestep, initialize directions for the agents
-        new_rotations = np.zeros(num_agents)
-
-        # For each agent, collect neighbors within its sensing range
-        for i in range(num_agents):
-            neighbor_rotations = []
-            # If there are any neighbors, average over their directions
-            # and assign it as the new direction.
-            for j in range(num_agents):
-                if i != j and np.linalg.norm(agent_positions[t - 1, i] - agent_positions[j]) < sensing_radius:
-                    neighbor_rotations.append(agent_rotations[j])
-            if neighbor_rotations != []:
-                average_neighbor_rotation = np.mean(np.array(neighbor_rotations))
-                new_rotations[i] = average_neighbor_rotation + np.random.uniform(-0.01, 0.01)
+        if steady_state:
+            # If the agent reaches a steady state, then it would stay at the vicinity
+            # of its steady state position.
+            if np.linalg.norm(beacon_position - positions[t - 1]) < noise_amplitude * 2.:
+                positions[t] = beacon_position + noise
             else:
-                new_rotations[i] = agent_rotations[i]
+                positions[t] = steady_state_position + noise
+        else:
+            # Otherwise, position should be updated so that the agent continues to approach the beacon
+            drift = drift_rate * beacon_influence * dt
+            positions[t] = positions[t - 1] + drift + noise
 
-        agent_rotations = np.copy(new_rotations)
+            # If we assume the agent positions to be bounded, then we check it against the boundary
+            # If it exceeds the boundary before reaching a beacon, then it reaches a steady state
+            if bounded:
+                if np.abs(positions[t, 0]) > room_size[0] * 0.5 or np.abs(positions[t, 1]) > room_size[1] * 0.5:
+                    steady_state = True
+                    steady_state_position = positions[t]
 
-        # Update position upon new direction
-        agent_positions[:, 0] += v * np.cos(agent_rotations)
-        agent_positions[:, 1] += v * np.sin(agent_rotations)
+            # If the agent reaches a beacon, it also reaches a steady state
+            if np.linalg.norm(beacon_position - positions[t]) < noise_amplitude * 2.:
+                steady_state = True
+                steady_state_position = beacon_position
 
-        # Assumes periodic boundary condition (for now)
-        agent_positions = np.mod(np.copy(agent_positions), boundary_size)
+    return positions
 
-        # Add timestamps to trajectories and headings
-        agent_positions[t + 1] = np.copy(agent_positions)
-        agent_rotations[t + 1] = np.copy(agent_rotations[:, np.newaxis])
 
-    return np.concatenate((agent_positions, agent_rotations), axis=-1)
+@njit
+def move_to_beacon(
+        agent_position,
+        beacon_position,
+        noise_amplitude=0.01,
+        drift_rate=0.5,
+        dt = 0.1,
+        proximity = 1.,
+        timesteps=1001
+):
+    """
+
+    """
+
+    # Initialize a numpy array for the position time series
+    positions = np.zeros((timesteps, 2), dtype=np.float32)
+    positions[0] = agent_position
+
+    for t in range(1, timesteps):
+        # Update beacon direction (as angles)
+        beacon_direction = external_influence(positions[t-1], beacon_position)
+
+        noise = noise_amplitude * (np.random.random(size=2) - 0.5)
+        drift = drift_rate * beacon_direction * dt
+
+        positions[t] = positions[t-1] + drift + noise
+
+        if np.linalg.norm(beacon_position - positions[t]) < proximity:
+            positions = beacon_position + (np.random.random(size=2) - 0.5) * proximity
+
+    return positions
+
+

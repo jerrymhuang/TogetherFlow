@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from matplotlib.animation import FuncAnimation
+from matplotlib.patches import FancyBboxPatch
+
 
 def plot_external_influence(
         num_agents,
@@ -46,3 +49,51 @@ def plot_external_influence(
 
     fig.tight_layout()
     return fig
+
+
+def animate_reorientation(
+        agent_position,
+        agent_rotations,
+        beacon_position,
+        beacon_influence,
+        frames=100
+):
+    f, ax = plt.subplots(1, 1, figsize=(4, 4))
+    room = FancyBboxPatch(
+        (-5., -6.), 10., 12.,
+        boxstyle="round, pad=0.5, rounding_size=1.5",
+        alpha=0.1
+    )
+    ax.add_patch(room)
+
+    influence = ax.quiver(
+        agent_position[0], agent_position[1],
+        beacon_influence[0], beacon_influence[1],
+        scale=0.25, angles='xy', scale_units='xy', color="r"
+    )
+
+    orientation = ax.quiver(
+        agent_position[0], agent_position[1],
+        np.cos(agent_rotations[0]), np.sin(agent_rotations[0]),
+        scale=0.25, angles='xy', scale_units='xy', color="b"
+    )
+
+    ax.scatter(x=agent_position[0], y=agent_position[1], c='b', marker='o')
+    ax.scatter(x=beacon_position[0], y=beacon_position[1], c='r', marker='o')
+
+    ax.set_xlim(-15., 15.)
+    ax.set_ylim(-15., 15.)
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_aspect("equal")
+
+    def update(frame):
+        rotation = agent_rotations[frame]
+
+        orientation.set_UVC(np.cos(rotation), np.sin(rotation))
+        return influence, orientation
+
+    animation = FuncAnimation(f, update, frames=frames, blit=True)
+    plt.close(f)
+
+    return animation

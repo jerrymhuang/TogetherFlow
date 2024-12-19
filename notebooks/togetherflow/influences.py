@@ -1,6 +1,8 @@
 import numpy as np
 from numba import njit
 
+from utils import bound, world2local, relative_angle
+
 
 @njit
 def external_influence(
@@ -31,21 +33,32 @@ def external_influence(
     beacon_direction = np.arctan2(
         beacon_position[1] - agent_position[1],
         beacon_position[0] - agent_position[0]
-    )
-
-    # Generate a random direction with drift around the target angle
-    direction = beacon_direction + (np.random.random() - 0.5) * noise_amplitude
+    ) + (np.random.random() - 0.5) * noise_amplitude
     # direction = beacon_direction + np.random.vonmises(0., 8.) * noise_amplitude
 
-    # Convert the angle to a unit vector in 2D space
-    v = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
+    influence = bound(beacon_direction)
 
-    return v
+    # Convert the angle to a unit vector in 2D space
+    v = np.array([np.cos(influence), np.sin(influence)], dtype=np.float32)
+
+    return influence
+
+
+@njit
+def external_influence(
+        agent_position,
+        agent_rotation,
+        beacon_position
+):
+    beacon_direction = world2local(agent_position, agent_rotation, beacon_position)
+    influence = relative_angle(beacon_direction)
+
+    return influence
 
 
 @njit
 def internal_influence(
-        self_position,
+    self_position,
         other_positions,
         other_rotations,
         sensing_radius=1.5,
