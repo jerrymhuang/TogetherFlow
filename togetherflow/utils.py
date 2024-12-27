@@ -45,12 +45,12 @@ def world2local(
     beacon_orientation = beacon_position - agent_position
 
     # Rotation matrix to convert beacon orientation to agent coordinates
-    rotation_matrix = np.array([[np.cos(agent_rotation), np.sin(agent_rotation)],
-                                [-np.sin(agent_rotation), np.cos(agent_rotation)]])
+    rotation_matrix = np.array([[np.cos(agent_rotation.item()), np.sin(agent_rotation.item())],
+                                [-np.sin(agent_rotation.item()), np.cos(agent_rotation.item())]], dtype=np.float32)
 
     # Apply the rotation to get the beacon direction in local coordinates
     beacon_direction = rotation_matrix @ beacon_orientation
-    return beacon_direction
+    return beacon_direction.astype(np.float32)
 
 
 @njit
@@ -63,6 +63,3 @@ def relative_angle(v):
 def adaptive_drift_rate(angle, drift_rate=0.1):
     # Drift rate is proportional to the relative angle, scaled by a maximum drift rate
     return np.sign(angle) * drift_rate
-
-
-

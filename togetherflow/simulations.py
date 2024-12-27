@@ -1,7 +1,29 @@
 import numpy as np
 
 from numba import njit
-from influences import external_influence
+from influences import position_influence, rotation_influence
+from utils import adaptive_drift_rate, bound
+
+
+@njit
+def rotational_update(
+        agent_position,
+        agent_rotation,
+        beacon_position,
+        drift_rate = np.pi * 0.1,
+        dt = 0.1,
+        noise_amplitude = 0.01
+):
+
+    rotate_vec = rotation_influence(agent_position, agent_rotation, beacon_position)
+
+    v = adaptive_drift_rate(rotate_vec, drift_rate)
+
+    noise = np.random.normal(0., noise_amplitude)
+
+    new_agent_rotation = bound(agent_rotation + v * dt + noise)
+
+    return new_agent_rotation
 
 
 @njit
@@ -119,7 +141,7 @@ def walk_to_beacon(
 
     # Calculate the influence of beacons if there is none
     if beacon_influence is None:
-        beacon_influence = external_influence(agent_position, beacon_position)
+        beacon_influence = rotation_influence(agent_position, beacon_position)
 
     for t in range(1, timesteps):
         # Calculate noise for each timestep
@@ -172,7 +194,7 @@ def move_to_beacon(
 
     for t in range(1, timesteps):
         # Update beacon direction (as angles)
-        beacon_direction = external_influence(positions[t-1], beacon_position)
+        beacon_direction = rotation_influence(positions[t-1], beacon_position)
 
         noise = noise_amplitude * (np.random.random(size=2) - 0.5)
         drift = drift_rate * beacon_direction * dt

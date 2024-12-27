@@ -5,12 +5,12 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.patches import FancyBboxPatch
 
 
-def plot_external_influence(
+def plot_rotation_influence(
         num_agents,
         agent_positions,
         agent_rotations,
         beacon_positions,
-        external_influence
+        influence
 ):
     from matplotlib.patches import FancyBboxPatch
 
@@ -29,7 +29,7 @@ def plot_external_influence(
 
         ax.quiver(
             agent_positions[i, 0], agent_positions[i, 1],
-            external_influence[i, 0], external_influence[i, 1],
+            influence[i, 0], influence[i, 1],
             scale=0.25, angles='xy', scale_units='xy', color="r"
         )
         ax.quiver(
