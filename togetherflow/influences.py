@@ -78,8 +78,7 @@ def alignment_influence(
         other_positions,
         other_rotations,
         sensing_radius=1.5,
-        focus=0.125,
-        noise=False
+        noise=0.1
 ):
     """
     Generate an influence vector for a single agent
@@ -114,21 +113,22 @@ def alignment_influence(
         dy = other_positions[i, 1] - self_position[1]
         d = (dx ** 2 + dy ** 2) ** 0.5
 
+        # Exclude 0 so that the agent itself is not taken into account.
         if d <= sensing_radius and d > 0:
             neighbor_rotations.append(other_rotations[i])
 
+    ## No neighbor, no influence
     if len(neighbor_rotations) == 0:
-        return np.array([0.0, 0.0], dtype=np.float32)
+        return np.array([0., 0.], dtype=np.float32)
 
+    # Compute neighbor rotation average
     neighbor_rotations = np.array(neighbor_rotations)
     averaged_rotation = np.sum(neighbor_rotations) / len(neighbor_rotations)
 
-    if noise:
-        deviation = (np.random.random() - 0.5) * focus
-    else:
-        deviation = np.random.vonmises(mu=0., kappa=4.) * focus
-    direction = averaged_rotation + deviation
+    # Add noise
+    direction = averaged_rotation + (np.random.random() - 0.5) * noise
 
+    # Decompose
     influence = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
 
     return influence

@@ -4,18 +4,23 @@ from .initializations import (
 )
 
 from .influences import (
-    external_influence
+    rotation_influence,
+    position_influence,
+    cohesion_influence,
+    alignment_influence
 )
 
 from .simulations import (
-    simulate_reorientation
+    walk_with_neighbors,
+    look_with_neighbors,
+    move_to_beacon,
+    look_at_beacon,
+    individual_motion,
+    collective_motion,
+    main_simulator
 )
 
 from .priors import (
     meta_prior_fun,
     complete_pooling_prior_fun
-)
-
-from .diagnostics import (
-    plot_external_influence
 )
