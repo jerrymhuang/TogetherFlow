@@ -5,6 +5,7 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.patches import FancyBboxPatch
 
 
+# These are old. But I might add more so they become useful again.
 def plot_rotation_influence(
         num_agents,
         agent_positions,

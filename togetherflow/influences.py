@@ -117,21 +117,21 @@ def alignment_influence(
         if d <= sensing_radius and d > 0:
             neighbor_rotations.append(other_rotations[i])
 
-    ## No neighbor, no influence
-    if len(neighbor_rotations) == 0:
-        return np.array([0., 0.], dtype=np.float32)
+    # ## No neighbor, no influence
+    # if len(neighbor_rotations) == 0:
+    #     return np.array([0., 0.], dtype=np.float32)
+    #
+    # # Compute neighbor rotation average
+    # neighbor_rotations = np.array(neighbor_rotations).astype(np.float32)
+    # averaged_rotation = np.sum(neighbor_rotations) / len(neighbor_rotations)
+    #
+    # # Add noise
+    # direction = averaged_rotation + (np.random.random() - 0.5) * noise
+    #
+    # # Decompose
+    # influence = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
 
-    # Compute neighbor rotation average
-    neighbor_rotations = np.array(neighbor_rotations)
-    averaged_rotation = np.sum(neighbor_rotations) / len(neighbor_rotations)
-
-    # Add noise
-    direction = averaged_rotation + (np.random.random() - 0.5) * noise
-
-    # Decompose
-    influence = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
-
-    return influence
+    return neighbor_rotations
 
 
 @njit
