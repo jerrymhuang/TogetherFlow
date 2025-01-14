@@ -32,7 +32,7 @@ def look_at_beacon(
         beacon_influence,
         dt=0.1,
         drift_rate=0.1,
-        noise_amplitude=0.001,
+        noise=0.01,
         timesteps=100
 ):
     """
@@ -81,129 +81,160 @@ def look_at_beacon(
         # If steady state is reached, then the agent will only be influenced by noise.
         # Otherwise, the reorientation happens until the steady state is reached.
         if steady_state:
-            rotations[t] = beacon_influence + (np.random.random() - 0.5) * noise_amplitude
+            rotations[t] = beacon_influence + (np.random.random() - 0.5) * noise
         else:
-            rotations[t] = rotations[t - 1] + reorientation_angle * dt + noise_amplitude * np.random.randn()
+            rotations[t] = rotations[t - 1] + reorientation_angle * dt + noise * np.random.randn()
 
-            if np.abs(rotation_diff) < noise_amplitude:
+            if np.abs(rotation_diff) < noise:
                 steady_state = True
 
     return rotations
 
 
-@njit
-def walk_to_beacon(
-        agent_position,
-        beacon_position,
-        beacon_influence=None,
-        drift_rate=0.5,
-        dt=0.1,
-        noise_amplitude=None,
-        timesteps=1001,
-        bounded=False,
-        room_size=(8., 10.),
-):
-    """
-    Simulate an agent's locomotion pattern influenced by a beacon.
+# @njit
+# def walk_to_beacon(
+#         agent_position,
+#         beacon_position,
+#         beacon_influence=None,
+#         drift_rate=0.5,
+#         dt=0.1,
+#         noise_amplitude=None,
+#         timesteps=1001,
+#         bounded=False,
+#         room_size=(8., 10.),
+# ):
+#     """
+#     Simulate an agent's locomotion pattern influenced by a beacon.
+#
+#     Parameters
+#     ----------
+#     agent_position : np.ndarray
+#         The starting position of the agent.
+#     beacon_position : np.ndarray
+#         The position of the beacon.
+#     beacon_influence : np.ndarray
+#         The influence of the beacon.
+#     drift_rate : float
+#         The drift rate of the agent.
+#     dt : float
+#         The time interval per time step for the simulation.
+#     noise_amplitude : float
+#         The amplitude of the noise.
+#     timesteps : int
+#         The number of timesteps to simulate.
+#     bounded : bool
+#         Whether the agent is bounded.
+#     room_size : tuple
+#         The size of the room.
+#
+#     Returns
+#     -------
+#     positions : np.ndarray
+#         The positions of the agent's locomotion pattern as time series influenced by a beacon.
+#     """
+#
+#     # Initialize a numpy array for the position time series
+#     positions = np.zeros((timesteps, 2), dtype=np.float32)
+#     positions[0] = agent_position
+#     steady_state = False
+#     steady_state_position = np.empty(2, dtype=np.float32)
+#
+#     # Calculate the influence of beacons if there is none
+#     if beacon_influence is None:
+#         beacon_influence = rotation_influence(agent_position, beacon_position)
+#
+#     for t in range(1, timesteps):
+#         # Calculate noise for each timestep
+#         noise = noise_amplitude * (np.random.random(size=2) - 0.5)
+#
+#         if steady_state:
+#             # If the agent reaches a steady state, then it would stay at the vicinity
+#             # of its steady state position.
+#             if np.linalg.norm(beacon_position - positions[t - 1]) < noise_amplitude * 2.:
+#                 positions[t] = beacon_position + noise
+#             else:
+#                 positions[t] = steady_state_position + noise
+#         else:
+#             # Otherwise, position should be updated so that the agent continues to approach the beacon
+#             drift = drift_rate * beacon_influence * dt
+#             positions[t] = positions[t - 1] + drift + noise
+#
+#             # If we assume the agent positions to be bounded, then we check it against the boundary
+#             # If it exceeds the boundary before reaching a beacon, then it reaches a steady state
+#             if bounded:
+#                 if np.abs(positions[t, 0]) > room_size[0] * 0.5 or np.abs(positions[t, 1]) > room_size[1] * 0.5:
+#                     steady_state = True
+#                     steady_state_position = positions[t]
+#
+#             # If the agent reaches a beacon, it also reaches a steady state
+#             if np.linalg.norm(beacon_position - positions[t]) < noise_amplitude * 2.:
+#                 steady_state = True
+#                 steady_state_position = beacon_position
+#
+#     return positions
 
-    Parameters
-    ----------
-    agent_position : np.ndarray
-        The starting position of the agent.
-    beacon_position : np.ndarray
-        The position of the beacon.
-    beacon_influence : np.ndarray
-        The influence of the beacon.
-    drift_rate : float
-        The drift rate of the agent.
-    dt : float
-        The time interval per time step for the simulation.
-    noise_amplitude : float
-        The amplitude of the noise.
-    timesteps : int
-        The number of timesteps to simulate.
-    bounded : bool
-        Whether the agent is bounded.
-    room_size : tuple
-        The size of the room.
 
-    Returns
-    -------
-    positions : np.ndarray
-        The positions of the agent's locomotion pattern as time series influenced by a beacon.
-    """
-
-    # Initialize a numpy array for the position time series
-    positions = np.zeros((timesteps, 2), dtype=np.float32)
-    positions[0] = agent_position
-    steady_state = False
-    steady_state_position = np.empty(2, dtype=np.float32)
-
-    # Calculate the influence of beacons if there is none
-    if beacon_influence is None:
-        beacon_influence = rotation_influence(agent_position, beacon_position)
-
-    for t in range(1, timesteps):
-        # Calculate noise for each timestep
-        noise = noise_amplitude * (np.random.random(size=2) - 0.5)
-
-        if steady_state:
-            # If the agent reaches a steady state, then it would stay at the vicinity
-            # of its steady state position.
-            if np.linalg.norm(beacon_position - positions[t - 1]) < noise_amplitude * 2.:
-                positions[t] = beacon_position + noise
-            else:
-                positions[t] = steady_state_position + noise
-        else:
-            # Otherwise, position should be updated so that the agent continues to approach the beacon
-            drift = drift_rate * beacon_influence * dt
-            positions[t] = positions[t - 1] + drift + noise
-
-            # If we assume the agent positions to be bounded, then we check it against the boundary
-            # If it exceeds the boundary before reaching a beacon, then it reaches a steady state
-            if bounded:
-                if np.abs(positions[t, 0]) > room_size[0] * 0.5 or np.abs(positions[t, 1]) > room_size[1] * 0.5:
-                    steady_state = True
-                    steady_state_position = positions[t]
-
-            # If the agent reaches a beacon, it also reaches a steady state
-            if np.linalg.norm(beacon_position - positions[t]) < noise_amplitude * 2.:
-                steady_state = True
-                steady_state_position = beacon_position
-
-    return positions
+from numba import njit
 
 
 @njit
 def move_to_beacon(
         agent_position,
         beacon_position,
-        noise_amplitude=0.01,
-        drift_rate=0.5,
-        dt = 0.1,
-        proximity = 1.,
-        timesteps=1001
+        drift=0.5,
+        timesteps=1000,
+        dt = 0.1
 ):
-    """
-
-    """
-
-    # Initialize a numpy array for the position time series
     positions = np.zeros((timesteps, 2), dtype=np.float32)
     positions[0] = agent_position
 
-    for t in range(1, timesteps):
-        # Update beacon direction (as angles)
-        beacon_direction = rotation_influence(positions[t-1], beacon_position)
-
-        noise = noise_amplitude * (np.random.random(size=2) - 0.5)
-        drift = drift_rate * beacon_direction * dt
-
-        positions[t] = positions[t-1] + drift + noise
-
-        if np.linalg.norm(beacon_position - positions[t]) < proximity:
-            positions = beacon_position + (np.random.random(size=2) - 0.5) * proximity
+    for i in range(1, timesteps):
+        direction = position_influence(positions[i - 1], beacon_position)
+        positions[i] = positions[i - 1] + direction * drift * dt
 
     return positions
+
+
+@njit
+def look_with_neighbors():
+    raise NotImplementedError
+
+
+@njit
+def walk_with_neighbors():
+    raise NotImplementedError
+
+
+# @njit
+# def move_to_beacon(
+#         agent_position,
+#         beacon_position,
+#         noise_amplitude=0.01,
+#         drift_rate=0.5,
+#         dt = 0.1,
+#         proximity = 1.,
+#         timesteps=1001
+# ):
+#     """
+#
+#     """
+#
+#     # Initialize a numpy array for the position time series
+#     positions = np.zeros((timesteps, 2), dtype=np.float32)
+#     positions[0] = agent_position
+#
+#     for t in range(1, timesteps):
+#         # Update beacon direction (as angles)
+#         beacon_direction = rotation_influence(positions[t-1], beacon_position)
+#
+#         noise = noise_amplitude * (np.random.random(size=2) - 0.5)
+#         drift = drift_rate * beacon_direction * dt
+#
+#         positions[t] = positions[t-1] + drift + noise
+#
+#         if np.linalg.norm(beacon_position - positions[t]) < proximity:
+#             positions = beacon_position + (np.random.random(size=2) - 0.5) * proximity
+#
+#     return positions
 
 
