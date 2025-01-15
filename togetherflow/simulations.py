@@ -86,6 +86,38 @@ def move_to_beacon(
 
 @njit
 def look_with_neighbors(
+        agent_positions,
+        agent_rotations,
+        sensing_radius=1.5,
+        timesteps=100,
+        dt=0.1,
+        v=0.5,
+        noise=0.1
+):
+
+    assert len(agent_positions) == len(agent_rotations)
+    num_agents = len(agent_positions)
+
+    rotations = np.zeros((timesteps, num_agents, 1), dtype=np.float32)
+    rotations[0] = agent_rotations
+
+    for t in range(1, timesteps):
+
+        for a in range(num_agents):
+            direction = alignment_influence(
+                agent_positions[a],
+                agent_positions,
+                rotations[t - 1],
+                sensing_radius,
+                noise
+            )
+
+            rotations[t, a] = rotations[t - 1, a] + direction * v * dt
+
+    return rotations
+
+@njit
+def follow_neighbors(
     agent_positions,
     agent_rotations,
     sensing_radius = 1.5,
@@ -94,8 +126,8 @@ def look_with_neighbors(
     timesteps=1000,
     dt = 0.1
 ):
-    assert len(agent_positions) == len(agent_rotations)
-    num_agents = len(agent_positions)
+    assert agent_positions.shape[0] == agent_rotations.shape[0]
+    num_agents = agent_positions.shape[0]
 
     rotations = np.zeros((timesteps, num_agents, 1), dtype=np.float32)
     rotations[0] = agent_rotations
