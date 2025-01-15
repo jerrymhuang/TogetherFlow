@@ -11,7 +11,7 @@ from .influences import (
 )
 
 from .simulations import (
-    walk_with_neighbors,
+    move_with_neighbors,
     look_with_neighbors,
     move_to_beacon,
     look_at_beacon,
@@ -22,5 +22,5 @@ from .simulations import (
 
 from .priors import (
     meta_prior_fun,
-    complete_pooling_prior_fun
+    complete_pooling_prior
 )

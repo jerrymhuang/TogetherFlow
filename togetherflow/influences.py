@@ -6,9 +6,9 @@ from utils import bound, world2local, relative_angle
 
 @njit
 def position_influence(
-        agent_position,
-        beacon_position,
-        noise=0.01
+    agent_position,
+    beacon_position,
+    noise=0.01
 ):
     """
     Generate a position drift-diffusion vector in 2D space for a single agent at a single time step
@@ -39,10 +39,10 @@ def position_influence(
 
 @njit
 def rotation_influence(
-        agent_position,
-        agent_rotation,
-        beacon_position,
-        noise=0.01
+    agent_position,
+    agent_rotation,
+    beacon_position,
+    noise=0.01
 ):
     """
     Generate a rotation drift-diffusion vector in 2D space for a single agent at a single time step
@@ -74,11 +74,11 @@ def rotation_influence(
 
 @njit
 def alignment_influence(
-        self_position,
-        other_positions,
-        other_rotations,
-        sensing_radius=1.5,
-        noise=0.1
+    self_position,
+    other_positions,
+    other_rotations,
+    sensing_radius=1.5,
+    noise=0.1
 ):
     """
     Generate an influence vector for a single agent
@@ -106,7 +106,19 @@ def alignment_influence(
         A 2D unit vector representing the averaged influence direction with added noise.
     """
 
-    neighbor_rotations = []
+    assert len(other_positions) == len(other_rotations)
+    num_agents = len(other_positions)
+
+    # Since the number of agents is known, instead of list initialization,
+    # we can just initialize it directly as a zero array to account for the
+    # maximum number of neighbors without getting into Numba troubles.
+    # If a neighbor is not within the sensing radius, then their respective
+    # value in this array would not change.
+    neighbor_rotations = np.zeros((num_agents, 1))
+
+    # The downside of this is that now we need a counter to keep track of
+    # the neighbors.
+    num_neighbors = 0
 
     for i in range(len(other_positions)):
         dx = other_positions[i, 0] - self_position[0]
@@ -115,31 +127,29 @@ def alignment_influence(
 
         # Exclude 0 so that the agent itself is not taken into account.
         if d <= sensing_radius and d > 0:
-            neighbor_rotations.append(other_rotations[i])
+            neighbor_rotations[i] = other_rotations[i]
+            num_neighbors += 1
 
-    # ## No neighbor, no influence
-    # if len(neighbor_rotations) == 0:
-    #     return np.array([0., 0.], dtype=np.float32)
-    #
-    # # Compute neighbor rotation average
-    # neighbor_rotations = np.array(neighbor_rotations).astype(np.float32)
-    # averaged_rotation = np.sum(neighbor_rotations) / len(neighbor_rotations)
-    #
-    # # Add noise
-    # direction = averaged_rotation + (np.random.random() - 0.5) * noise
-    #
-    # # Decompose
+    ## No neighbor, no influence
+    if num_neighbors == 0:
+        return 0.
+
+    # Compute neighbor rotation average
+    averaged_rotation = np.sum(neighbor_rotations) / num_neighbors
+
+    # Add noise
+    influence = averaged_rotation + (np.random.random() - 0.5) * noise
+    return influence
+    # Decompose
     # influence = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
-
-    return neighbor_rotations
 
 
 @njit
 def cohesion_influence(
-        self_position,
-        other_positions,
-        sensing_radius=1.5,
-        noise=0.01
+    self_position,
+    other_positions,
+    sensing_radius=1.5,
+    noise=0.1
 ):
     """
     Generate an influence vector for a single agent
@@ -167,7 +177,17 @@ def cohesion_influence(
         A 2D unit vector representing the averaged influence direction with added noise.
     """
 
-    neighbor_positions = []
+    num_agents = len(other_positions)
+    # Since the number of agents is known, instead of list initialization,
+    # we can just initialize it directly as a zero array to account for the
+    # maximum number of neighbors without getting into Numba troubles.
+    # If a neighbor is not within the sensing radius, then their respective
+    # value in this array would not change.
+    neighbor_positions = np.zeros((num_agents, 1))
+
+    # The downside of this is that now we need a counter to keep track of
+    # the neighbors.
+    num_neighbors = 0
 
     for i in range(len(other_positions)):
         dx = other_positions[i, 0] - self_position[0]
@@ -175,13 +195,13 @@ def cohesion_influence(
         d = (dx ** 2 + dy ** 2) ** 0.5
 
         if d <= sensing_radius and d > 0:
-            neighbor_positions.append(other_positions[i])
+            neighbor_positions[i] = other_positions[i]
+            num_neighbors += 1
 
-    if len(neighbor_positions) == 0:
+    if num_neighbors == 0:
         return np.array([0.0, 0.0], dtype=np.float32)
 
-    neighbor_positions = np.array(neighbor_positions)
-    averaged_position = np.sum(neighbor_positions) / len(neighbor_positions)
+    averaged_position = np.sum(neighbor_positions) / num_neighbors
 
     direction = averaged_position + (np.random.random() - 0.5) * noise
 

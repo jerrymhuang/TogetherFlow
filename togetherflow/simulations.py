@@ -12,13 +12,13 @@ from utils import adaptive_drift_rate, bound
 
 @njit
 def look_at_beacon(
-        agent_position,
-        agent_rotation,
-        beacon_position,
-        dt=0.1,
-        drift=0.1,
-        noise=0.01,
-        timesteps=100
+    agent_position,
+    agent_rotation,
+    beacon_position,
+    drift=0.5,
+    noise=0.1,
+    timesteps=1000,
+    dt=0.1
 ):
     """
     Simulate reorientation as influenced by the relative position
@@ -67,12 +67,12 @@ def look_at_beacon(
 
 @njit
 def move_to_beacon(
-        agent_position,
-        beacon_position,
-        drift=0.5,
-        noise=0.1,
-        timesteps=1000,
-        dt = 0.1
+    agent_position,
+    beacon_position,
+    drift=0.5,
+    noise=0.1,
+    timesteps=1000,
+    dt = 0.1
 ):
     positions = np.zeros((timesteps, 2), dtype=np.float32)
     positions[0] = agent_position
@@ -85,16 +85,62 @@ def move_to_beacon(
 
 
 @njit
+def look_with_neighbors(
+    agent_positions,
+    agent_rotations,
+    sensing_radius = 1.5,
+    drift=0.5,
+    noise=0.1,
+    timesteps=1000,
+    dt = 0.1
+):
+    assert len(agent_positions) == len(agent_rotations)
+    num_agents = len(agent_positions)
+
+    rotations = np.zeros((timesteps, num_agents, 1), dtype=np.float32)
+    rotations[0] = agent_rotations
+
+    for t in range(1, timesteps):
+        for a in range(num_agents):
+
+            direction = alignment_influence(
+                agent_positions[a],
+                agent_positions,
+                rotations[t-1],
+                sensing_radius,
+                noise
+            )
+
+            rotations[t, a] = rotations[t-1, a] + direction * drift * dt
+
+    # Normalization
+    rotations = rotations % (2. * np.pi)
+    return rotations
+
+
+@njit
+def move_with_neighbors(
+    agent_position,
+    sensing_radius=1.5,
+    noise=0.1,
+    timesteps=1000,
+    dt=0.1
+):
+
+    positions = np.zeros((timesteps, 2), dtype=np.float32)
+
+
+@njit
 def individual_motion(
-        agent_position,
-        agent_rotation,
-        beacon_position,
-        position_drift=0.1,
-        rotation_drift=0.1,
-        position_noise=0.1,
-        rotation_noise=0.01,
-        timesteps=1000,
-        dt=0.1
+    agent_position,
+    agent_rotation,
+    beacon_position,
+    position_drift=0.5,
+    rotation_drift=0.5,
+    position_noise=0.1,
+    rotation_noise=0.1,
+    timesteps=1000,
+    dt=0.1
 ):
     positions = np.zeros((timesteps, 2), dtype=np.float32)
     rotations = np.zeros((timesteps, 1), dtype=np.float32)
@@ -115,24 +161,6 @@ def individual_motion(
 
 
 @njit
-def walk_with_neighbors(
-    self_position,
-    other_positions,
-    other_rotations,
-    dt = 0.1,
-    timesteps = 1000,
-):
-
-    positions = np.zeros((timesteps, 2), dtype=np.float32)
-
-
-
-@njit
-def look_with_neighbors():
-    raise NotImplementedError
-
-
-@njit
 def collective_motion():
     raise NotImplementedError
 
@@ -144,22 +172,22 @@ def main_simulator(
     raise NotImplementedError
 
 
-@njit
-def rotational_update(
-        agent_position,
-        agent_rotation,
-        beacon_position,
-        drift_rate = np.pi * 0.1,
-        dt = 0.1,
-        noise_amplitude = 0.01
-):
-
-    rotate_vec = rotation_influence(agent_position, agent_rotation, beacon_position)
-
-    v = adaptive_drift_rate(rotate_vec, drift_rate)
-
-    noise = np.random.normal(0., noise_amplitude)
-
-    new_agent_rotation = bound(agent_rotation + v * dt + noise)
-
-    return new_agent_rotation
+# @njit
+# def rotational_update(
+#         agent_position,
+#         agent_rotation,
+#         beacon_position,
+#         drift_rate = np.pi * 0.1,
+#         dt = 0.1,
+#         noise_amplitude = 0.01
+# ):
+#
+#     rotate_vec = rotation_influence(agent_position, agent_rotation, beacon_position)
+#
+#     v = adaptive_drift_rate(rotate_vec, drift_rate)
+#
+#     noise = np.random.normal(0., noise_amplitude)
+#
+#     new_agent_rotation = bound(agent_rotation + v * dt + noise)
+#
+#     return new_agent_rotation
