@@ -5,6 +5,32 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.patches import FancyBboxPatch
 
 
+def inspect_simulation(
+    sim_data
+):
+    positions = sim_data[:,:,0:2]
+    rotations = sim_data[:,:,-1]
+
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+
+    def update(frame):
+        ax.clear()
+        quiver = ax.quiver(positions[frame, :, 0], positions[frame, :, 1], np.cos(rotations[frame]),
+                           np.sin(rotations[frame]))
+        quiver.set_offsets(positions[frame])
+        quiver.set_UVC(np.cos(rotations[frame]), np.sin(rotations[frame]))
+        ax.set_xlim(-20., 20)
+        ax.set_ylim(-20., 20)
+        return quiver,
+
+    a = FuncAnimation(fig, update, frames=len(positions), blit=True, repeat=False)
+    plt.title("Simulation")
+    plt.xlabel("X")
+    plt.ylabel("Y")
+
+    return a
+
+
 # These are old. But I might add more so they become useful again.
 def plot_rotation_influence(
         num_agents,
@@ -13,7 +39,6 @@ def plot_rotation_influence(
         beacon_positions,
         influence
 ):
-    from matplotlib.patches import FancyBboxPatch
 
     num_col = int(num_agents / 3)
     num_row = 3

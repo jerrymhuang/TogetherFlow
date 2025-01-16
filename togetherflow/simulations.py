@@ -13,7 +13,6 @@ from influences import (
     alignment_influence,
     cohesion_influence
 )
-# from utils import adaptive_drift_rate, bound
 
 
 @njit
@@ -121,6 +120,31 @@ def look_with_neighbors(
         drift=0.5,
         noise=0.1
 ):
+    """
+    Simulate rotation (orientation) as influenced by the neighboring agents
+
+    Parameters
+    ----------
+    agent_positions : np.ndarray or float
+        Positions of the agents
+    agent_rotations : np.ndarray or float
+        Rotations of the agents
+    sensing_radius : float
+        The sensing radius of the agents
+    timesteps : int
+        Number of time steps to simulate
+    dt : float
+        Time interval per time step
+    drift: float
+        Rotational drift rate of the agent as influenced by their neighbors
+    noise : float
+        Noise amplitude of the agent's rotation
+
+    Returns
+    -------
+    np.ndarray or float
+        Time series of agent rotation influenced by the neighboring agents
+    """
 
     assert len(agent_positions) == len(agent_rotations)
     num_agents = len(agent_positions)
@@ -154,8 +178,32 @@ def move_with_neighbors(
     timesteps=1000,
     dt=0.1
 ):
+    """
+    Simulate motion (locomotion) as influenced by the neighboring agents
+
+    Parameters
+    ----------
+    agent_positions : np.ndarray or float
+        Positions of the agents
+    sensing_radius : float
+        The sensing radius of the agents
+    timesteps : int
+        Number of time steps to simulate
+    dt : float
+        Time interval per time step
+    drift: float
+        Locomotive drift rate of the agent as influenced by their neighbors
+    noise : float
+        Noise amplitude of the agent's position
+
+    Returns
+    -------
+    np.ndarray or float
+        Time series of agent position influenced by the neighboring agents
+    """
 
     num_agents = agent_positions.shape[0]
+
     positions = np.zeros((timesteps, num_agents, 2), dtype=np.float32)
     positions[0] = agent_positions
 
@@ -185,6 +233,36 @@ def individual_motion(
     timesteps=1000,
     dt=0.1
 ):
+    """
+    Simulate agent motion as influenced by the beacons only.
+
+    Parameters
+    ----------
+    agent_position : np.ndarray or float
+        Position of the agent
+    agent_rotation : np.ndarray or float
+        Rotation of the agent
+    beacon_position : np.ndarray or float
+        Position of the beacon
+    position_drift : float
+        Positional drift rate of the beacon
+    rotation_drift : float
+        Rotational drift rate of the beacon
+    position_noise : float
+        Positional noise amplitude of the beacon
+    rotation_noise : float
+        Rotational noise amplitude of the beacon
+    timesteps : int
+        Number of time steps to simulate
+    dt : float
+        Time interval per time step
+
+    Returns
+    -------
+    np.ndarray or float
+        Time series of agent positions and rotations influenced by the beacons
+    """
+
     positions = np.zeros((timesteps, 2), dtype=np.float32)
     rotations = np.zeros((timesteps, 1), dtype=np.float32)
     positions[0] = agent_position
@@ -215,6 +293,35 @@ def collective_motion(
     timesteps=1000,
     dt=0.1
 ):
+    """
+    Simulate agent motion as influenced by the neighboring agents only.
+
+    Parameters
+    ----------
+    agent_positions : np.ndarray or float
+        Positions of the agents
+    agent_rotations : np.ndarray or float
+        Rotations of the agents
+    alignment_drift : float
+        Drift rate for rotational alignment of the agents with their sensed neighbors
+    cohesion_drift : float
+        Drift rate for cohesion of the agents with their neighbors
+    alignment_noise : float
+        Noise amplitude of the agent's alignment
+    cohesion_noise : float
+        Noise amplitude of the agent's cohesion
+    sensing_radius : float
+        The sensing radius of the agent
+    timesteps : int
+        Number of time steps to simulate
+    dt : float
+        Time interval per time step
+
+    Returns
+    -------
+    np.ndarray or float
+        Time series of agent positions and rotations influenced by the neighboring agents
+    """
 
     assert len(agent_positions) == len(agent_rotations)
     num_agents = len(agent_positions)
@@ -252,26 +359,69 @@ def collective_motion(
 @njit
 def motion_simulation(
     theta=None,
-    agent_positions=None,
-    agent_rotations=None,
-    beacon_positions=None,
-    position_drift=0.5,
-    rotation_drift=0.5,
-    alignment_drift=0.5,
-    cohesion_drift=0.5,
-    position_noise=0.1,
-    rotation_noise=0.1,
-    alignment_noise=0.1,
-    cohesion_noise=0.1,
-    sensing_radius=1.5,
-    influence_weight=0.5,
+    num_agents: int = 12,
+    num_beacons: int = 10,
+    room_size: np.ndarray = (8, 10),
+    position_drift: float = 0.5,
+    rotation_drift: float = 0.5,
+    alignment_drift: float = 0.5,
+    cohesion_drift: float = 0.5,
+    position_noise: float = 0.001,
+    rotation_noise: float = 0.001,
+    alignment_noise: float = 0.001,
+    cohesion_noise: float = 0.001,
+    sensing_radius: float = 1.5,
+    influence_weight: float = 0.5,
     timesteps=1000,
     dt=0.1
 ):
+    """
+    Full simulation of agent motion, incorporating both individual and collective influences.
 
-    assert len(agent_positions) == len(agent_rotations)
-    num_agents = len(agent_positions)
-    num_beacons = len(beacon_positions)
+    Parameters
+    ----------
+    theta : np.ndarray or float
+        Prior for the agents' properties, such as drift rates, modulation weights, and sensing radii.
+        If none given, defaults are used.
+    num_agents : int
+        Number of agents to simulate.
+    num_beacons : int
+        Number of beacons to simulate.
+    room_size : tuple
+        Size of the room to simulate the agents.
+    position_drift : float
+        Positional drift rate of the beacon
+    rotation_drift : float
+        Rotational drift rate of the beacon
+    alignment_drift : float
+        Alignment drift rate of the beacon as influenced by their neighbors
+    cohesion_drift : float
+        Cohesion drift rate of the beacon as influenced by their neighbors
+    position_noise : float
+        Positional noise amplitude of the agent
+    rotation_noise : float
+        Rotational noise amplitude of the agent
+    alignment_noise : float
+        Alignment noise amplitude of the agent
+    cohesion_noise : float
+        Cohesion noise amplitude of the agent
+    sensing_radius : float
+        Sensing radius of the agents
+    influence_weight : float
+        The modulation weight between individual and collective influences for each agents
+    timesteps : int
+        Number of time steps to simulate
+    dt : float
+        Time interval per time step
+
+    Returns
+    -------
+    np.ndarray or float
+        Time series of agent positions and rotations
+    """
+
+    initial_agent_positions, initial_agent_rotations = initialize_agents(num_agents, room_size=room_size)
+    beacon_positions = initialize_beacons(num_beacons)
 
     if theta is not None:
         influence_weight = theta[0]
@@ -285,12 +435,13 @@ def motion_simulation(
     # Initialization
     positions = np.zeros((timesteps, num_agents, 2), dtype=np.float32)
     rotations = np.zeros((timesteps, num_agents, 1), dtype=np.float32)
-    positions[0] = agent_positions
-    rotations[0] = agent_rotations
+    positions[0] = initial_agent_positions
+    rotations[0] = initial_agent_rotations
 
     for t in range(1, timesteps):
         for a in range(num_agents):
 
+            # Find the nearest beacon to target
             distances_to_beacons = np.zeros((num_beacons, 1), dtype=np.float32)
 
             for b in range(num_beacons):
@@ -300,6 +451,7 @@ def motion_simulation(
 
             beacon_id = np.argmin(distances_to_beacons)
 
+            # The influences
             move_direction = position_influence(
                 positions[t-1, a],
                 beacon_positions[beacon_id],
@@ -342,15 +494,24 @@ def motion_simulation(
             rotations[t, a] = rotations[t - 1, a] + rotation_shift * dt
 
     rotations = rotations % (2. * np.pi)
-    return positions, rotations
+    return np.concatenate((positions, rotations), axis=-1)
 
 
+# Backup simulation for debugging purposes only
+@njit
+def look():
+    raise NotImplementedError
+
+
+@njit
+def move():
+    raise NotImplementedError
+
+
+# For testing purpose only
+#
 if __name__ == "__main__":
-    agent_positions, agent_rotations = initialize_agents()
-    beacon_positions = initialize_beacons()
 
-    sim_positions, sim_rotations = motion_simulation(
-        agent_positions=agent_positions,
-        agent_rotations=agent_rotations,
-        beacon_positions=beacon_positions
-    )
+    sim = motion_simulation(num_agents=49, num_beacons=25)
+
+    print(sim)

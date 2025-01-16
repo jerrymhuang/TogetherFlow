@@ -10,6 +10,7 @@ def complete_pooling_prior():
     v = np.random.beta(2, 2) * 2.
     return np.array([weight, radius, v])
 
+
 @njit
 def complete_pooling_prior_with_noise():
     external_noise = np.random.beta(2, 2)
@@ -19,7 +20,7 @@ def complete_pooling_prior_with_noise():
     v = np.random.beta(2, 2) * 2.
     return np.array([weight, radius, v, external_noise, internal_noise])
 
+
 @njit
 def meta_prior_fun():
     raise NotImplementedError
-
