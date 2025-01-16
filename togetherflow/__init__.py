@@ -17,7 +17,7 @@ from .simulations import (
     look_at_beacon,
     individual_motion,
     collective_motion,
-    main_simulator
+    motion_simulation
 )
 
 from .priors import (

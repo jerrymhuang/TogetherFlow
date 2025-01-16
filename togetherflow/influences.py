@@ -1,7 +1,8 @@
 import numpy as np
 from numba import njit
 
-from utils import world2local, relative_angle, bound
+from utils import world2local, relative_angle
+# bound
 
 
 @njit
@@ -56,6 +57,8 @@ def rotation_influence(
         The orientation of the agent.
     beacon_position : np.ndarray
         The position of the target beacon.
+    noise : float, optional
+        The amplitude of rotational noise influenced by the neighbors.
 
     Returns
     -------
@@ -86,17 +89,14 @@ def alignment_influence(
 
     Parameters
     ----------
-    self_position : np.ndarray of shape (2,)
+    self_position : np.ndarray of shape (2)
         A 2D vector representing the position of the agent
-    other_positions : np.ndarray of shape (2,)
+    other_positions : np.ndarray of shape (2)
         A 2D vector representing the positions of the neighboring agents.
-    other_rotations : np.ndarray of shape (2,)
+    other_rotations : np.ndarray of shape (2)
         A 2D vector representing the rotations of the neighboring agents.
     sensing_radius : float
         The sensing radius within which agents interact with their neighbors.
-    focus : float, optional
-        The dispersion of a von Mises distribution for rotational noise influenced by the neighbors.
-        The higher the value is, the less perturbation there would be.
     noise: bool, optional
         Whether the focus is interpreted as noise amplitude.
 
@@ -127,11 +127,11 @@ def alignment_influence(
         d = (dx ** 2 + dy ** 2) ** 0.5
 
         # Exclude 0 so that the agent itself is not taken into account.
-        if d <= sensing_radius and d > 0:
+        if 0 < d <= sensing_radius:
             neighbor_rotations[i] = other_rotations[i]
             num_neighbors += 1
 
-    ## No neighbor, no influence
+    # No neighbor, no influence
     if num_neighbors != 0:
         # Compute neighbor rotation average
         averaged_rotation = np.sum(neighbor_rotations) / num_neighbors
@@ -156,17 +156,12 @@ def cohesion_influence(
 
     Parameters
     ----------
-    self_position : np.ndarray of shape (2,)
+    self_position : np.ndarray of shape (2)
         A 2D vector representing the position of the agent
-    other_positions : np.ndarray of shape (2,)
+    other_positions : np.ndarray of shape (2)
         A 2D vector representing the positions of the neighboring agents.
-    other_rotations : np.ndarray of shape (2,)
-        A 2D vector representing the rotations of the neighboring agents.
     sensing_radius : float
         The sensing radius within which agents interact with their neighbors.
-    focus : float, optional
-        The dispersion of a von Mises distribution for rotational noise influenced by the neighbors.
-        The higher the value is, the less perturbation there would be.
     noise: bool, optional
         Whether the focus is interpreted as noise amplitude.
 
@@ -194,13 +189,13 @@ def cohesion_influence(
         dy = other_positions[i, 1] - self_position[1]
         d = (dx ** 2 + dy ** 2) ** 0.5
 
-        if d <= sensing_radius and d > 0:
+        if 0 < d <= sensing_radius:
             neighbor_positions[i] = other_positions[i]
             num_neighbors += 1
 
     if num_neighbors != 0:
 
-        averaged_position = np.sum(neighbor_positions) / num_neighbors
+        averaged_position = np.sum(neighbor_positions, axis=-1) / num_neighbors
 
         influence = np.arctan2(
             averaged_position[1], averaged_position[0]
