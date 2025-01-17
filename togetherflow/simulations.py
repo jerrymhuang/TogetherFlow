@@ -216,7 +216,7 @@ def move_with_neighbors(
                 noise
             )
 
-            positions[t, a] = positions[t - 1, a] + direction * drift * dt
+            positions[t, a] = positions[t - 1, a] + np.array([np.cos(direction), np.sin(direction)], dtype=np.float32) * drift * dt
 
     return positions
 
