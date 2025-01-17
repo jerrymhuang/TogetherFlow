@@ -364,8 +364,6 @@ def motion_simulation(
     room_size: np.ndarray = (8, 10),
     position_drift: float = 0.5,
     rotation_drift: float = 0.5,
-    alignment_drift: float = 0.5,
-    cohesion_drift: float = 0.5,
     position_noise: float = 0.001,
     rotation_noise: float = 0.001,
     alignment_noise: float = 0.001,
@@ -480,18 +478,13 @@ def motion_simulation(
                 alignment_noise
             )
 
-            position_shift = (
-                influence_weight * move_direction * position_drift +
-                (1 - influence_weight) * follow_direction * cohesion_drift
-            )
+            position_shift = influence_weight * move_direction + (1 - influence_weight) * follow_direction
+            rotation_shift = influence_weight * look_direction + (1 - influence_weight) * align_direction
 
-            rotation_shift = (
-                influence_weight * look_direction * rotation_drift +
-                (1 - influence_weight) * align_direction * alignment_drift
-            )
-
-            positions[t, a] = positions[t - 1, a] + position_shift * dt
-            rotations[t, a] = rotations[t - 1, a] + rotation_shift * dt
+            positions[t, a] = positions[t - 1, a] + np.array(
+                [np.cos(position_shift), np.sin(position_shift)], dtype=np.float32
+            ) * position_drift * dt
+            rotations[t, a] = rotations[t - 1, a] + rotation_shift * rotation_drift * dt
 
     rotations = rotations % (2. * np.pi)
     return np.concatenate((positions, rotations), axis=-1)

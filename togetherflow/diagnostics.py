@@ -84,6 +84,7 @@ def inspect_rotation_influence(sim, agent_position, beacon_position):
     anim = FuncAnimation(f, update, frames=len(sim), blit=True, repeat=False)
     return anim
 
+
 def inspect_position_influence(sim, beacon_position):
     f, ax = plt.subplots(1, 1, figsize=(8, 8))
 
