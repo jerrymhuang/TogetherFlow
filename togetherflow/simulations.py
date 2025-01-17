@@ -105,7 +105,7 @@ def move_to_beacon(
 
     for i in range(1, timesteps):
         direction = position_influence(positions[i - 1], beacon_position, noise)
-        positions[i] = positions[i - 1] + direction * drift * dt + (np.random.random(size=2) - 0.5) * noise
+        positions[i] = positions[i - 1] + np.array([np.cos(direction), np.sin(direction)], dtype=np.float32) * drift * dt
 
     return positions
 

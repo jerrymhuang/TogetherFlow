@@ -5,86 +5,13 @@ from matplotlib.animation import FuncAnimation
 from matplotlib.patches import FancyBboxPatch
 
 
-def inspect_simulation(
-    sim_data
-):
-    positions = sim_data[:,:,0:2]
-    rotations = sim_data[:,:,-1]
+def inspect_simulation(sim_data):
+    positions = sim_data[:, :, 0:2]
+    rotations = sim_data[:, :, -1]
 
-    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    fig, ax = plt.subplots(1, 1, figsize=(4, 4))
 
-    def update(frame):
-        ax.clear()
-        quiver = ax.quiver(positions[frame, :, 0], positions[frame, :, 1], np.cos(rotations[frame]),
-                           np.sin(rotations[frame]))
-        quiver.set_offsets(positions[frame])
-        quiver.set_UVC(np.cos(rotations[frame]), np.sin(rotations[frame]))
-        ax.set_xlim(-20., 20)
-        ax.set_ylim(-20., 20)
-        return quiver,
-
-    a = FuncAnimation(fig, update, frames=len(positions), blit=True, repeat=False)
-    plt.title("Simulation")
-    plt.xlabel("X")
-    plt.ylabel("Y")
-
-    return a
-
-
-# These are old. But I might add more so they become useful again.
-def plot_rotation_influence(
-        num_agents,
-        agent_positions,
-        agent_rotations,
-        beacon_positions,
-        influence
-):
-
-    num_col = int(num_agents / 3)
-    num_row = 3
-
-    fig, axes = plt.subplots(num_row, num_col, figsize=(num_col * 3, num_row * 3))
-
-    for i, ax in enumerate(axes.flat):
-        room = FancyBboxPatch(
-            (-5., -6.), 10., 12.,
-            boxstyle="round, pad=0.5, rounding_size=1.5",
-            alpha=0.1
-        )
-        ax.add_patch(room)
-
-        ax.quiver(
-            agent_positions[i, 0], agent_positions[i, 1],
-            influence[i, 0], influence[i, 1],
-            scale=0.25, angles='xy', scale_units='xy', color="r"
-        )
-        ax.quiver(
-            agent_positions[i, 0], agent_positions[i, 1],
-            np.cos(agent_rotations[i]), np.sin(agent_rotations[i]),
-            scale=0.25, angles='xy', scale_units='xy', color="b"
-        )
-
-        ax.scatter(x=agent_positions[i, 0], y=agent_positions[i, 1], c='b', marker='o')
-        ax.scatter(x=beacon_positions[0, 0], y=beacon_positions[0, 1], c='r', marker='o')
-
-        ax.set_xlim(-15., 15.)
-        ax.set_ylim(-15., 15.)
-        ax.set_xlabel('X')
-        ax.set_ylabel('Y')
-        ax.set_aspect("equal")
-
-    fig.tight_layout()
-    return fig
-
-
-def animate_reorientation(
-        agent_position,
-        agent_rotations,
-        beacon_position,
-        beacon_influence,
-        frames=100
-):
-    f, ax = plt.subplots(1, 1, figsize=(4, 4))
+    # Add the static room boundary once
     room = FancyBboxPatch(
         (-5., -6.), 10., 12.,
         boxstyle="round, pad=0.5, rounding_size=1.5",
@@ -92,34 +19,107 @@ def animate_reorientation(
     )
     ax.add_patch(room)
 
-    influence = ax.quiver(
-        agent_position[0], agent_position[1],
-        beacon_influence[0], beacon_influence[1],
-        scale=0.25, angles='xy', scale_units='xy', color="r"
+    # Set axis limits and labels once
+    ax.set_xlim(-20., 20.)
+    ax.set_ylim(-20., 20.)
+    ax.set_title("")
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_aspect('equal')
+
+    # Initialize the quiver object once
+    quiver = ax.quiver(
+        positions[0, :, 0], positions[0, :, 1],
+        np.cos(rotations[0]), np.sin(rotations[0])
     )
-
-    orientation = ax.quiver(
-        agent_position[0], agent_position[1],
-        np.cos(agent_rotations[0]), np.sin(agent_rotations[0]),
-        scale=0.25, angles='xy', scale_units='xy', color="b"
-    )
-
-    ax.scatter(x=agent_position[0], y=agent_position[1], c='b', marker='o')
-    ax.scatter(x=beacon_position[0], y=beacon_position[1], c='r', marker='o')
-
-    ax.set_xlim(-15., 15.)
-    ax.set_ylim(-15., 15.)
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_aspect("equal")
 
     def update(frame):
-        rotation = agent_rotations[frame]
+        # Update offsets and angles for quiver arrows
+        quiver.set_offsets(positions[frame])
+        quiver.set_UVC(np.cos(rotations[frame]), np.sin(rotations[frame]))
+        return quiver,
 
-        orientation.set_UVC(np.cos(rotation), np.sin(rotation))
-        return influence, orientation
+    # Use FuncAnimation with blit=True for faster performance
+    anim = FuncAnimation(fig, update, frames=len(positions), blit=True, repeat=False)
+    return anim
 
-    animation = FuncAnimation(f, update, frames=frames, blit=True)
-    plt.close(f)
 
-    return animation
+
+
+# These are old. But I might add more so they become useful again.
+def inspect_rotation_influence(sim, agent_position, beacon_position):
+    f, ax = plt.subplots(1, 1, figsize=(8, 8))
+
+    # Add the static room boundary once
+    room = FancyBboxPatch(
+        (-5., -6.), 10., 12.,
+        boxstyle="round, pad=0.5, rounding_size=1.5",
+        alpha=0.1
+    )
+    ax.add_patch(room)
+
+    # Set axis limits and labels once
+    ax.set_xlim(-20., 20.)
+    ax.set_ylim(-20., 20.)
+    ax.set_title("")
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_aspect('equal')
+
+    ax.scatter(x=beacon_position[0], y=beacon_position[1], c='r', marker='o')
+
+    # Initialize the quiver object once
+    quiver = ax.quiver(
+        agent_position[0], agent_position[1],
+        np.cos(sim[0]), np.sin(sim[0])
+    )
+
+    def update(frame):
+        # Update offsets and angles for quiver arrows
+        # quiver.set_offsets(positions[frame])
+        quiver.set_UVC(np.cos(sim[frame]), np.sin(sim[frame]))
+        return quiver,
+
+    # Use FuncAnimation with blit=True for faster performance
+    anim = FuncAnimation(f, update, frames=len(sim), blit=True, repeat=False)
+    return anim
+
+def inspect_position_influence(sim, beacon_position):
+    f, ax = plt.subplots(1, 1, figsize=(8, 8))
+
+    # Add the static room boundary once
+    room = FancyBboxPatch(
+        (-5., -6.), 10., 12.,
+        boxstyle="round, pad=0.5, rounding_size=1.5",
+        alpha=0.1
+    )
+    ax.add_patch(room)
+
+    # Set axis limits and labels once
+    ax.set_xlim(-20., 20.)
+    ax.set_ylim(-20., 20.)
+    ax.set_title("")
+    ax.set_xlabel("")
+    ax.set_ylabel("")
+    ax.set_aspect('equal')
+
+    ax.scatter(x=beacon_position[0], y=beacon_position[1], c='r', marker='o')
+
+    # Initialize the quiver object once
+    quiver = ax.quiver(
+        sim[0, 0], sim[0, 1],
+        beacon_position[0] - sim[0, 0],
+        beacon_position[1] - sim[0, 1]
+    )
+
+    def update(frame):
+        # Update offsets and angles for quiver arrows
+        quiver.set_offsets(sim[frame])
+        # quiver.set_offsets(positions[frame])
+        quiver.set_UVC(beacon_position[0] - sim[frame, 0],
+                       beacon_position[1] - sim[frame, 1])
+        return quiver,
+
+    # Use FuncAnimation with blit=True for faster performance
+    anim = FuncAnimation(f, update, frames=len(sim), blit=True, repeat=False)
+    return anim
