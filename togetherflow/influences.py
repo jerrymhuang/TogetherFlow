@@ -138,9 +138,8 @@ def alignment_influence(
 
         # Add noise
         influence = averaged_rotation + (np.random.random() - 0.5) * noise
+
     return influence
-    # Decompose
-    # influence = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
 
 
 @njit

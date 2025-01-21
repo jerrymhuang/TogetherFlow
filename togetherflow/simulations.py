@@ -105,7 +105,8 @@ def move_to_beacon(
 
     for i in range(1, timesteps):
         direction = position_influence(positions[i - 1], beacon_position, noise)
-        positions[i] = positions[i - 1] + np.array([np.cos(direction), np.sin(direction)], dtype=np.float32) * drift * dt
+        motion_vector = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
+        positions[i] = positions[i - 1] + motion_vector * drift * dt
 
     return positions
 
@@ -115,9 +116,9 @@ def look_with_neighbors(
         agent_positions,
         agent_rotations,
         sensing_radius=1.5,
-        timesteps=100,
+        timesteps=1000,
         dt=0.1,
-        drift=0.5,
+        drift=1.,
         noise=0.1
 ):
     """
@@ -149,6 +150,11 @@ def look_with_neighbors(
     assert len(agent_positions) == len(agent_rotations)
     num_agents = len(agent_positions)
 
+    # Position update is a result of rotation update!
+
+    positions = np.zeros((timesteps, num_agents, 2), dtype=np.float32)
+    positions[0] = agent_positions
+
     rotations = np.zeros((timesteps, num_agents, 1), dtype=np.float32)
     rotations[0] = agent_rotations
 
@@ -156,17 +162,21 @@ def look_with_neighbors(
 
         for a in range(num_agents):
             direction = alignment_influence(
-                agent_positions[a],
-                agent_positions,
+                positions[t - 1, a],
+                positions[t - 1],
                 rotations[t - 1],
                 sensing_radius,
                 noise
             )
+            rotations[t, a] = direction
+            if direction == 0.0:
+                motion_vector = np.array([0.,0.], dtype=np.float32)
+            else:
+                motion_vector = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
 
-            rotations[t, a] = rotations[t - 1, a] + direction * drift * dt
+            positions[t, a] = positions[t - 1, a] + motion_vector * drift * dt
 
-    rotations = rotations % (2. * np.pi)
-    return rotations
+    return np.concatenate((positions, rotations), axis=-1)
 
 
 @njit
@@ -216,7 +226,8 @@ def move_with_neighbors(
                 noise
             )
 
-            positions[t, a] = positions[t - 1, a] + np.array([np.cos(direction), np.sin(direction)], dtype=np.float32) * drift * dt
+            motion_vector = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
+            positions[t, a] = positions[t - 1, a] + motion_vector * drift * dt
 
     return positions
 
@@ -352,8 +363,8 @@ def collective_motion(
             positions[t, a] = positions[t - 1, a] + move_direction * cohesion_drift * dt
             rotations[t, a] = rotations[t - 1, a] + look_direction * alignment_drift * dt
 
-    rotations = rotations % (2. * np.pi)
-    return positions, rotations
+    # rotations = rotations % (2. * np.pi)
+    return np.concatenate((positions, rotations), axis=-1)
 
 
 @njit
