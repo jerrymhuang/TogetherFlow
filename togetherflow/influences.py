@@ -194,10 +194,16 @@ def cohesion_influence(
 
     if num_neighbors != 0:
 
-        averaged_position = np.sum(neighbor_positions, axis=-1) / num_neighbors
+        averaged_position = np.sum(neighbor_positions, axis=0) / num_neighbors
+        averaged_position -= self_position
 
         influence = np.arctan2(
             averaged_position[1], averaged_position[0]
-        ) + (np.random.random() - 0.5) * noise
+        ) # + (np.random.random() - 0.5) * noise
 
     return influence
+
+
+# For debugging only
+if __name__ == "__main__":
+    pass

@@ -169,6 +169,7 @@ def look_with_neighbors(
                 noise
             )
             rotations[t, a] = direction
+
             if direction == 0.0:
                 motion_vector = np.array([0.,0.], dtype=np.float32)
             else:
@@ -220,14 +221,20 @@ def move_with_neighbors(
     for t in range(1, timesteps):
         for a in range(num_agents):
             direction = cohesion_influence(
-                agent_positions[a],
-                agent_positions,
+                positions[t-1, a],
+                positions[t-1],
                 sensing_radius,
                 noise
             )
 
-            motion_vector = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
+            if direction == 0.0:
+                motion_vector = np.array([0.,0.], dtype=np.float32)
+            else:
+                motion_vector = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
+            
             positions[t, a] = positions[t - 1, a] + motion_vector * drift * dt
+            # positions[t, a, 0] = positions[t - 1, a, 0] + np.cos(direction) * drift * dt
+            # positions[t, a, 1] = positions[t-1, a, 1] + np.sin(direction) * drift * dt
 
     return positions
 
@@ -438,6 +445,7 @@ def motion_simulation(
         # All drifts are the same, for now
         position_drift = theta[2]
         rotation_drift = theta[2]
+        # backup
         alignment_drift = theta[2]
         cohesion_drift = theta[2]
 
@@ -504,11 +512,13 @@ def motion_simulation(
 # Backup simulation for debugging purposes only
 @njit
 def look():
+    # for debugging rotation only
     raise NotImplementedError
 
 
 @njit
 def move():
+    # for debugging position only
     raise NotImplementedError
 
 

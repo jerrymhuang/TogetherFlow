@@ -157,7 +157,6 @@ def inspect_alignment_influence(sim):
     ax.set_ylabel("")
     ax.set_aspect('equal')
 
-    ax.scatter(x=sim[0, :, 0], y=sim[0, :, 1], c='r', marker='o')
 
     # Initialize the quiver object once
     quiver = ax.quiver(
@@ -165,11 +164,15 @@ def inspect_alignment_influence(sim):
         np.cos(sim[0,:,-1]), np.sin(sim[0,:,-1])
     )
 
+    scatter = ax.scatter(x=sim[0, :, 0], y=sim[0, :, 1], c='r', marker='o')
+
     def update(frame):
         # Update offsets and angles for quiver arrows
         quiver.set_offsets(sim[frame, :, 0:2])
         quiver.set_UVC(np.cos(sim[frame,:,-1]), np.sin(sim[frame,:,-1]))
-        return quiver,
+        scatter.set_offsets(sim[frame, :, 0:2])
+        # ax.scatter(x=sim[frame, :, 0], y=sim[frame, :, 1], c='r', marker='o')
+        return quiver, scatter
 
     # Use FuncAnimation with blit=True for faster performance
     anim = FuncAnimation(f, update, frames=len(sim), blit=True, repeat=False)
@@ -195,8 +198,13 @@ def inspect_cohesion_influence(sim):
     ax.set_xlabel("")
     ax.set_ylabel("")
     ax.set_aspect('equal')
+
+    scatter = ax.scatter(x=sim[0, :, 0], y=sim[0, :, 1], c='r', marker='o')
+
     def update(frame):
-        raise NotImplementedError
+        scatter.set_offsets(sim[frame, :, 0:2])
+        return scatter,
+
 
     # Use FuncAnimation with blit=True for faster performance
     anim = FuncAnimation(f, update, frames=len(sim), blit=True, repeat=False)
