@@ -199,7 +199,7 @@ def cohesion_influence(
 
         influence = np.arctan2(
             averaged_position[1], averaged_position[0]
-        ) # + (np.random.random() - 0.5) * noise
+        ) + (np.random.random() - 0.5) * noise
 
     return influence
 
