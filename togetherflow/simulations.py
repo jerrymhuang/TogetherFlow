@@ -113,13 +113,13 @@ def move_to_beacon(
 
 @njit
 def look_with_neighbors(
-        agent_positions,
-        agent_rotations,
-        sensing_radius=1.5,
-        timesteps=1000,
-        dt=0.1,
-        drift=1.,
-        noise=0.1
+    agent_positions,
+    agent_rotations,
+    sensing_radius=1.5,
+    timesteps=1000,
+    dt=0.1,
+    drift=1.,
+    noise=0.1
 ):
     """
     Simulate rotation (orientation) as influenced by the neighboring agents
@@ -303,8 +303,7 @@ def individual_motion(
 def collective_motion(
     agent_positions,
     agent_rotations,
-    alignment_drift=0.5,
-    cohesion_drift=0.5,
+    drift=0.5,
     alignment_noise=0.1,
     cohesion_noise=0.1,
     sensing_radius=1.5,
@@ -367,8 +366,14 @@ def collective_motion(
                 alignment_noise
             )
 
-            positions[t, a] = positions[t - 1, a] + move_direction * cohesion_drift * dt
-            rotations[t, a] = rotations[t - 1, a] + look_direction * alignment_drift * dt
+            if move_direction == 0.0 and look_direction == 0.0:
+                motion_vector = np.array([0., 0.], dtype=np.float32)
+            else:
+                direction = look_direction + move_direction
+                motion_vector = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
+
+            positions[t, a] = positions[t - 1, a] + motion_vector * drift * dt
+            rotations[t, a] = look_direction
 
     # rotations = rotations % (2. * np.pi)
     return np.concatenate((positions, rotations), axis=-1)
@@ -380,8 +385,7 @@ def motion_simulation(
     num_agents: int = 12,
     num_beacons: int = 10,
     room_size: np.ndarray = (8, 10),
-    position_drift: float = 0.5,
-    rotation_drift: float = 0.5,
+    drift: np.ndarray | float = 0.5,
     position_noise: float = 0.001,
     rotation_noise: float = 0.001,
     alignment_noise: float = 0.001,
@@ -449,6 +453,10 @@ def motion_simulation(
         alignment_drift = theta[2]
         cohesion_drift = theta[2]
 
+    else:
+        position_drift = drift
+        rotation_drift = drift
+
     # Initialization
     positions = np.zeros((timesteps, num_agents, 2), dtype=np.float32)
     rotations = np.zeros((timesteps, num_agents, 1), dtype=np.float32)
@@ -482,7 +490,7 @@ def motion_simulation(
                 rotation_noise
             )
 
-            follow_direction = cohesion_influence(
+            group_direction = cohesion_influence(
                 positions[t-1, a],
                 positions[t-1],
                 sensing_radius,
@@ -497,7 +505,7 @@ def motion_simulation(
                 alignment_noise
             )
 
-            position_shift = influence_weight * move_direction + (1 - influence_weight) * follow_direction
+            position_shift = influence_weight * move_direction + (1 - influence_weight) * group_direction
             rotation_shift = influence_weight * look_direction + (1 - influence_weight) * align_direction
 
             positions[t, a] = positions[t - 1, a] + np.array(
