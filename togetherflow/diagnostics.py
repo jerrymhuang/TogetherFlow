@@ -5,7 +5,7 @@ from matplotlib.animation import FuncAnimation, FFMpegWriter
 from matplotlib.patches import FancyBboxPatch
 
 
-def inspect_simulation(sim_data, export_video=False):
+def inspect_simulation(sim_data, beacons, export_video=False):
     positions = sim_data[:, :, 0:2]
     rotations = sim_data[:, :, -1]
 
@@ -32,6 +32,8 @@ def inspect_simulation(sim_data, export_video=False):
         positions[0, :, 0], positions[0, :, 1],
         np.cos(rotations[0]), np.sin(rotations[0])
     )
+
+    ax.scatter(x=beacons[0], y=beacons[1], c='r', marker='o')
 
     def update(frame):
         # Update offsets and angles for quiver arrows

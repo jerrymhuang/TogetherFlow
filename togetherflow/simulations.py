@@ -60,7 +60,7 @@ def look_at_beacon(
         # Calculate the relative angle between the agent's current orientation and
         # the direction of the beacon relative to the agent
         direction = rotation_influence(agent_position, rotations[t-1], beacon_position, noise)
-        rotations[t] = (rotations[t - 1] + direction * drift * dt)
+        rotations[t] = rotations[t - 1] + direction * drift * dt
 
     # Normalization
     rotations = rotations % (2. * np.pi)
@@ -249,7 +249,8 @@ def individual_motion(
     position_noise=0.1,
     rotation_noise=0.1,
     timesteps=1000,
-    dt=0.1
+    dt=0.1,
+    sequential=False
 ):
     """
     Simulate agent motion as influenced by the beacons only.
@@ -296,7 +297,7 @@ def individual_motion(
     # normalization
     rotations = rotations % (2. * np.pi)
 
-    return positions, rotations
+    return np.concatenate((positions, rotations), axis=-1)
 
 
 @njit
@@ -505,13 +506,13 @@ def motion_simulation(
                 alignment_noise
             )
 
-            position_shift = influence_weight * move_direction + (1 - influence_weight) * group_direction
-            rotation_shift = influence_weight * look_direction + (1 - influence_weight) * align_direction
+            motion_direction = influence_weight * move_direction + (1 - influence_weight) * group_direction
+            rotate_direction = influence_weight * look_direction + (1 - influence_weight) * align_direction
 
             positions[t, a] = positions[t - 1, a] + np.array(
-                [np.cos(position_shift), np.sin(position_shift)], dtype=np.float32
+                [np.cos(motion_direction), np.sin(motion_direction)], dtype=np.float32
             ) * position_drift * dt
-            rotations[t, a] = rotations[t - 1, a] + rotation_shift * rotation_drift * dt
+            rotations[t, a] = rotations[t-1, a] + influence_weight * look_direction * rotation_drift * dt
 
     rotations = rotations % (2. * np.pi)
     return np.concatenate((positions, rotations), axis=-1)
