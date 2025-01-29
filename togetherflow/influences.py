@@ -204,6 +204,32 @@ def cohesion_influence(
     return influence
 
 
+@njit
+def separation_influence(
+    self_position,
+    other_positions,
+    repulsion_radius=1.5,
+    noise=0.1
+):
+    num_agents = len(other_positions)
+
+    neighbor_positions = np.zeros((num_agents, 2), dtype=np.float32)
+
+    influence = 0.0
+    num_neighbors = 0
+
+    for i in range(len(other_positions)):
+        dx = other_positions[i, 0] - self_position[0]
+        dy = other_positions[i, 1] - self_position[1]
+        d = (dx ** 2 + dy ** 2) ** 0.5
+
+        if 0 < d <= repulsion_radius:
+            neighbor_positions[i] = other_positions[i]
+            num_neighbors += 1
+
+    return influence
+
+
 # For debugging only
 if __name__ == "__main__":
     pass

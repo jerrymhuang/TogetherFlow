@@ -5,11 +5,8 @@ from matplotlib.animation import FuncAnimation, FFMpegWriter
 from matplotlib.patches import FancyBboxPatch
 
 
-def inspect_simulation(sim_data, beacons, export_video=False):
-    positions = sim_data[:, :, 0:2]
-    rotations = sim_data[:, :, -1]
-
-    fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+def prepare_figure(figsize=(4, 4), lim=20.):
+    fig, ax = plt.subplots(1, 1, figsize=figsize)
 
     # Add the static room boundary once
     room = FancyBboxPatch(
@@ -20,12 +17,36 @@ def inspect_simulation(sim_data, beacons, export_video=False):
     ax.add_patch(room)
 
     # Set axis limits and labels once
-    ax.set_xlim(-20., 20.)
-    ax.set_ylim(-20., 20.)
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
     ax.set_title("")
     ax.set_xlabel("")
     ax.set_ylabel("")
     ax.set_aspect('equal')
+
+    return fig, ax
+
+
+def inspect_initialization(agent_positions, agent_rotations, beacon_positions):
+
+    fig, ax = prepare_figure(figsize=(8,8))
+
+    ax.quiver(
+        agent_positions[:, 0], agent_positions[:, 1],
+        np.cos(agent_rotations), np.sin(agent_rotations),
+        color="b"
+    )
+
+    ax.scatter(agent_positions[:, 0], agent_positions[:, 1], color='blue')
+    ax.scatter(beacon_positions[:, 0], beacon_positions[:, 1], color='red')
+
+    return fig
+
+def inspect_simulation(sim_data, beacons, export_video=False):
+    positions = sim_data[:, :, 0:2]
+    rotations = sim_data[:, :, -1]
+
+    fig, ax = prepare_figure()
 
     # Initialize the quiver object once
     quiver = ax.quiver(
@@ -33,7 +54,7 @@ def inspect_simulation(sim_data, beacons, export_video=False):
         np.cos(rotations[0]), np.sin(rotations[0])
     )
 
-    ax.scatter(x=beacons[0], y=beacons[1], c='r', marker='o')
+    ax.scatter(x=beacons[:,0], y=beacons[:,1], c='r', marker='o')
 
     def update(frame):
         # Update offsets and angles for quiver arrows
@@ -55,23 +76,7 @@ def inspect_simulation(sim_data, beacons, export_video=False):
 
 # These are old. But I might add more so they become useful again.
 def inspect_rotation_influence(sim, agent_position, beacon_position):
-    f, ax = plt.subplots(1, 1, figsize=(8, 8))
-
-    # Add the static room boundary once
-    room = FancyBboxPatch(
-        (-5., -6.), 10., 12.,
-        boxstyle="round, pad=0.5, rounding_size=1.5",
-        alpha=0.1
-    )
-    ax.add_patch(room)
-
-    # Set axis limits and labels once
-    ax.set_xlim(-20., 20.)
-    ax.set_ylim(-20., 20.)
-    ax.set_title("")
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_aspect('equal')
+    f, ax = prepare_figure()
 
     ax.scatter(x=beacon_position[0], y=beacon_position[1], c='r', marker='o')
 
@@ -94,23 +99,7 @@ def inspect_rotation_influence(sim, agent_position, beacon_position):
 
 
 def inspect_position_influence(sim, beacon_position):
-    f, ax = plt.subplots(1, 1, figsize=(8, 8))
-
-    # Add the static room boundary once
-    room = FancyBboxPatch(
-        (-5., -6.), 10., 12.,
-        boxstyle="round, pad=0.5, rounding_size=1.5",
-        alpha=0.1
-    )
-    ax.add_patch(room)
-
-    # Set axis limits and labels once
-    ax.set_xlim(-20., 20.)
-    ax.set_ylim(-20., 20.)
-    ax.set_title("")
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_aspect('equal')
+    f, ax = prepare_figure()
 
     ax.scatter(x=beacon_position[0], y=beacon_position[1], c='r', marker='o')
     ax.plot(sim[:,0], sim[:,1], c='g')
@@ -141,23 +130,7 @@ def inspect_position_influence(sim, beacon_position):
 
 def inspect_alignment_influence(sim):
 
-    f, ax = plt.subplots(1, 1, figsize=(8, 8))
-
-    # Add the static room boundary once
-    room = FancyBboxPatch(
-        (-5., -6.), 10., 12.,
-        boxstyle="round, pad=0.5, rounding_size=1.5",
-        alpha=0.1
-    )
-    ax.add_patch(room)
-
-    # Set axis limits and labels once
-    ax.set_xlim(-20., 20.)
-    ax.set_ylim(-20., 20.)
-    ax.set_title("")
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_aspect('equal')
+    f, ax = prepare_figure()
 
 
     # Initialize the quiver object once
@@ -183,23 +156,7 @@ def inspect_alignment_influence(sim):
 
 
 def inspect_cohesion_influence(sim):
-    f, ax = plt.subplots(1, 1, figsize=(8, 8))
-
-    # Add the static room boundary once
-    room = FancyBboxPatch(
-        (-5., -6.), 10., 12.,
-        boxstyle="round, pad=0.5, rounding_size=1.5",
-        alpha=0.1
-    )
-    ax.add_patch(room)
-
-    # Set axis limits and labels once
-    ax.set_xlim(-20., 20.)
-    ax.set_ylim(-20., 20.)
-    ax.set_title("")
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_aspect('equal')
+    f, ax = prepare_figure()
 
     scatter = ax.scatter(x=sim[0, :, 0], y=sim[0, :, 1], c='r', marker='o')
 
@@ -214,23 +171,7 @@ def inspect_cohesion_influence(sim):
 
 
 def inspect_individual_motion(sim):
-    f, ax = plt.subplots(1, 1, figsize=(8, 8))
-
-    # Add the static room boundary once
-    room = FancyBboxPatch(
-        (-5., -6.), 10., 12.,
-        boxstyle="round, pad=0.5, rounding_size=1.5",
-        alpha=0.1
-    )
-    ax.add_patch(room)
-
-    # Set axis limits and labels once
-    ax.set_xlim(-20., 20.)
-    ax.set_ylim(-20., 20.)
-    ax.set_title("")
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_aspect('equal')
+    f, ax = prepare_figure()
     def update(frame):
         raise NotImplementedError
 
@@ -240,23 +181,7 @@ def inspect_individual_motion(sim):
 
 
 def inspect_collective_motion(sim):
-    f, ax = plt.subplots(1, 1, figsize=(8, 8))
-
-    # Add the static room boundary once
-    room = FancyBboxPatch(
-        (-5., -6.), 10., 12.,
-        boxstyle="round, pad=0.5, rounding_size=1.5",
-        alpha=0.1
-    )
-    ax.add_patch(room)
-
-    # Set axis limits and labels once
-    ax.set_xlim(-20., 20.)
-    ax.set_ylim(-20., 20.)
-    ax.set_title("")
-    ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_aspect('equal')
+    f, ax = prepare_figure()
     def update(frame):
         raise NotImplementedError
 

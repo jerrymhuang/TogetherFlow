@@ -246,7 +246,7 @@ def individual_motion(
     beacon_position,
     position_drift=0.5,
     rotation_drift=0.5,
-    position_noise=0.1,
+    position_noise=0.5,
     rotation_noise=0.1,
     timesteps=1000,
     dt=0.1,
@@ -288,10 +288,22 @@ def individual_motion(
     rotations[0] = agent_rotation
 
     for t in range(1, timesteps):
-        move_direction = position_influence(positions[t-1], beacon_position, position_noise)
-        look_direction = rotation_influence(positions[t-1], rotations[t-1], beacon_position, rotation_noise)
+        move_direction = position_influence(
+            positions[t-1],
+            beacon_position,
+            position_noise
+        )
 
-        positions[t] = positions[t - 1] + move_direction * position_drift * dt
+        look_direction = rotation_influence(
+            positions[t-1],
+            rotations[t-1],
+            beacon_position,
+            rotation_noise
+        )
+
+        motion_vector = np.array([np.cos(move_direction), np.sin(move_direction)], dtype=np.float32)
+
+        positions[t] = positions[t - 1] + motion_vector * position_drift * dt
         rotations[t] = rotations[t - 1] + look_direction * rotation_drift * dt
 
     # normalization
