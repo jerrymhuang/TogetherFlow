@@ -172,6 +172,7 @@ def inspect_cohesion_influence(sim):
 
 def inspect_individual_motion(sim):
     f, ax = prepare_figure()
+
     def update(frame):
         raise NotImplementedError
 
