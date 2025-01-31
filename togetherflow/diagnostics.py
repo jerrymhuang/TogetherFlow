@@ -170,14 +170,29 @@ def inspect_cohesion_influence(sim):
     return anim
 
 
-def inspect_individual_motion(sim):
+def inspect_individual_motion(sim, beacon_positions):
+
     f, ax = prepare_figure()
 
+    ax.scatter(beacon_positions[:,0], beacon_positions[:,1], c='r')
+
+    # Initialize the quiver object once
+    quiver = ax.quiver(
+        sim[:, 0, 0], sim[:, 0, 1],
+        np.cos(sim[:,0,-1]), np.sin(sim[:,0,-1])
+    )
+
+    scatter = ax.scatter(x=sim[:, 0, 0], y=sim[:, 0, 1], c='b')
+
     def update(frame):
-        raise NotImplementedError
+        quiver.set_offsets(sim[:, frame, 0:2])
+        quiver.set_UVC(np.cos(sim[:, frame, -1]), np.sin(sim[:, frame, -1]))
+        scatter.set_offsets(sim[:, frame, 0:2])
+        # ax.scatter(x=sim[frame, :, 0], y=sim[frame, :, 1], c='r', marker='o')
+        return quiver, scatter
 
     # Use FuncAnimation with blit=True for faster performance
-    anim = FuncAnimation(f, update, frames=len(sim), blit=True, repeat=False)
+    anim = FuncAnimation(f, update, frames=sim.shape[1], blit=True, repeat=False)
     return anim
 
 
