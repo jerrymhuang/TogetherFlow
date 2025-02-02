@@ -5,6 +5,18 @@ from numba import njit
 
 @njit
 def complete_pooling_prior():
+    """
+    Function that samples the free parameters under a complete pooling scheme
+    based on their respective prior distributions.
+
+    Returns
+    -------
+    np.ndarray of the following sampled priors:
+    -   weight: the influence weight of the agent that emphasizes their tendency to move
+                individually or collectively.
+    -   radius: the sensing radius of the agent for calculating external influences.
+    -   v:      global movement velocity (drift rate) of the agent.
+    """
     weight = np.random.beta(2, 5)
     radius = np.random.beta(2, 2) * 5.
     v = np.random.beta(2, 2) * 2.
@@ -13,10 +25,19 @@ def complete_pooling_prior():
 
 @njit
 def hyperprior():
+    """
+    Function that samples the hyperpriors of the free parameters under a partial pooling scheme.
+
+    Returns
+    -------
+    np.ndarray of the following sampled priors:
+    -   alpha_w : alpha parameter of the Beta distribution for the sampled weights.
+    -   beta_w  : beta parameter of the Beta distribution for the sampled weights.
+    """
 
     hyperprior = np.zeros(2, dtype=np.float32)
-    alpha_w = np.random.uniform(1, 5)
-    beta_w = np.random.uniform(1, 5)
+    alpha_w = np.random.random() * 4 + 1
+    beta_w = np.random.random() * 4 + 1
 
     hyperprior[0] = alpha_w
     hyperprior[1] = beta_w
@@ -26,9 +47,30 @@ def hyperprior():
 
 @njit
 def partial_pooling_prior(hyperprior, num_agents=12):
-    alpha_w, beta_w = hyperprior[0], hyperprior[1]
+    """
+    Function that samples the free parameters under a partial pooling scheme.
 
-    weights = np.random.beta(alpha_w, beta_w, size=(num_agents, 1))
+    Parameters
+    ----------
+    hyperprior : np.ndarray of size (2)
+        The sampled hyperpriors
+    num_agents : int, default=12
+        The number of agents to sample
+
+    Returns
+    -------
+    np.ndarray of the following sampled priors:
+    -   weights :   the influence weights of the individual agents that
+                    emphasizes their tendency to move individually or
+                    collectively.
+    -   radius  :   the sensing radius of the agent for calculating
+                    external influences. This radius needs to be sampled
+                    globally for the simulation to function properly.
+    -   v       :   global movement velocity (drift rate) of the agent.
+    """
+
+    alpha_w, beta_w = hyperprior[0], hyperprior[1]
+    weights = np.random.beta(alpha_w, beta_w, size=(num_agents, 1)).astype(np.float32)
 
     global_prior = np.zeros((2, 1), dtype=np.float32)
     radius = np.random.beta(2, 2) * 5.
@@ -37,7 +79,7 @@ def partial_pooling_prior(hyperprior, num_agents=12):
     global_prior[0] = radius
     global_prior[1] = v
 
-    return np.concatenate((weights, global_prior), axis=-1)
+    return np.concatenate((weights, global_prior))
 
 
 @njit
