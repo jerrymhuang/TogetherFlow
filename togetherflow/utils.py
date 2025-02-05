@@ -4,6 +4,38 @@ from numba import njit
 
 
 @njit
+def count_neighbors(self_position, other_positions, sensing_radius=1.5):
+    """
+    Helper function that counts the number of neighbors
+
+    Parameters
+    ----------
+    self_position   : np.ndarray of size (2)
+        The position of the agent itself
+    other_positions : np.ndarray of size (num_agents, 2)
+        The positions of all agents
+    sensing_radius  : float, default: 1.5
+        The sensing radius of the agent
+
+    Returns
+    -------
+    num_neighbors   : int, default: 0
+        The number of neighbors within the agent's sensing radius.
+    """
+
+    num_neighbors = 0
+
+    for i in range(len(other_positions)):
+        dx = other_positions[i, 0] - self_position[0]
+        dy = other_positions[i, 1] - self_position[1]
+        d = (dx ** 2 + dy ** 2) ** 0.5
+
+        if d <= sensing_radius and d > 0:
+            num_neighbors += 1
+
+    return num_neighbors
+
+@njit
 def bound(direction):
 
     if direction > np.pi:
