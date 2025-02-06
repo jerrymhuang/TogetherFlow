@@ -24,7 +24,7 @@ def complete_pooling_prior():
 
 
 @njit
-def hyperprior():
+def partial_pooling_hyper_prior():
     """
     Function that samples the hyperpriors of the free parameters under a partial pooling scheme.
 
@@ -36,6 +36,7 @@ def hyperprior():
     """
 
     hyperprior = np.zeros(2, dtype=np.float32)
+
     alpha_w = np.random.random() * 4 + 1
     beta_w = np.random.random() * 4 + 1
 
@@ -46,7 +47,7 @@ def hyperprior():
 
 
 @njit
-def partial_pooling_prior(hyperprior, num_agents=12):
+def partial_pooling_local_prior(hyperprior, num_agents=12):
     """
     Function that samples the free parameters under a partial pooling scheme.
 
@@ -72,14 +73,21 @@ def partial_pooling_prior(hyperprior, num_agents=12):
     alpha_w, beta_w = hyperprior[0], hyperprior[1]
     weights = np.random.beta(alpha_w, beta_w, size=(num_agents, 1)).astype(np.float32)
 
-    global_prior = np.zeros((2, 1), dtype=np.float32)
+    return weights
+
+
+@njit
+def partial_pooling_shared_prior():
+
+    shared_prior = np.zeros((2, 1), dtype=np.float32)
+
+    weight = np.random.beta(2, 5)
     radius = np.random.beta(2, 2) * 5.
-    v = np.random.beta(2, 2) * 2.
 
-    global_prior[0] = radius
-    global_prior[1] = v
+    shared_prior[0] = weight
+    shared_prior[1] = radius
 
-    return np.concatenate((weights, global_prior))
+    return shared_prior
 
 
 @njit
