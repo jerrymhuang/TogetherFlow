@@ -71,7 +71,7 @@ def partial_pooling_local_prior(hyperprior, num_agents=12):
     """
 
     alpha_w, beta_w = hyperprior[0], hyperprior[1]
-    weights = np.random.beta(alpha_w, beta_w, size=(num_agents, 1)).astype(np.float32)
+    weights = np.random.beta(alpha_w, beta_w, size=(num_agents, )).astype(np.float32)
 
     return weights
 
@@ -79,7 +79,7 @@ def partial_pooling_local_prior(hyperprior, num_agents=12):
 @njit
 def partial_pooling_shared_prior():
 
-    shared_prior = np.zeros((2, 1), dtype=np.float32)
+    shared_prior = np.zeros((2,), dtype=np.float32)
 
     weight = np.random.beta(2, 5)
     radius = np.random.beta(2, 2) * 5.
