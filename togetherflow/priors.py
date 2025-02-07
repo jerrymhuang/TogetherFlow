@@ -35,7 +35,7 @@ def partial_pooling_hyper_prior():
     -   beta_w  : beta parameter of the Beta distribution for the sampled weights.
     """
 
-    hyperprior = np.zeros(2, dtype=np.float32)
+    hyperprior = np.zeros((2, ), dtype=np.float32)
 
     alpha_w = np.random.random() * 4 + 1
     beta_w = np.random.random() * 4 + 1
@@ -70,7 +70,7 @@ def partial_pooling_local_prior(hyperprior, num_agents=12):
     -   v       :   global movement velocity (drift rate) of the agent.
     """
 
-    alpha_w, beta_w = hyperprior[0], hyperprior[1]
+    alpha_w, beta_w = hyperprior[0].item(), hyperprior[1].item()
     weights = np.random.beta(alpha_w, beta_w, size=(num_agents, )).astype(np.float32)
 
     return weights
@@ -79,7 +79,7 @@ def partial_pooling_local_prior(hyperprior, num_agents=12):
 @njit
 def partial_pooling_shared_prior():
 
-    shared_prior = np.zeros((2,), dtype=np.float32)
+    shared_prior = np.zeros((2, ), dtype=np.float32)
 
     weight = np.random.beta(2, 5)
     radius = np.random.beta(2, 2) * 5.
