@@ -35,13 +35,18 @@ def partial_pooling_hyper_prior():
     -   beta_w  : beta parameter of the Beta distribution for the sampled weights.
     """
 
-    hyperprior = np.zeros((2, ), dtype=np.float32)
+    hyperprior = np.zeros((4, ), dtype=np.float32)
 
+    # This is redundant, but doing so for clarity.
     alpha_w = np.random.random() * 4 + 1
     beta_w = np.random.random() * 4 + 1
+    alpha_r = np.random.random() * 4 + 1
+    beta_r = np.random.random() * 4 + 1
 
     hyperprior[0] = alpha_w
     hyperprior[1] = beta_w
+    hyperprior[2] = alpha_r
+    hyperprior[3] = beta_r
 
     return hyperprior
 
@@ -71,21 +76,24 @@ def partial_pooling_local_prior(hyperprior, num_agents=12):
     """
 
     alpha_w, beta_w = hyperprior[0].item(), hyperprior[1].item()
-    weights = np.random.beta(alpha_w, beta_w, size=(num_agents, )).astype(np.float32)
+    weights = np.random.beta(alpha_w, beta_w, size=(num_agents, 1)).astype(np.float32)
 
-    return weights
+    alpha_v, beta_v = hyperprior[2].item(), hyperprior[3].item()
+    drifts = np.random.beta(alpha_v, beta_v, size=(num_agents, 1)).astype(np.float32)
+
+    return np.concatenate((weights, drifts), axis=-1)
 
 
 @njit
 def partial_pooling_shared_prior():
 
-    shared_prior = np.zeros((2, ), dtype=np.float32)
+    shared_prior = np.zeros((1, ), dtype=np.float32)
 
-    weight = np.random.beta(2, 5)
+    # weight = np.random.beta(2, 5)
     radius = np.random.beta(2, 2) * 5.
 
-    shared_prior[0] = weight
-    shared_prior[1] = radius
+    # shared_prior[0] = weight
+    shared_prior[0] = radius
 
     return shared_prior
 
