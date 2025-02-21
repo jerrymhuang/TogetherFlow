@@ -1,4 +1,4 @@
-from .initializations import (
+from .initial_conditions import (
     initialize_agents,
     initialize_beacons
 )

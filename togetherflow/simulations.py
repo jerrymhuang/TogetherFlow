@@ -2,7 +2,7 @@ import numpy as np
 
 from numba import njit
 
-from initializations import (
+from initial_conditions import (
     initialize_agents,
     initialize_beacons
 )
