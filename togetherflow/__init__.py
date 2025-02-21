@@ -3,6 +3,11 @@ from .initial_conditions import (
     initialize_beacons
 )
 
+from .boundary_conditions import (
+    bound_agent_position,
+    bound_agent_rotation
+)
+
 from .influences import (
     rotation_influence,
     position_influence,

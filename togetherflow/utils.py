@@ -35,18 +35,6 @@ def count_neighbors(self_position, other_positions, sensing_radius=1.5):
 
     return num_neighbors
 
-@njit
-def bound(direction):
-
-    if direction > np.pi:
-        d = direction - 2 * np.pi
-    elif direction < -np.pi:
-        d = direction + 2 * np.pi
-    else:
-        d = direction
-
-    return d
-
 
 @njit
 def world2local(
