@@ -26,7 +26,6 @@ def bound_agent_position(
         distance_to_room_center = agent_position[0] ** 2 + agent_position[1] ** 2
         if distance_to_room_center > room_size ** 2:
             bounded_position = agent_position / distance_to_room_center * room_size
-
     else:
         if np.abs(agent_position[0]) > room_size[0] * 0.5:
             bounded_position[0] = agent_position[0] + boundary_noise
