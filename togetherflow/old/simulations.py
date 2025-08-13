@@ -2,12 +2,12 @@ import numpy as np
 
 from numba import njit
 
-from initial_conditions import (
+from togetherflow.old.initial_conditions import (
     initialize_agents,
     initialize_beacons
 )
 
-from influences import (
+from togetherflow.old.influences import (
     position_influence,
     rotation_influence,
     alignment_influence,
