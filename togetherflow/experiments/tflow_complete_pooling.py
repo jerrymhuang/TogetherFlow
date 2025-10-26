@@ -2,15 +2,12 @@ import os
 
 os.environ["KERAS_BACKEND"] = "jax"
 
-import json
-import time
 import pathlib
 import logging
 
 import keras
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 import bayesflow as bf
 
 from src import TogetherFlowSimulator, GRU, SummaryNet, TogetherNet
@@ -31,7 +28,8 @@ if __name__ == "__main__":
 
     # Define simulator
     simulator = TogetherFlowSimulator(
-        num_beacons=49,
+        num_agents=49,
+        num_beacons=4,
         dt=0.1,
         time_horizon=60.,
         downsample_factor=1.
@@ -46,11 +44,20 @@ if __name__ == "__main__":
     )
 
     # Define networks
+    # summary_net = SummaryNet(keras.Sequential([
+    #     keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
+    #     keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
+    #     keras.layers.LSTM(512),
+    #     keras.layers.Dense(64)
+    # ]))
     summary_net = SummaryNet(keras.Sequential([
-        keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
-        keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
+        keras.layers.Conv1D(filters=32, kernel_size=3, strides=2, activation="swish"),
+        keras.layers.Conv1D(filters=32, kernel_size=3, strides=2, activation="swish"),
+        keras.layers.LayerNormalization(),
         keras.layers.LSTM(512),
-        keras.layers.Dense(64)
+        keras.layers.LayerNormalization(),
+        keras.layers.Dropout(0.2),
+        keras.layers.Dense(64, activation="swish"),
     ]))
     # summary_net = GRU()
     # summary_net = TogetherNet()
@@ -74,26 +81,28 @@ if __name__ == "__main__":
         training_set   = load_npz_dict(train_path)
         validation_set = load_npz_dict(val_path)
     else:
-        training_set   = workflow.simulate((10000,))
-        validation_set = workflow.simulate((200,))
+        logging.info("Generating training set...")
+        training_set   = workflow.simulate((20000,))
+        logging.info("Generating validation set...")
+        validation_set = workflow.simulate((500,))
         save_npz_dict(training_set, train_path)
         save_npz_dict(validation_set, val_path)
-        meta = dict(
-            version="v1",
-            created=time.strftime("%Y-%m-%d %H:%M:%S"),
-            simulator="TogetherFlowSimulator",
-            train_batch_shape="(10000,)",
-            val_batch_shape="(200,)",
-        )
-        meta_path.parent.mkdir(parents=True, exist_ok=True)
-        meta_path.write_text(json.dumps(meta, indent=2))
+        # meta = dict(
+        #     version="v1",
+        #     created=time.strftime("%Y-%m-%d %H:%M:%S"),
+        #     simulator="TogetherFlowSimulator",
+        #     train_batch_shape="(10000,)",
+        #     val_batch_shape="(200,)",
+        # )
+        # meta_path.parent.mkdir(parents=True, exist_ok=True)
+        # meta_path.write_text(json.dumps(meta, indent=2))
 
     # Start training
     history = workflow.fit_offline(
         data=training_set,
         validation_data=validation_set,
         batch_size=32,
-        epochs=10
+        epochs=500
     )
 
     # Diagnostics

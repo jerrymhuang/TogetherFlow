@@ -1,12 +1,12 @@
 import numpy as np
-from numba import njit
+from numba import njit, prange
 
 from .initialization import initialize_agents, initialize_beacons
 from .influences import combined_influences
 from .priors import complete_pooling_prior
 
 
-@njit
+@njit(parallel=True)
 def simulator_fun(
         theta=None,
         num_agents: int = 12,
@@ -77,7 +77,7 @@ def simulator_fun(
     beacon_positions = initialize_beacons(num_beacons)
 
     # Simulation loop
-    for t in range(1, num_timesteps):
+    for t in prange(1, num_timesteps):
         ps, rs, num_neighbors = combined_influences(
             agent_positions=positions[t - 1],
             agent_rotations=rotations[t - 1],
