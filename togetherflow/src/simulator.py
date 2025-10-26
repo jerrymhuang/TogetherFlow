@@ -2,7 +2,7 @@ import numpy as np
 from numba import njit
 
 from .initialization import initialize_agents, initialize_beacons
-from .influences import internal_influence, external_influence, combined_influences
+from .influences import combined_influences
 from .priors import complete_pooling_prior
 
 
@@ -111,7 +111,7 @@ class TogetherFlowSimulator:
                  dt: float = 0.001,
                  internal_focus: float = 0.1,
                  time_horizon: float = 30.,
-                 downsample: bool = True,
+                 downsample: bool = False,
                  downsample_factor: int = 10
                  ):
         self.num_agents = num_agents
@@ -158,9 +158,9 @@ class TogetherFlowSimulator:
         neighbors = samples[:,:,:,3].reshape((B, T, A))
 
         return dict(
-            w = thetas[:,0],
-            r = thetas[:,1],
-            v = thetas[:,2],
+            w = thetas[:,0][..., None],
+            r = thetas[:,1][..., None],
+            v = thetas[:,2][..., None],
             positions = positions,
             rotations = rotations,
             neighbors = neighbors

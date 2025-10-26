@@ -1,2 +1,2 @@
 from .simulator import TogetherFlowSimulator
-from .networks import GRU
+from .networks import GRU, SummaryNet
