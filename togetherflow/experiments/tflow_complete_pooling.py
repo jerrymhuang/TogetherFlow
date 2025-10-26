@@ -1,7 +1,6 @@
 import os
 
-if "KERAS_BACKEND" not in os.environ:
-    os.environ["KERAS_BACKEND"] = "jax"
+os.environ["KERAS_BACKEND"] = "jax"
 
 import json
 import time
@@ -14,7 +13,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import bayesflow as bf
 
-from src import TogetherFlowSimulator, GRU, SummaryNet
+from src import TogetherFlowSimulator, GRU, SummaryNet, TogetherNet
 
 
 def save_npz_dict(d, path):
@@ -34,7 +33,7 @@ if __name__ == "__main__":
     simulator = TogetherFlowSimulator(
         num_beacons=49,
         dt=0.1,
-        time_horizon=100.,
+        time_horizon=60.,
         downsample_factor=1.
     )
 
@@ -47,15 +46,15 @@ if __name__ == "__main__":
     )
 
     # Define networks
-    # summary_net = SummaryNet(keras.Sequential([
-    #     keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="elu"),
-    #     keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="elu"),
-    #     keras.layers.LSTM(512),
-    #     keras.layers.Dense(64)
-    # ]))
+    summary_net = SummaryNet(keras.Sequential([
+        keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
+        keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
+        keras.layers.LSTM(512),
+        keras.layers.Dense(64)
+    ]))
     # summary_net = GRU()
-    summary_net = bf.networks.TimeSeriesTransformer(summary_dim=64)
-    inference_net = bf.networks.DiffusionModel()
+    # summary_net = TogetherNet()
+    inference_net = bf.networks.FlowMatching()
 
     # Set up workflow
     workflow = bf.workflows.BasicWorkflow(
@@ -76,7 +75,7 @@ if __name__ == "__main__":
         validation_set = load_npz_dict(val_path)
     else:
         training_set   = workflow.simulate((10000,))
-        validation_set = workflow.simulate((500,))
+        validation_set = workflow.simulate((200,))
         save_npz_dict(training_set, train_path)
         save_npz_dict(validation_set, val_path)
         meta = dict(
@@ -84,7 +83,7 @@ if __name__ == "__main__":
             created=time.strftime("%Y-%m-%d %H:%M:%S"),
             simulator="TogetherFlowSimulator",
             train_batch_shape="(10000,)",
-            val_batch_shape="(500,)",
+            val_batch_shape="(200,)",
         )
         meta_path.parent.mkdir(parents=True, exist_ok=True)
         meta_path.write_text(json.dumps(meta, indent=2))
@@ -94,7 +93,7 @@ if __name__ == "__main__":
         data=training_set,
         validation_data=validation_set,
         batch_size=32,
-        epochs=100
+        epochs=10
     )
 
     # Diagnostics
