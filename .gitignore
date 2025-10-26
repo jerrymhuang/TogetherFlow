@@ -163,6 +163,9 @@ cython_debug/
 .idea/
 .idea/TogetherFlow.iml
 .idea/misc.xml
+*.iml
+*.xml
+uv.lock
 
 *.npz
 meta.json
