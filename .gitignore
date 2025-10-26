@@ -163,3 +163,8 @@ cython_debug/
 .idea/
 .idea/TogetherFlow.iml
 .idea/misc.xml
+
+*.npz
+meta.json
+
+*.png
