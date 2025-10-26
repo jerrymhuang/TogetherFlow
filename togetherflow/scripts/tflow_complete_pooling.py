@@ -47,13 +47,14 @@ if __name__ == "__main__":
     )
 
     # Define networks
-    summary_net = SummaryNet(keras.Sequential([
-        keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="elu"),
-        keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="elu"),
-        keras.layers.LSTM(512),
-        keras.layers.Dense(64)
-    ]))
+    # summary_net = SummaryNet(keras.Sequential([
+    #     keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="elu"),
+    #     keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="elu"),
+    #     keras.layers.LSTM(512),
+    #     keras.layers.Dense(64)
+    # ]))
     # summary_net = GRU()
+    summary_net = bf.networks.TimeSeriesTransformer(summary_dim=64)
     inference_net = bf.networks.DiffusionModel()
 
     # Set up workflow
@@ -65,6 +66,7 @@ if __name__ == "__main__":
     )
 
     outdir = pathlib.Path("dataset")
+    figure_dir = pathlib.Path("figures")
     train_path = outdir / "train.npz"
     val_path   = outdir / "val.npz"
     meta_path  = outdir / "meta.json"
@@ -73,8 +75,8 @@ if __name__ == "__main__":
         training_set   = load_npz_dict(train_path)
         validation_set = load_npz_dict(val_path)
     else:
-        training_set   = workflow.simulate((1000,))
-        validation_set = workflow.simulate((50,))
+        training_set   = workflow.simulate((10000,))
+        validation_set = workflow.simulate((500,))
         save_npz_dict(training_set, train_path)
         save_npz_dict(validation_set, val_path)
         meta = dict(
@@ -91,8 +93,8 @@ if __name__ == "__main__":
     history = workflow.fit_offline(
         data=training_set,
         validation_data=validation_set,
-        batch_size=64,
-        epochs=50
+        batch_size=32,
+        epochs=100
     )
 
     # Diagnostics
@@ -108,7 +110,7 @@ if __name__ == "__main__":
     )
 
     for plot_name, fig in figures.items():
-        fig_path = "figures" / f"tflow_complete_pooling_{plot_name}.png"
+        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}.png"
         fig.savefig(fig_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
         logging.info(f"Saved diagnostic plot to {fig_path}")
