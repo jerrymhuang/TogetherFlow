@@ -52,12 +52,12 @@ if __name__ == "__main__":
         print(sample["summary_variables"].shape)
 
     # Define networks
-    summary_net = keras.Sequential([
+    summary_net = SummaryNet(keras.Sequential([
         keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
         keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
         keras.layers.LSTM(512),
         keras.layers.Dense(64)
-    ])
+    ]))
 
     # summary_net = HierarchicalNetwork([
     #     keras.layers.TimeDistributed(keras.layers.LSTM(512)),
