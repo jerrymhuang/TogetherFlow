@@ -70,6 +70,9 @@ def simulator_fun(
     positions = np.zeros((num_timesteps, num_agents, 2))
     rotations = np.zeros((num_timesteps, num_agents,))
     neighbors = np.zeros((num_timesteps, num_agents,))
+    distances = np.zeros((num_timesteps, num_agents,))
+    angular_velocities = np.zeros((num_timesteps, num_agents,))
+    neighbor_fluctuations = np.zeros((num_timesteps, num_agents,))
     positions[0] = initial_positions
     rotations[0] = initial_rotations
 
@@ -78,7 +81,7 @@ def simulator_fun(
 
     # Simulation loop
     for t in prange(1, num_timesteps):
-        ps, rs, num_neighbors = combined_influences(
+        ps, rs, num_neighbors, average_dists = combined_influences(
             agent_positions=positions[t - 1],
             agent_rotations=rotations[t - 1],
             beacon_positions=beacon_positions,
@@ -92,14 +95,27 @@ def simulator_fun(
         # Store positions and orientations for each time step
         positions[t] = ps
         rotations[t] = rs
-        neighbors[t] = np.sqrt(num_neighbors)
+        neighbors[t] = num_neighbors
+        distances[t] = average_dists
+        angular_velocities[t] = rs - rotations[t - 1]
+        neighbor_fluctuations[t] = num_neighbors - neighbors[t - 1]
 
     neighbors[0] = neighbors[1]
 
     rotations = rotations[:, :, np.newaxis]
     neighbors = neighbors[:, :, np.newaxis]
+    distances = distances[:, :, np.newaxis]
+    angular_velocities = angular_velocities[:, :, np.newaxis]
+    neighbor_fluctuations = neighbor_fluctuations[:, :, np.newaxis]
 
-    return np.concatenate((positions, rotations, neighbors), axis=-1)
+    return np.concatenate((
+        positions,
+        rotations,
+        neighbors,
+        distances,
+        angular_velocities,
+        neighbor_fluctuations
+    ), axis=-1)
 
 
 class TogetherFlowSimulator:
@@ -160,10 +176,16 @@ class TogetherFlowSimulator:
             positions = samples[:,:,:,0:2].reshape((B, T, A*2))
             rotations = samples[:,:,:,2].reshape((B, T, A))
             neighbors = samples[:,:,:,3].reshape((B, T, A))
+            distances = samples[:,:,:,4].reshape((B, T, A))
+            angular_velocities = samples[:,:,:,5].reshape((B, T, A))
+            neighbor_fluctuations = samples[:,:,:,6].reshape((B, T, A))
         else:
             positions = samples[:,:,:,0:2]
             rotations = samples[:,:,:,2][..., None]
             neighbors = samples[:,:,:,3][..., None]
+            distances = samples[:,:,:,4][..., None]
+            angular_velocities = samples[:,:,:,5][..., None]
+            neighbor_fluctuations = samples[:,:,:,6][..., None]
 
         return dict(
             w = thetas[:,0][..., None],
@@ -171,5 +193,8 @@ class TogetherFlowSimulator:
             v = thetas[:,2][..., None],
             positions = positions,
             rotations = rotations,
-            neighbors = neighbors
+            neighbors = neighbors,
+            distances = distances,
+            angular_velocities = angular_velocities,
+            neighbor_fluctuations = neighbor_fluctuations
         )

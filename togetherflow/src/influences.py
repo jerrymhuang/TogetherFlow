@@ -161,10 +161,11 @@ def combined_influences(
     new_agent_positions = np.zeros((num_agents, 2))
     new_agent_rotations = np.zeros((num_agents,))
     num_neighbors = np.zeros((num_agents,))
+    average_dists = np.zeros((num_agents,))
 
     for i in range(num_agents):
 
-        num_neighbors[i] = count_neighbors(agent_positions[i], agent_positions)
+        num_neighbors[i], average_dists[i] = count_neighbors(agent_positions[i], agent_positions)
 
         # Generate the ddm vector for the agent based on its closest beacon
         distance_to_beacon = []
@@ -208,4 +209,4 @@ def combined_influences(
 
         new_agent_positions[i] = bound_agent_position(new_agent_positions[i], room_size=room_size)
 
-    return new_agent_positions, new_agent_rotations, num_neighbors
+    return new_agent_positions, new_agent_rotations, num_neighbors, average_dists

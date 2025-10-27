@@ -44,7 +44,7 @@ if __name__ == "__main__":
         bf.adapters.Adapter()
         .convert_dtype("float64", "float32")
         .concatenate(['w', 'r', 'v'], into="inference_variables")
-        .concatenate(["positions", "rotations", "neighbors"], into="summary_variables", axis=-1)
+        .concatenate(["positions", "rotations", "neighbors", "distances"], into="summary_variables", axis=-1)
     )
 
     if debug:
@@ -117,7 +117,7 @@ if __name__ == "__main__":
         data=training_set,
         validation_data=validation_set,
         batch_size=32,
-        epochs=100
+        epochs=10
     )
 
     # Diagnostics

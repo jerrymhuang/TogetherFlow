@@ -23,6 +23,7 @@ def count_neighbors(self_position, other_positions, sensing_radius=1.5):
     """
 
     num_neighbors = 0
+    distances = []
 
     for i in range(len(other_positions)):
         dx = other_positions[i, 0] - self_position[0]
@@ -30,9 +31,12 @@ def count_neighbors(self_position, other_positions, sensing_radius=1.5):
         d = (dx ** 2 + dy ** 2) ** 0.5
 
         if d <= sensing_radius and d > 0:
+            distances.append(d)
             num_neighbors += 1
 
-    return num_neighbors
+    average_distance = np.mean(np.array(distances)) if len(distances) > 0.0 else 0.0
+
+    return num_neighbors, average_distance
 
 
 @njit
