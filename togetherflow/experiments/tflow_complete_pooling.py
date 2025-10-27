@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import bayesflow as bf
 
-from src import TogetherFlowSimulator, GRU, SummaryNet, TogetherNet
+from src import TogetherFlowSimulator, GRU, SummaryNet, TogetherNet, HierarchicalNetwork
 
 
 def save_npz_dict(d, path):
@@ -26,13 +26,17 @@ def load_npz_dict(path):
 
 if __name__ == "__main__":
 
+    debug = False
+    gather = True
+
     # Define simulator
     simulator = TogetherFlowSimulator(
         num_agents=49,
         num_beacons=4,
         dt=0.1,
         time_horizon=60.,
-        downsample_factor=1.
+        downsample_factor=1.,
+        gather=gather
     )
 
     # Define adapter
@@ -43,13 +47,23 @@ if __name__ == "__main__":
         .concatenate(["positions", "rotations", "neighbors"], into="summary_variables", axis=-1)
     )
 
+    if debug:
+        sample = adapter(simulator.sample((1,)))
+        print(sample["summary_variables"].shape)
+
     # Define networks
-    summary_net = SummaryNet(keras.Sequential([
+    summary_net = keras.Sequential([
         keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
         keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
         keras.layers.LSTM(512),
         keras.layers.Dense(64)
-    ]))
+    ])
+
+    # summary_net = HierarchicalNetwork([
+    #     keras.layers.TimeDistributed(keras.layers.LSTM(512)),
+    #     keras.layers.Lambda(lambda x: keras.ops.mean(x, axis=1))
+    # ])
+
     # summary_net = SummaryNet(keras.Sequential([
     #     keras.layers.Conv1D(filters=32, kernel_size=3, strides=2, activation="swish"),
     #     keras.layers.Conv1D(filters=32, kernel_size=3, strides=2, activation="swish"),
@@ -61,7 +75,7 @@ if __name__ == "__main__":
     # ]))
 
     # summary_net = GRU()
-    # summary_net = TogetherNet()
+
     inference_net = bf.networks.FlowMatching()
 
     # Set up workflow
@@ -74,8 +88,8 @@ if __name__ == "__main__":
 
     outdir = pathlib.Path("dataset")
     figure_dir = pathlib.Path("figures")
-    train_path = outdir / "train.npz"
-    val_path   = outdir / "val.npz"
+    train_path = outdir / ("train.npz" if gather else "train_0.npz")
+    val_path   = outdir / ("val.npz" if gather else "val_0.npz")
     meta_path  = outdir / "meta.json"
 
     if train_path.exists() and val_path.exists():
@@ -103,7 +117,7 @@ if __name__ == "__main__":
         data=training_set,
         validation_data=validation_set,
         batch_size=32,
-        epochs=200
+        epochs=100
     )
 
     # Diagnostics

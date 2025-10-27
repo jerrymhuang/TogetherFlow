@@ -4,10 +4,10 @@ from .utils import count_neighbors, bound_agent_position
 
 @njit
 def external_influence(
-        agent_position,
-        beacon_position,
-        noise=False,
-        noise_amplitude=0.01
+    agent_position,
+    beacon_position,
+    noise=False,
+    noise_amplitude=0.01
 ):
     """
     Generate a drift-diffusion vector in 2D space for a single agent
@@ -49,12 +49,12 @@ def external_influence(
 
 @njit
 def internal_influence(
-        self_position,
-        other_positions,
-        other_rotations,
-        sensing_radius=1.5,
-        focus=0.01,
-        noise=False
+    self_position,
+    other_positions,
+    other_rotations,
+    sensing_radius=1.5,
+    focus=0.01,
+    noise=False
 ):
     """
     Generate an influence vector for a single agent
@@ -101,7 +101,7 @@ def internal_influence(
     if noise:
         deviation = (np.random.random() - 0.5) * focus
     else:
-        deviation = np.random.vonmises(mu=0., kappa=4.) * focus
+        deviation = np.random.normal(loc=0.0, scale=focus)
     direction = averaged_rotation + deviation
 
     v = np.array([np.cos(direction), np.sin(direction)], dtype=np.float32)
@@ -111,15 +111,15 @@ def internal_influence(
 
 @njit
 def combined_influences(
-        agent_positions: np.ndarray = None,
-        agent_rotations: np.ndarray = None,
-        beacon_positions: np.ndarray = None,
-        room_size: tuple = (8, 10),
-        velocity: float = 1.0,
-        sensing_radius: float = 2.5,
-        dt: float = 0.1,
-        influence_weight: float = 0.5,
-        internal_focus: float = 0.1
+    agent_positions: np.ndarray = None,
+    agent_rotations: np.ndarray = None,
+    beacon_positions: np.ndarray = None,
+    room_size: tuple = (8, 10),
+    velocity: float = 1.0,
+    sensing_radius: float = 2.5,
+    dt: float = 0.1,
+    influence_weight: float = 0.5,
+    internal_focus: float = 0.1
 ):
     """
     Update the positions and orientations of a single agent

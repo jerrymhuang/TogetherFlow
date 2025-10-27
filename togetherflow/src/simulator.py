@@ -8,16 +8,16 @@ from .priors import complete_pooling_prior
 
 @njit(parallel=True)
 def simulator_fun(
-        theta=None,
-        num_agents: int = 12,
-        num_beacons: int = 1,
-        room_size: tuple = (8, 10),
-        velocity: float = 1.0,
-        dt: float = 0.001,
-        influence_weight: float = 0.7,
-        sensing_radius: float = 10.0,
-        internal_focus: float = 0.1,
-        time_horizon: float = 30.
+    theta=None,
+    num_agents: int = 12,
+    num_beacons: int = 1,
+    room_size: tuple = (8, 10),
+    velocity: float = 1.0,
+    dt: float = 0.001,
+    influence_weight: float = 0.7,
+    sensing_radius: float = 10.0,
+    internal_focus: float = 0.1,
+    time_horizon: float = 30.
 ):
     """
     Run the simulation and store the time series of positions and orientations of agents.
@@ -104,16 +104,18 @@ def simulator_fun(
 
 class TogetherFlowSimulator:
 
-    def __init__(self,
-                 num_agents: int = 12,
-                 num_beacons: int = 1,
-                 room_size: tuple = (8, 10),
-                 dt: float = 0.001,
-                 internal_focus: float = 0.1,
-                 time_horizon: float = 30.,
-                 downsample: bool = False,
-                 downsample_factor: int = 10
-                 ):
+    def __init__(
+        self,
+        num_agents: int = 12,
+        num_beacons: int = 1,
+        room_size: tuple = (8, 10),
+        dt: float = 0.001,
+        internal_focus: float = 0.1,
+        time_horizon: float = 30.,
+        downsample: bool = False,
+        downsample_factor: int = 10,
+        gather: bool = True,
+    ):
         self.num_agents = num_agents
         self.num_beacons = num_beacons
         self.room_size = room_size
@@ -123,6 +125,7 @@ class TogetherFlowSimulator:
         self.downsample = downsample
         self.downsample_factor = downsample_factor
         self.num_timesteps = int(time_horizon / dt)
+        self.gather = gather
 
 
     def sample(self, batch_shape: int | tuple = (1,)) -> dict[str, np.ndarray]:
@@ -153,9 +156,14 @@ class TogetherFlowSimulator:
 
         B, T, A, D = samples.shape
 
-        positions = samples[:,:,:,0:2].reshape((B, T, A*2))
-        rotations = samples[:,:,:,2].reshape((B, T, A))
-        neighbors = samples[:,:,:,3].reshape((B, T, A))
+        if self.gather:
+            positions = samples[:,:,:,0:2].reshape((B, T, A*2))
+            rotations = samples[:,:,:,2].reshape((B, T, A))
+            neighbors = samples[:,:,:,3].reshape((B, T, A))
+        else:
+            positions = samples[:,:,:,0:2]
+            rotations = samples[:,:,:,2][..., None]
+            neighbors = samples[:,:,:,3][..., None]
 
         return dict(
             w = thetas[:,0][..., None],
