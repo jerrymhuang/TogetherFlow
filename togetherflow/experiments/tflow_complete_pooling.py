@@ -44,21 +44,22 @@ if __name__ == "__main__":
     )
 
     # Define networks
-    # summary_net = SummaryNet(keras.Sequential([
-    #     keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
-    #     keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
-    #     keras.layers.LSTM(512),
-    #     keras.layers.Dense(64)
-    # ]))
     summary_net = SummaryNet(keras.Sequential([
-        keras.layers.Conv1D(filters=32, kernel_size=3, strides=2, activation="swish"),
-        keras.layers.Conv1D(filters=32, kernel_size=3, strides=2, activation="swish"),
-        keras.layers.LayerNormalization(),
+        keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
+        keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
         keras.layers.LSTM(512),
-        keras.layers.LayerNormalization(),
-        keras.layers.Dropout(0.2),
-        keras.layers.Dense(64, activation="swish"),
+        keras.layers.Dense(64)
     ]))
+    # summary_net = SummaryNet(keras.Sequential([
+    #     keras.layers.Conv1D(filters=32, kernel_size=3, strides=2, activation="swish"),
+    #     keras.layers.Conv1D(filters=32, kernel_size=3, strides=2, activation="swish"),
+    #     keras.layers.LayerNormalization(),
+    #     keras.layers.LSTM(512),
+    #     keras.layers.LayerNormalization(),
+    #     keras.layers.Dropout(0.2),
+    #     keras.layers.Dense(64, activation="swish"),
+    # ]))
+
     # summary_net = GRU()
     # summary_net = TogetherNet()
     inference_net = bf.networks.FlowMatching()
@@ -102,7 +103,7 @@ if __name__ == "__main__":
         data=training_set,
         validation_data=validation_set,
         batch_size=32,
-        epochs=500
+        epochs=200
     )
 
     # Diagnostics

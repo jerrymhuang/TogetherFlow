@@ -92,7 +92,7 @@ def simulator_fun(
         # Store positions and orientations for each time step
         positions[t] = ps
         rotations[t] = rs
-        neighbors[t] = num_neighbors
+        neighbors[t] = np.sqrt(num_neighbors)
 
     neighbors[0] = neighbors[1]
 
