@@ -89,7 +89,7 @@ def internal_influence(
         dy = other_positions[i, 1] - self_position[1]
         d = (dx ** 2 + dy ** 2) ** 0.5
 
-        if d <= sensing_radius and d > 0:
+        if d <= sensing_radius:
             neighbor_rotations.append(other_rotations[i])
 
     if len(neighbor_rotations) == 0:

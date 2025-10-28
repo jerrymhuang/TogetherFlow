@@ -1,7 +1,7 @@
 import numpy as np
 from numba import njit
 
-from utils import world2local, relative_angle
+from .utils import world2local, relative_angle
 # bound
 
 

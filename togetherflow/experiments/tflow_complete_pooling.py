@@ -44,7 +44,14 @@ if __name__ == "__main__":
         bf.adapters.Adapter()
         .convert_dtype("float64", "float32")
         .concatenate(['w', 'r', 'v'], into="inference_variables")
-        .concatenate(["positions", "rotations", "neighbors", "distances"], into="summary_variables", axis=-1)
+        .concatenate([
+            "positions",
+            "rotations",
+            "neighbors",
+            "distances",
+            "angular_velocities",
+            "neighbor_fluctuations"
+        ], into="summary_variables", axis=-1)
     )
 
     if debug:
@@ -97,9 +104,9 @@ if __name__ == "__main__":
         validation_set = load_npz_dict(val_path)
     else:
         logging.info("Generating training set...")
-        training_set   = workflow.simulate((20000,))
+        training_set   = workflow.simulate((5000,))
         logging.info("Generating validation set...")
-        validation_set = workflow.simulate((500,))
+        validation_set = workflow.simulate((300,))
         save_npz_dict(training_set, train_path)
         save_npz_dict(validation_set, val_path)
         # meta = dict(
