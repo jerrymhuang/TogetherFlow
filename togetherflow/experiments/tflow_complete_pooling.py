@@ -43,7 +43,7 @@ if __name__ == "__main__":
     adapter = (
         bf.adapters.Adapter()
         .convert_dtype("float64", "float32")
-        .concatenate(['w', 'r', 'v'], into="inference_variables")
+        .concatenate(['w', 'r', 'v', "noise"], into="inference_variables")
         .concatenate([
             "positions",
             "rotations",
@@ -61,9 +61,17 @@ if __name__ == "__main__":
     # Define networks
     summary_net = SummaryNet(keras.Sequential([
         keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
+        keras.layers.LayerNormalization(),
+        keras.layers.SpatialDropout1D(0.1),
+
         keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
-        keras.layers.LSTM(512),
-        keras.layers.Dense(64)
+        keras.layers.LayerNormalization(),
+        keras.layers.SpatialDropout1D(0.1),
+
+        keras.layers.LSTM(512, return_sequences=True, recurrent_dropout=0.1),
+        keras.layers.GlobalAveragePooling1D(),
+        keras.layers.Dropout(0.1),
+        keras.layers.Dense(64, activation="swish"),
     ]))
 
     # summary_net = HierarchicalNetwork([
@@ -82,8 +90,9 @@ if __name__ == "__main__":
     # ]))
 
     # summary_net = GRU()
-
-    inference_net = bf.networks.FlowMatching()
+    inference_net = bf.networks.CouplingFlow(depth=6, transform="spline")
+    #inference_net = bf.networks.FlowMatching()
+    # inference_net = bf.networks.DiffusionModel()
 
     # Set up workflow
     workflow = bf.workflows.BasicWorkflow(
@@ -95,8 +104,8 @@ if __name__ == "__main__":
 
     outdir = pathlib.Path("dataset")
     figure_dir = pathlib.Path("figures")
-    train_path = outdir / ("train.npz" if gather else "train_0.npz")
-    val_path   = outdir / ("val.npz" if gather else "val_0.npz")
+    train_path = outdir / ("train_r.npz" if gather else "train_0.npz")
+    val_path   = outdir / ("val_r.npz" if gather else "val_0.npz")
     meta_path  = outdir / "meta.json"
 
     if train_path.exists() and val_path.exists():
@@ -104,9 +113,9 @@ if __name__ == "__main__":
         validation_set = load_npz_dict(val_path)
     else:
         logging.info("Generating training set...")
-        training_set   = workflow.simulate((5000,))
+        training_set   = workflow.simulate((10000,))
         logging.info("Generating validation set...")
-        validation_set = workflow.simulate((300,))
+        validation_set = workflow.simulate((500,))
         save_npz_dict(training_set, train_path)
         save_npz_dict(validation_set, val_path)
         # meta = dict(
@@ -124,15 +133,15 @@ if __name__ == "__main__":
         data=training_set,
         validation_data=validation_set,
         batch_size=32,
-        epochs=10
+        epochs=100
     )
 
     # Diagnostics
-    fig_size = (12, 4)
+    fig_size = (16, 4)
 
     figures = workflow.plot_default_diagnostics(
         test_data=validation_set,
-        variable_names=["w", "r", "v"],
+        variable_names=[r"$w$", r"$r$", r"$v$", r"$\eta$"],
         loss_kwargs={"figsize": fig_size, "label_fontsize": 12},
         recovery_kwargs={"figsize": fig_size, "label_fontsize": 12},
         calibration_ecdf_kwargs={"figsize": fig_size, "legend_fontsize": 8, "difference": True, "label_fontsize": 12},
@@ -140,7 +149,7 @@ if __name__ == "__main__":
     )
 
     for plot_name, fig in figures.items():
-        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}.png"
+        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_cf6.png"
         fig.savefig(fig_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
         logging.info(f"Saved diagnostic plot to {fig_path}")
