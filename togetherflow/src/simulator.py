@@ -55,7 +55,7 @@ def simulator_fun(
         influence_weight = theta[0]
         sensing_radius = theta[1]
         velocity = theta[2]
-        # internal_focus = theta[3]
+        internal_focus = theta[3]
 
     num_timesteps = int(time_horizon / dt)
 
@@ -158,8 +158,8 @@ class TogetherFlowSimulator:
                 num_beacons=self.num_beacons,
                 room_size=self.room_size,
                 dt=self.dt,
-                internal_focus=self.internal_focus,
-                time_horizon=self.time_horizon
+                time_horizon=self.time_horizon,
+                # internal_focus=self.internal_focus,
             )
             thetas.append(theta)
             samples.append(sim)
@@ -191,6 +191,7 @@ class TogetherFlowSimulator:
             w = thetas[:,0][..., None],
             r = thetas[:,1][..., None],
             v = thetas[:,2][..., None],
+            noise = thetas[:,3][..., None],
             positions = positions,
             rotations = rotations,
             neighbors = neighbors,
