@@ -162,6 +162,7 @@ def combined_influences(
     new_agent_rotations = np.zeros((num_agents,))
     num_neighbors = np.zeros((num_agents,))
     average_dists = np.zeros((num_agents,))
+    #max_dists = np.zeros((num_agents,))
 
     for i in range(num_agents):
 
@@ -209,4 +210,4 @@ def combined_influences(
 
         new_agent_positions[i] = bound_agent_position(new_agent_positions[i], room_size=room_size)
 
-    return new_agent_positions, new_agent_rotations, num_neighbors, average_dists
+    return new_agent_positions, new_agent_rotations, num_neighbors, average_dists#, max_dists
