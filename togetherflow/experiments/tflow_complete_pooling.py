@@ -150,7 +150,7 @@ if __name__ == "__main__":
 
     metrics = workflow.compute_default_diagnostics(test_data=validation_set)
     print(metrics)
-    metrics.to_csv("../results/tflow_complete_pooling_fm100_3e4.csv", index=False)
+    metrics.to_csv("./results/tflow_complete_pooling_fm100_3e4.csv", index=False)
 
     color = "#4e2a84"
 
