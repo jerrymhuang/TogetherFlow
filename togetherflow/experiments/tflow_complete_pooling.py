@@ -108,13 +108,13 @@ if __name__ == "__main__":
         adapter=adapter,
         summary_network=summary_net,
         inference_network=inference_net,
-        checkpoint_filepath="../checkpoints/tflow_complete_pooling_flow_matching_3e4"
+        checkpoint_filepath="../checkpoints/tflow_complete_pooling_flow_matching_3e3"
     )
 
     outdir = pathlib.Path("dataset")
     figure_dir = pathlib.Path("figures")
-    train_path = outdir / ("train_3e4.npz" if gather else "train_0.npz")
-    val_path   = outdir / ("val_3e4.npz" if gather else "val_0.npz")
+    train_path = outdir / ("train_3e3.npz" if gather else "train_0.npz")
+    val_path   = outdir / ("val_3e3.npz" if gather else "val_0.npz")
     meta_path  = outdir / "meta.json"
 
     if train_path.exists() and val_path.exists():
@@ -122,7 +122,7 @@ if __name__ == "__main__":
         validation_set = load_npz_dict(val_path)
     else:
         logging.info("Generating training set...")
-        training_set   = workflow.simulate((30000,))
+        training_set   = workflow.simulate((3000,))
         logging.info("Generating validation set...")
         validation_set = workflow.simulate((300,))
         save_npz_dict(training_set, train_path)
@@ -150,21 +150,27 @@ if __name__ == "__main__":
 
     metrics = workflow.compute_default_diagnostics(test_data=validation_set)
     print(metrics)
-    metrics.to_csv("./results/tflow_complete_pooling_fm100_3e4.csv", index=False)
+    metrics.to_csv("./results/tflow_complete_pooling_fm100_3e3.csv", index=False)
 
-    color = "#4e2a84"
+    color = "#6969ff"
 
     figures = workflow.plot_default_diagnostics(
         test_data=validation_set,
         variable_names=[r"$w$", r"$r$", r"$v$", r"$\eta$"],
-        loss_kwargs={"figsize": fig_size, "label_fontsize": 12},
+        loss_kwargs={"figsize": fig_size, "label_fontsize": 12, "train_color": color},
         recovery_kwargs={"figsize": fig_size, "label_fontsize": 12, "color": color},
-        calibration_ecdf_kwargs={"figsize": fig_size, "legend_fontsize": 8, "difference": True, "label_fontsize": 12, "color": color},
+        calibration_ecdf_kwargs={
+            "figsize": fig_size,
+            "legend_fontsize": 8,
+            "difference": True,
+            "label_fontsize": 12,
+            "rank_ecdf_color": color
+        },
         z_score_contraction_kwargs={"figsize": fig_size, "label_fontsize": 12, "color": color},
     )
 
     for plot_name, fig in figures.items():
-        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_fm100_3e4.png"
+        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_fm100_3e3.png"
         fig.savefig(fig_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
         logging.info(f"Saved diagnostic plot to {fig_path}")
