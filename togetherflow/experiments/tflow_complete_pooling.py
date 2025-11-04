@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
     # summary_net = GRU()
     # inference_net = bf.networks.CouplingFlow(depth=2, transform="spline")
-    inference_net = bf.networks.FlowMatching()
+    inference_net = bf.networks.FlowMatching(dropout=0.1)
     # inference_net = bf.networks.DiffusionModel()
 
     # Set up workflow
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         adapter=adapter,
         summary_network=summary_net,
         inference_network=inference_net,
-        checkpoint_filepath="../checkpoints/tflow_complete_pooling_flow_matching_3e3"
+        checkpoint_filepath="../checkpoints/tflow_complete_pooling_flow_matching_3e3_100"
     )
 
     outdir = pathlib.Path("dataset")
@@ -159,6 +159,13 @@ if __name__ == "__main__":
         variable_names=[r"$w$", r"$r$", r"$v$", r"$\eta$"],
         loss_kwargs={"figsize": fig_size, "label_fontsize": 12, "train_color": color},
         recovery_kwargs={"figsize": fig_size, "label_fontsize": 12, "color": color},
+        coverage_kwargs={
+            "figsize": fig_size,
+            "color": color,
+            "label_fontsize": 12,
+            "legend_fontsize": 8,
+            "difference": True
+        },
         calibration_ecdf_kwargs={
             "figsize": fig_size,
             "legend_fontsize": 8,
