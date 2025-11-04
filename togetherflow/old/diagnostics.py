@@ -11,7 +11,7 @@ def prepare_figure(figsize=(4, 4), lim=20.):
     # Add the static room boundary once
     room = FancyBboxPatch(
         (-5., -6.), 10., 12.,
-        boxstyle="round, pad=0.5, rounding_size=1.5",
+        boxstyle="round, pad=0., rounding_size=1.5",
         alpha=0.1
     )
     ax.add_patch(room)

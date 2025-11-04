@@ -38,7 +38,8 @@ def initialize_agents(
 @njit
 def initialize_beacons(
         num_beacons=10,
-        room_sensing_range=50.
+        room_sensing_range=50.,
+        room_size: np.ndarray = (10., 8.),
 ):
     """
     Initialize beacons following a uniform distribution scaled to the room's sensing boundary
@@ -55,6 +56,14 @@ def initialize_beacons(
     beacons      : np.ndarray of shape (num_beacons, 2)
         Initial positions of the beacons.
     """
+    beacons = np.zeros((num_beacons, 2))
+    n = 0
 
-    beacons = (np.random.random(size=(num_beacons, 2)) - 0.5) * room_sensing_range
+    while n < num_beacons:
+        beacon = (np.random.random(size=2) - 0.5) * room_sensing_range
+        beacon_to_center = (beacon[0] ** 2 + beacon[1] ** 2)
+        room_to_center = ((room_size[0] * 0.5) ** 2 + (room_size[1] * 0.5) ** 2)
+        if beacon_to_center > room_to_center:
+            beacons[n] = beacon
+            n += 1
     return beacons.astype(np.float32)

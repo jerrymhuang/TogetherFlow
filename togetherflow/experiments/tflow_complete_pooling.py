@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import bayesflow as bf
 
-from src import TogetherFlowSimulator, GRU, SummaryNet, TogetherNet, HierarchicalNetwork
+from src import TogetherFlowSimulator, SummaryNet, TogetherNet, HierarchicalNetwork
 
 
 def save_npz_dict(d, path):
@@ -75,13 +75,9 @@ if __name__ == "__main__":
     #     keras.layers.Dense(64, activation="swish"),
     # ]))
 
-    summary_net = SummaryNet(keras.Sequential([
-        keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
-        keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
-        keras.layers.LSTM(512),
-        keras.layers.Dense(64),
-    ]))
+    summary_net = SummaryNet()
 
+    # summary_net = bf.networks.TimeSeriesNetwork(dropout=0.2)
     # summary_net = HierarchicalNetwork([
     #     keras.layers.TimeDistributed(keras.layers.LSTM(512)),
     #     keras.layers.Lambda(lambda x: keras.ops.mean(x, axis=1))
@@ -99,7 +95,7 @@ if __name__ == "__main__":
 
     # summary_net = GRU()
     # inference_net = bf.networks.CouplingFlow(depth=2, transform="spline")
-    inference_net = bf.networks.FlowMatching(dropout=0.1)
+    inference_net = bf.networks.FlowMatching(subnet_kwargs={"widths": (128,)*3})
     # inference_net = bf.networks.DiffusionModel()
 
     # Set up workflow
@@ -108,13 +104,13 @@ if __name__ == "__main__":
         adapter=adapter,
         summary_network=summary_net,
         inference_network=inference_net,
-        checkpoint_filepath="../checkpoints/tflow_complete_pooling_flow_matching_3e3_100"
+        checkpoint_filepath="../checkpoints/tflow_complete_pooling_flow_matching_3e4_200"
     )
 
     outdir = pathlib.Path("dataset")
     figure_dir = pathlib.Path("figures")
-    train_path = outdir / ("train_3e3.npz" if gather else "train_0.npz")
-    val_path   = outdir / ("val_3e3.npz" if gather else "val_0.npz")
+    train_path = outdir / ("train_3e4.npz" if gather else "train_0.npz")
+    val_path   = outdir / ("val_3e4.npz" if gather else "val_0.npz")
     meta_path  = outdir / "meta.json"
 
     if train_path.exists() and val_path.exists():
@@ -122,7 +118,7 @@ if __name__ == "__main__":
         validation_set = load_npz_dict(val_path)
     else:
         logging.info("Generating training set...")
-        training_set   = workflow.simulate((3000,))
+        training_set   = workflow.simulate((30000,))
         logging.info("Generating validation set...")
         validation_set = workflow.simulate((300,))
         save_npz_dict(training_set, train_path)
@@ -142,7 +138,7 @@ if __name__ == "__main__":
         data=training_set,
         validation_data=validation_set,
         batch_size=64,
-        epochs=100
+        epochs=200
     )
 
     # Diagnostics
@@ -150,9 +146,9 @@ if __name__ == "__main__":
 
     metrics = workflow.compute_default_diagnostics(test_data=validation_set)
     print(metrics)
-    metrics.to_csv("./results/tflow_complete_pooling_fm100_3e3.csv", index=False)
+    metrics.to_csv("./results/tflow_complete_pooling_fm100_3e4.csv", index=False)
 
-    color = "#6969ff"
+    color = "#4e2a84"
 
     figures = workflow.plot_default_diagnostics(
         test_data=validation_set,
@@ -177,7 +173,7 @@ if __name__ == "__main__":
     )
 
     for plot_name, fig in figures.items():
-        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_fm100_3e3.png"
+        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_fm100_3e4.png"
         fig.savefig(fig_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
         logging.info(f"Saved diagnostic plot to {fig_path}")
