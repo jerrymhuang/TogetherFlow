@@ -5,12 +5,11 @@ os.environ["KERAS_BACKEND"] = "jax"
 import pathlib
 import logging
 
-import keras
 import numpy as np
 import matplotlib.pyplot as plt
 import bayesflow as bf
 
-from src import TogetherFlowSimulator, SummaryNet, TogetherNet, HierarchicalNetwork
+from src import TogetherFlowSimulator, SummaryNet
 
 
 def save_npz_dict(d, path):
@@ -28,6 +27,7 @@ if __name__ == "__main__":
 
     debug = False
     gather = True
+    epochs = 100
 
     # Define simulator
     simulator = TogetherFlowSimulator(
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         adapter=adapter,
         summary_network=summary_net,
         inference_network=inference_net,
-        checkpoint_filepath="../checkpoints/tflow_complete_pooling_flow_matching_3e4_200"
+        checkpoint_filepath=f"../checkpoints/tflow_complete_pooling_flow_matching_3e4_{epochs}"
     )
 
     outdir = pathlib.Path("dataset")
@@ -123,22 +123,13 @@ if __name__ == "__main__":
         validation_set = workflow.simulate((300,))
         save_npz_dict(training_set, train_path)
         save_npz_dict(validation_set, val_path)
-        # meta = dict(
-        #     version="v1",
-        #     created=time.strftime("%Y-%m-%d %H:%M:%S"),
-        #     simulator="TogetherFlowSimulator",
-        #     train_batch_shape="(10000,)",
-        #     val_batch_shape="(200,)",
-        # )
-        # meta_path.parent.mkdir(parents=True, exist_ok=True)
-        # meta_path.write_text(json.dumps(meta, indent=2))
 
     # Start training
     history = workflow.fit_offline(
         data=training_set,
         validation_data=validation_set,
         batch_size=64,
-        epochs=200
+        epochs=epochs
     )
 
     # Diagnostics
@@ -146,7 +137,7 @@ if __name__ == "__main__":
 
     metrics = workflow.compute_default_diagnostics(test_data=validation_set)
     print(metrics)
-    metrics.to_csv("./results/tflow_complete_pooling_fm100_3e4.csv", index=False)
+    metrics.to_csv(f"./results/tflow_complete_pooling_fm{epochs}_3e4.csv", index=False)
 
     color = "#4e2a84"
 
@@ -160,12 +151,12 @@ if __name__ == "__main__":
             "color": color,
             "label_fontsize": 12,
             "legend_fontsize": 8,
-            "difference": True
+            "difference": False
         },
         calibration_ecdf_kwargs={
             "figsize": fig_size,
             "legend_fontsize": 8,
-            "difference": True,
+            "difference": False,
             "label_fontsize": 12,
             "rank_ecdf_color": color
         },
@@ -173,7 +164,7 @@ if __name__ == "__main__":
     )
 
     for plot_name, fig in figures.items():
-        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_fm100_3e4.png"
+        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_fm{epochs}_3e4.png"
         fig.savefig(fig_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
         logging.info(f"Saved diagnostic plot to {fig_path}")
