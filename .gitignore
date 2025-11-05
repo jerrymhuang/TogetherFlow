@@ -169,3 +169,11 @@ uv.lock
 
 *.npz
 meta.json
+
+# Keras models
+*model.keras
+*model.weights.h5
+
+# Checkpoint metadata
+*config.json
+*metadata.json
