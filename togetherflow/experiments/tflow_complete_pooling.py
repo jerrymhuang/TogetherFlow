@@ -25,9 +25,10 @@ def load_npz_dict(path):
 
 if __name__ == "__main__":
 
-    debug = False
+    debug = True
     gather = True
     epochs = 100
+    return_summary = True
 
     # Define simulator
     simulator = TogetherFlowSimulator(
@@ -36,8 +37,16 @@ if __name__ == "__main__":
         dt=0.1,
         time_horizon=60.,
         downsample_factor=1.,
-        gather=gather
+        gather=gather,
+        return_summary=False,
     )
+
+    sim = simulator.sample(batch_size=2)
+
+    print(sim["w"].shape)
+    print(sim["positions"].shape)
+    print(sim["rotations"].shape)
+    print(np.concatenate((sim["positions"], sim["rotations"]), axis=2).shape)
 
     # Define adapter
     adapter = (
@@ -56,7 +65,7 @@ if __name__ == "__main__":
     )
 
     if debug:
-        sample = adapter(simulator.sample((1,)))
+        sample = adapter(simulator.sample(2))
         print(sample["summary_variables"].shape)
 
     # Define networks
@@ -104,67 +113,73 @@ if __name__ == "__main__":
         adapter=adapter,
         summary_network=summary_net,
         inference_network=inference_net,
-        checkpoint_filepath=f"../checkpoints/tflow_complete_pooling_flow_matching_3e4_{epochs}"
+        checkpoint_filepath=f"../checkpoints/tflow_complete_pooling_bdlstm_fm_3e4_{epochs}"
     )
 
     outdir = pathlib.Path("dataset")
     figure_dir = pathlib.Path("figures")
-    train_path = outdir / ("train_3e4.npz" if gather else "train_0.npz")
-    val_path   = outdir / ("val_3e4.npz" if gather else "val_0.npz")
+    train_path = outdir / ("train_3e4s.npz" if gather else "train_0.npz")
+    val_path   = outdir / ("val_3e4s.npz" if gather else "val_0.npz")
     meta_path  = outdir / "meta.json"
 
     if train_path.exists() and val_path.exists():
-        training_set   = load_npz_dict(train_path)
+        # training_set   = load_npz_dict(train_path)
         validation_set = load_npz_dict(val_path)
     else:
-        logging.info("Generating training set...")
-        training_set   = workflow.simulate((30000,))
+        # logging.info("Generating training set...")
+        # training_set   = workflow.simulate((30000,))
         logging.info("Generating validation set...")
-        validation_set = workflow.simulate((300,))
-        save_npz_dict(training_set, train_path)
+        validation_set = workflow.simulate(300)
+        # save_npz_dict(training_set, train_path)
         save_npz_dict(validation_set, val_path)
 
-    # Start training
-    history = workflow.fit_offline(
-        data=training_set,
-        validation_data=validation_set,
-        batch_size=64,
-        epochs=epochs
+    # # Start training
+    # history = workflow.fit_offline(
+    #     data=training_set,
+    #     validation_data=validation_set,
+    #     batch_size=64,
+    #     epochs=epochs
+    # )
+
+    history = workflow.fit_online(
+        epochs=100,
+        batch_size=32,
+        num_batches_per_epoch=100
     )
 
     # Diagnostics
     fig_size = (16, 4)
 
-    metrics = workflow.compute_default_diagnostics(test_data=validation_set)
+    metrics = workflow.compute_default_diagnostics(test_data=300)
     print(metrics)
-    metrics.to_csv(f"./results/tflow_complete_pooling_fm{epochs}_3e4.csv", index=False)
+    metrics.to_csv(f"./results/tflow_complete_pooling_bdfm{epochs}_3e4.csv", index=False)
 
     color = "#4e2a84"
 
     figures = workflow.plot_default_diagnostics(
-        test_data=validation_set,
+        test_data=300,
         variable_names=[r"$w$", r"$r$", r"$v$", r"$\eta$"],
         loss_kwargs={"figsize": fig_size, "label_fontsize": 12, "train_color": color},
         recovery_kwargs={"figsize": fig_size, "label_fontsize": 12, "color": color},
         coverage_kwargs={
             "figsize": fig_size,
             "color": color,
-            "label_fontsize": 12,
-            "legend_fontsize": 8,
+            "label_fontsize": 16,
+            "legend_fontsize": 11,
             "difference": False
         },
         calibration_ecdf_kwargs={
             "figsize": fig_size,
-            "legend_fontsize": 8,
+            "legend_fontsize": 16,
             "difference": False,
-            "label_fontsize": 12,
+            "label_fontsize": 11,
             "rank_ecdf_color": color
         },
         z_score_contraction_kwargs={"figsize": fig_size, "label_fontsize": 12, "color": color},
     )
 
     for plot_name, fig in figures.items():
-        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_fm{epochs}_3e4.png"
+        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_bdfm{epochs}_3e4.png"
         fig.savefig(fig_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
         logging.info(f"Saved diagnostic plot to {fig_path}")

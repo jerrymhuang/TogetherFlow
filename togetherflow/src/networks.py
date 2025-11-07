@@ -14,9 +14,11 @@ class SummaryNet(bf.networks.SummaryNetwork):
             keras.layers.GroupNormalization(groups=8),
             keras.layers.Conv1D(filters=32, kernel_size=2, strides=2, activation="swish"),
             keras.layers.GroupNormalization(groups=8),
-            keras.layers.LSTM(256, dropout=0.2),
+            keras.layers.Bidirectional(keras.layers.LSTM(256, dropout=0.2)),
             keras.layers.Dense(16)
         ])
+
+        # self.base = bf.networks.DeepSet()
 
     def build(self, input_shape):
         self.base.build(input_shape)
