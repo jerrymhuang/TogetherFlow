@@ -28,6 +28,7 @@ if __name__ == "__main__":
     debug = True
     gather = True
     epochs = 100
+    return_summary = True
 
     # Define simulator
     simulator = TogetherFlowSimulator(
@@ -37,7 +38,7 @@ if __name__ == "__main__":
         time_horizon=60.,
         downsample_factor=1.,
         gather=gather,
-        return_summary=False,
+        return_summary=True,
     )
 
     sim = simulator.sample(batch_size=200)
@@ -83,7 +84,7 @@ if __name__ == "__main__":
     #     keras.layers.Dense(64, activation="swish"),
     # ]))
 
-    summary_net = SummaryNet()
+    summary_net = bf.networks.DeepSet()
 
     # summary_net = bf.networks.TimeSeriesNetwork(dropout=0.2)
     # summary_net = HierarchicalNetwork([
@@ -104,7 +105,7 @@ if __name__ == "__main__":
     # summary_net = GRU()
     # inference_net = bf.networks.CouplingFlow(depth=2, transform="spline")
     inference_net = bf.networks.FlowMatching(subnet_kwargs={"widths": (128,)*3})
-    # inference_net = bf.networks.DiffusionModel(subnet_kwargs={"widths": (128,)*3})
+    # inference_net = bf.networks.DiffusionModel()
 
     # Set up workflow
     workflow = bf.workflows.BasicWorkflow(
@@ -112,7 +113,7 @@ if __name__ == "__main__":
         adapter=adapter,
         summary_network=summary_net,
         inference_network=inference_net,
-        checkpoint_filepath=f"../checkpoints/tflow_complete_pooling_bdlstm_fm_3e4_{epochs}"
+        checkpoint_filepath=f"../checkpoints/tflow_complete_pooling_bdlstm_fm_3e4_{epochs}_sumstat"
     )
 
     outdir = pathlib.Path("dataset")
@@ -122,16 +123,16 @@ if __name__ == "__main__":
     meta_path  = outdir / "meta.json"
 
     # if train_path.exists() and val_path.exists():
-    #     training_set   = load_npz_dict(train_path)
+    #     # training_set   = load_npz_dict(train_path)
     #     validation_set = load_npz_dict(val_path)
     # else:
-    #     logging.info("Generating training set...")
-    #     training_set   = workflow.simulate(30000)
+    #     # logging.info("Generating training set...")
+    #     # training_set   = workflow.simulate((30000,))
     #     logging.info("Generating validation set...")
     #     validation_set = workflow.simulate(300)
     #     # save_npz_dict(training_set, train_path)
     #     save_npz_dict(validation_set, val_path)
-    #
+
     # # Start training
     # history = workflow.fit_offline(
     #     data=training_set,
@@ -141,9 +142,9 @@ if __name__ == "__main__":
     # )
 
     history = workflow.fit_online(
-        epochs=100,
+        epochs=200,
         batch_size=64,
-        num_batches_per_epoch=500
+        num_batches_per_epoch=200
     )
 
     # Diagnostics
@@ -151,7 +152,7 @@ if __name__ == "__main__":
 
     metrics = workflow.compute_default_diagnostics(test_data=300)
     print(metrics)
-    metrics.to_csv(f"./results/tflow_complete_pooling_bdlstm_fm{epochs}_3e4.csv", index=False)
+    metrics.to_csv(f"./results/tflow_complete_pooling_bdfm{epochs}_3e4_sumstat.csv", index=False)
 
     color = "#4e2a84"
 
@@ -184,7 +185,7 @@ if __name__ == "__main__":
     )
 
     for plot_name, fig in figures.items():
-        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_bdlstm_fm{epochs}_3e4.png"
+        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_bdfm{epochs}_3e4_sumstat.png"
         fig.savefig(fig_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
         logging.info(f"Saved diagnostic plot to {fig_path}")
