@@ -27,8 +27,8 @@ if __name__ == "__main__":
 
     debug = True
     gather = True
-    epochs = 50
-    online = False
+    epochs = 100
+    online = True
 
     # Define simulator
     simulator = TogetherFlowSimulator(
@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     if online:
         history = workflow.fit_online(
-            epochs=1,
+            epochs=100,
             batch_size=64,
             num_batches_per_epoch=500
         )
