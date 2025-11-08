@@ -28,6 +28,7 @@ if __name__ == "__main__":
     debug = True
     gather = True
     epochs = 100
+    online = False
 
     # Define simulator
     simulator = TogetherFlowSimulator(
@@ -115,48 +116,53 @@ if __name__ == "__main__":
         checkpoint_filepath=f"../checkpoints/tflow_complete_pooling_bdlstm_fm_3e4_{epochs}"
     )
 
-    outdir = pathlib.Path("dataset")
-    figure_dir = pathlib.Path("figures")
-    train_path = outdir / ("train_3e4s.npz" if gather else "train_0.npz")
-    val_path   = outdir / ("val_3e4s.npz" if gather else "val_0.npz")
-    meta_path  = outdir / "meta.json"
+    if online:
+        history = workflow.fit_online(
+            epochs=1,
+            batch_size=64,
+            num_batches_per_epoch=500
+        )
+    else:
+        outdir = pathlib.Path("dataset")
+        figure_dir = pathlib.Path("figures")
+        train_path = outdir / ("train_3e4.npz" if gather else "train_0.npz")
+        val_path   = outdir / ("val_3e4.npz" if gather else "val_0.npz")
+        meta_path  = outdir / "meta.json"
 
-    # if train_path.exists() and val_path.exists():
-    #     training_set   = load_npz_dict(train_path)
-    #     validation_set = load_npz_dict(val_path)
-    # else:
-    #     logging.info("Generating training set...")
-    #     training_set   = workflow.simulate(30000)
-    #     logging.info("Generating validation set...")
-    #     validation_set = workflow.simulate(300)
-    #     # save_npz_dict(training_set, train_path)
-    #     save_npz_dict(validation_set, val_path)
-    #
-    # # Start training
-    # history = workflow.fit_offline(
-    #     data=training_set,
-    #     validation_data=validation_set,
-    #     batch_size=64,
-    #     epochs=epochs
-    # )
+        if train_path.exists() and val_path.exists():
+            logging.info(f"Loading training data from {train_path}...")
+            training_set   = load_npz_dict(train_path)
+            logging.info(f"Loading validation data from {val_path}...")
+            validation_set = load_npz_dict(val_path)
+        else:
+            logging.info("Generating training set...")
+            training_set   = workflow.simulate(30000)
+            logging.info("Generating validation set...")
+            validation_set = workflow.simulate(30S0)
+            save_npz_dict(training_set, train_path)
+            save_npz_dict(validation_set, val_path)
 
-    history = workflow.fit_online(
-        epochs=100,
-        batch_size=64,
-        num_batches_per_epoch=500
-    )
+        # Start training
+        history = workflow.fit_offline(
+            data=training_set,
+            validation_data=validation_set,
+            batch_size=64,
+            epochs=1
+        )
+
+
 
     # Diagnostics
     fig_size = (16, 4)
 
-    metrics = workflow.compute_default_diagnostics(test_data=300)
+    metrics = workflow.compute_default_diagnostics(test_data=(300 if online else validation_set))
     print(metrics)
     metrics.to_csv(f"./results/tflow_complete_pooling_bdlstm_fm{epochs}_3e4.csv", index=False)
 
     color = "#4e2a84"
 
     figures = workflow.plot_default_diagnostics(
-        test_data=300,
+        test_data=(300 if online else validation_set),
         variable_names=[r"$w$", r"$r$", r"$v$", r"$\eta$"],
         loss_kwargs={"figsize": fig_size, "label_fontsize": 16, "train_color": color},
         recovery_kwargs={
