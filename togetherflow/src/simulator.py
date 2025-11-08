@@ -202,10 +202,10 @@ class TogetherFlowSimulator:
             neighbor_fluctuations = samples[:,:,:,6][..., None]
 
         out = dict(
-            w = np.expand_dims(thetas[:,0], axis=-1),
-            r = np.expand_dims(thetas[:,1], axis=-1),
-            v = np.expand_dims(thetas[:,2], axis=-1),
-            noise = np.expand_dims(thetas[:,3], axis=-1),
+            w = thetas[:, 0:1],
+            r = thetas[:, 1:2],
+            v = thetas[:, 2:3],
+            noise = thetas[:, 3:4],
         )
 
         if not self.return_summary:

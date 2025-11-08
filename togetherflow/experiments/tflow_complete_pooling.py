@@ -84,7 +84,7 @@ if __name__ == "__main__":
     #     keras.layers.Dense(64, activation="swish"),
     # ]))
 
-    summary_net = SummaryNet()
+    summary_net = bf.networks.DeepSet()
 
     # summary_net = bf.networks.TimeSeriesNetwork(dropout=0.2)
     # summary_net = HierarchicalNetwork([
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         adapter=adapter,
         summary_network=summary_net,
         inference_network=inference_net,
-        checkpoint_filepath=f"../checkpoints/tflow_complete_pooling_bdlstm_fm_3e4_{epochs}"
+        checkpoint_filepath=f"../checkpoints/tflow_complete_pooling_bdlstm_fm_3e4_{epochs}_summary"
     )
 
     outdir = pathlib.Path("dataset")
@@ -122,16 +122,16 @@ if __name__ == "__main__":
     val_path   = outdir / ("val_3e4s.npz" if gather else "val_0.npz")
     meta_path  = outdir / "meta.json"
 
-    if train_path.exists() and val_path.exists():
-        # training_set   = load_npz_dict(train_path)
-        validation_set = load_npz_dict(val_path)
-    else:
-        # logging.info("Generating training set...")
-        # training_set   = workflow.simulate((30000,))
-        logging.info("Generating validation set...")
-        validation_set = workflow.simulate(300)
-        # save_npz_dict(training_set, train_path)
-        save_npz_dict(validation_set, val_path)
+    # if train_path.exists() and val_path.exists():
+    #     # training_set   = load_npz_dict(train_path)
+    #     validation_set = load_npz_dict(val_path)
+    # else:
+    #     # logging.info("Generating training set...")
+    #     # training_set   = workflow.simulate((30000,))
+    #     logging.info("Generating validation set...")
+    #     validation_set = workflow.simulate(300)
+    #     # save_npz_dict(training_set, train_path)
+    #     save_npz_dict(validation_set, val_path)
 
     # # Start training
     # history = workflow.fit_offline(
@@ -142,9 +142,9 @@ if __name__ == "__main__":
     # )
 
     history = workflow.fit_online(
-        epochs=100,
-        batch_size=32,
-        num_batches_per_epoch=100
+        epochs=200,
+        batch_size=64,
+        num_batches_per_epoch=200
     )
 
     # Diagnostics
@@ -152,20 +152,26 @@ if __name__ == "__main__":
 
     metrics = workflow.compute_default_diagnostics(test_data=300)
     print(metrics)
-    metrics.to_csv(f"./results/tflow_complete_pooling_bdfm{epochs}_3e4.csv", index=False)
+    metrics.to_csv(f"./results/tflow_complete_pooling_bdfm{epochs}_3e4_summary.csv", index=False)
 
     color = "#4e2a84"
 
     figures = workflow.plot_default_diagnostics(
         test_data=300,
         variable_names=[r"$w$", r"$r$", r"$v$", r"$\eta$"],
-        loss_kwargs={"figsize": fig_size, "label_fontsize": 12, "train_color": color},
-        recovery_kwargs={"figsize": fig_size, "label_fontsize": 12, "color": color},
+        loss_kwargs={"figsize": fig_size, "label_fontsize": 16, "train_color": color},
+        recovery_kwargs={
+            "figsize": fig_size,
+            "label_fontsize": 16,
+            "title_fontsize": 20,
+            "color": color
+        },
         coverage_kwargs={
             "figsize": fig_size,
             "color": color,
             "label_fontsize": 16,
-            "legend_fontsize": 11,
+            "legend_fontsize": 12,
+            "title_fontsize": 20,
             "difference": False
         },
         calibration_ecdf_kwargs={
@@ -179,7 +185,7 @@ if __name__ == "__main__":
     )
 
     for plot_name, fig in figures.items():
-        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_bdfm{epochs}_3e4.png"
+        fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_bdfm{epochs}_3e4_summary.png"
         fig.savefig(fig_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
         logging.info(f"Saved diagnostic plot to {fig_path}")

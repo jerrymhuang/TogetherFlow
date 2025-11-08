@@ -18,7 +18,9 @@ class SummaryNet(bf.networks.SummaryNetwork):
             keras.layers.Dense(16)
         ])
 
-        # self.base = bf.networks.DeepSet()
+        self.base = bf.networks.DeepSet(
+            phi
+        )
 
     def build(self, input_shape):
         self.base.build(input_shape)
