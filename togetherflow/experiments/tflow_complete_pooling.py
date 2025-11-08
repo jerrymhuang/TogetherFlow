@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     debug = True
     gather = True
-    epochs = 100
+    epochs = 50
     online = False
 
     # Define simulator
@@ -138,7 +138,7 @@ if __name__ == "__main__":
             logging.info("Generating training set...")
             training_set   = workflow.simulate(30000)
             logging.info("Generating validation set...")
-            validation_set = workflow.simulate(30S0)
+            validation_set = workflow.simulate(300)
             save_npz_dict(training_set, train_path)
             save_npz_dict(validation_set, val_path)
 
@@ -147,7 +147,7 @@ if __name__ == "__main__":
             data=training_set,
             validation_data=validation_set,
             batch_size=64,
-            epochs=1
+            epochs=epochs
         )
 
 
