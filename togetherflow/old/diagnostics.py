@@ -12,9 +12,20 @@ def prepare_figure(figsize=(4, 4), lim=20.):
     room = FancyBboxPatch(
         (-5., -6.), 10., 12.,
         boxstyle="round, pad=0., rounding_size=1.5",
-        alpha=0.1
+        facecolor="#6969ff",
+        alpha=0.2
     )
     ax.add_patch(room)
+
+    room_boundary = FancyBboxPatch(
+        (-5., -6.), 10., 12.,
+        fill=False,
+        edgecolor="#6969ff",
+        boxstyle="round, pad=0., rounding_size=1.5",
+        alpha=1
+    )
+    ax.add_patch(room_boundary)
+    ax.grid(True)
 
     # Set axis limits and labels once
     ax.set_xlim(-lim, lim)
