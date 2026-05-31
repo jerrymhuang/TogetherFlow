@@ -177,3 +177,6 @@ meta.json
 # Checkpoint metadata
 *config.json
 *metadata.json
+
+# Interactables
+interactables/
