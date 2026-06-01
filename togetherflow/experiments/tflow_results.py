@@ -9,7 +9,9 @@ import pandas as pd
 import bayesflow as bf
 import matplotlib.pyplot as plt
 
-from src.simulator import TogetherFlowSimulator
+from togetherflow import TogetherFlowSimulator
+
+ROOT = pathlib.Path(__file__).parent.parent.parent
 
 
 def load_npz_dict(path):
@@ -19,7 +21,7 @@ def load_npz_dict(path):
 if __name__ == "__main__":
 
     epochs = 100
-    fig_dir = pathlib.Path("figures")
+    fig_dir = ROOT / "outputs" / "figures"
     fig_size = (16, 4)
     color = "#4e2a84"
     variable_names = [r"$w$", r"$r$", r"$v$", r"$\eta$"]
@@ -35,7 +37,7 @@ if __name__ == "__main__":
         return_summary=False,
     )
 
-    estimator = keras.saving.load_model("../checkpoints/tflow_complete_pooling_bdlstm_fm_3e4_100_summary/model.keras")
+    estimator = keras.saving.load_model(str(ROOT / "outputs" / "checkpoints" / "tflow_complete_pooling_bdlstm_fm_3e4_100_summary" / "model.keras"))
     print("success")
 
     adapter = (
@@ -65,7 +67,7 @@ if __name__ == "__main__":
 
     metrics = workflow.compute_default_diagnostics(test_data=300)
     print(metrics)
-    metrics.to_csv(f"./results/tflow_complete_pooling_bdlstm_fm{epochs}_3e4_summary.csv", index=False)
+    metrics.to_csv(str(ROOT / "outputs" / "results" / f"tflow_complete_pooling_bdlstm_fm{epochs}_3e4_summary.csv"), index=False)
 
     val_sims = simulator.sample(batch_size=200)
     post_draws = estimator.sample(conditions=val_sims, num_samples=300)

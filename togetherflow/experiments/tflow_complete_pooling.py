@@ -9,7 +9,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import bayesflow as bf
 
-from src import TogetherFlowSimulator, SummaryNet
+from togetherflow import TogetherFlowSimulator, SummaryNet
+
+ROOT = pathlib.Path(__file__).parent.parent.parent
 
 
 def save_npz_dict(d, path):
@@ -113,19 +115,19 @@ if __name__ == "__main__":
         adapter=adapter,
         summary_network=summary_net,
         inference_network=inference_net,
-        checkpoint_filepath=f"../checkpoints/tflow_complete_pooling_bdlstm_fm_3e3o_{epochs}"
+        checkpoint_filepath=str(ROOT / "outputs" / "checkpoints" / f"tflow_complete_pooling_bdlstm_fm_3e3o_{epochs}")
     )
 
     if online:
-        figure_dir = pathlib.Path("figures")
+        figure_dir = ROOT / "outputs" / "figures"
         history = workflow.fit_online(
             epochs=100,
             batch_size=64,
             num_batches_per_epoch=50
         )
     else:
-        outdir = pathlib.Path("dataset")
-        figure_dir = pathlib.Path("figures")
+        outdir = ROOT / "data"
+        figure_dir = ROOT / "outputs" / "figures"
         train_path = outdir / ("train_3e3.npz" if gather else "train_0.npz")
         val_path   = outdir / ("val_3e3.npz" if gather else "val_0.npz")
         meta_path  = outdir / "meta.json"
@@ -158,7 +160,7 @@ if __name__ == "__main__":
 
     metrics = workflow.compute_default_diagnostics(test_data=(300 if online else validation_set))
     print(metrics)
-    metrics.to_csv(f"./results/tflow_complete_pooling_bdlstm_fm{epochs}_3e3o.csv", index=False)
+    metrics.to_csv(str(ROOT / "outputs" / "results" / f"tflow_complete_pooling_bdlstm_fm{epochs}_3e3o.csv"), index=False)
 
     color = "#6969ff"
 

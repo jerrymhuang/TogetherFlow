@@ -9,7 +9,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import bayesflow as bf
 
-from src import TogetherFlowSimulator, SummaryNet
+from togetherflow import TogetherFlowSimulator, SummaryNet
+
+ROOT = pathlib.Path(__file__).parent.parent.parent
 
 
 def save_npz_dict(d, path):
@@ -113,11 +115,11 @@ if __name__ == "__main__":
         adapter=adapter,
         summary_network=summary_net,
         inference_network=inference_net,
-        checkpoint_filepath=f"../checkpoints/tflow_complete_pooling_bdlstm_fm_3e4_{epochs}_sumstat"
+        checkpoint_filepath=str(ROOT / "outputs" / "checkpoints" / f"tflow_complete_pooling_bdlstm_fm_3e4_{epochs}_sumstat")
     )
 
-    outdir = pathlib.Path("dataset")
-    figure_dir = pathlib.Path("figures")
+    outdir = ROOT / "data"
+    figure_dir = ROOT / "outputs" / "figures"
     train_path = outdir / ("train_3e4s.npz" if gather else "train_0.npz")
     val_path   = outdir / ("val_3e4s.npz" if gather else "val_0.npz")
     meta_path  = outdir / "meta.json"
@@ -152,7 +154,7 @@ if __name__ == "__main__":
 
     metrics = workflow.compute_default_diagnostics(test_data=300)
     print(metrics)
-    metrics.to_csv(f"./results/tflow_complete_pooling_bdfm{epochs}_3e4_sumstat.csv", index=False)
+    metrics.to_csv(str(ROOT / "outputs" / "results" / f"tflow_complete_pooling_bdfm{epochs}_3e4_sumstat.csv"), index=False)
 
     color = "#4e2a84"
 
@@ -186,6 +188,7 @@ if __name__ == "__main__":
 
     for plot_name, fig in figures.items():
         fig_path = figure_dir / f"tflow_complete_pooling_{plot_name}_bdfm{epochs}_3e4_sumstat.png"
+
         fig.savefig(fig_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
         logging.info(f"Saved diagnostic plot to {fig_path}")
