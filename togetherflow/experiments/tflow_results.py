@@ -32,9 +32,7 @@ if __name__ == "__main__":
         num_beacons=4,
         dt=0.1,
         time_horizon=60.,
-        downsample_factor=1.,
-        gather=True,
-        return_summary=False,
+        output_mode="flat",
     )
 
     estimator = keras.saving.load_model(str(ROOT / "outputs" / "checkpoints" / "tflow_complete_pooling_bdlstm_fm_3e4_100_summary" / "model.keras"))
@@ -49,9 +47,8 @@ if __name__ == "__main__":
             "rotations",
             "neighbors",
             "distances",
-            #"max_dists",
             "angular_velocities",
-            "neighbor_fluctuations"
+            "neighbor_fluctuations",
         ], into="summary_variables", axis=-1)
     )
 

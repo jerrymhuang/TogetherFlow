@@ -28,7 +28,6 @@ def load_npz_dict(path):
 if __name__ == "__main__":
 
     debug = True
-    gather = True
     epochs = 100
     online = True
 
@@ -38,17 +37,14 @@ if __name__ == "__main__":
         num_beacons=4,
         dt=0.1,
         time_horizon=60.,
-        downsample_factor=1.,
-        gather=gather,
-        return_summary=False,
+        output_mode="flat",
     )
 
-    sim = simulator.sample(batch_size=200)
-
-    print(sim["w"].shape)
-    print(sim["positions"].shape)
-    print(sim["rotations"].shape)
-    print(np.concatenate((sim["positions"], sim["rotations"]), axis=2).shape)
+    if debug:
+        sim = simulator.sample(batch_size=2)
+        print("w:", sim["w"].shape)
+        print("positions:", sim["positions"].shape)
+        print("rotations:", sim["rotations"].shape)
 
     # Define adapter
     adapter = (
@@ -60,9 +56,8 @@ if __name__ == "__main__":
             "rotations",
             "neighbors",
             "distances",
-            #"max_dists",
             "angular_velocities",
-            "neighbor_fluctuations"
+            "neighbor_fluctuations",
         ], into="summary_variables", axis=-1)
     )
 
