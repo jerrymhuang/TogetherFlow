@@ -180,3 +180,6 @@ meta.json
 
 # Interactables
 interactables/
+
+# You know
+.claude/
