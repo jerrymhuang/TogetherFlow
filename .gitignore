@@ -183,3 +183,11 @@ interactables/
 
 # You know
 .claude/
+STATUS.md
+SUMMARY.md
+
+*.tex
+feedback.md
+outputs/docs/figures
+outputs/scenarios/figures
+.idea/*

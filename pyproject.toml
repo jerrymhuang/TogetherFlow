@@ -1,6 +1,40 @@
 [project]
 name = "togetherflow"
 version = "0.1.0"
-description = "Add your description here"
-requires-python = ">=3.12"
-dependencies = []
+description = "Amortized Bayesian inference for multi-agent motion dynamics in immersive rooms"
+requires-python = ">=3.12,<3.14"
+
+dependencies = [
+    # superstats pins bayesflow==2.0.12 exactly and, via the [cuda] extra, pulls
+    # jax[cuda13]>=0.11.0 — which keeps jax, jaxlib, jax-cuda13-pjrt and
+    # jax-cuda13-plugin on matching versions. Installing plain `superstats`
+    # instead upgrades jax while leaving the CUDA plugins behind, which breaks
+    # GPU support.
+    "superstats[cuda]>=0.0.2",
+    "bayesflow==2.0.12",
+    "numba>=0.65",
+    "numpy>=2.4,<2.5",   # superstats requires <2.5; numba is also sensitive here
+    "matplotlib>=3.10",
+    "pandas>=3.0",
+    "scipy>=1.17",
+]
+
+[dependency-groups]
+# Installed by `uv sync` by default; not required to run the experiments.
+dev = [
+    "jupyter>=1.1",
+    "jupyterlab>=4.5",
+    "ipykernel>=7",
+    "seaborn>=0.13",
+    "tqdm>=4.67",
+]
+
+# A build backend makes this a real (editable-installable) package rather than a
+# "virtual" project, so `uv sync` keeps `import togetherflow` working from any
+# working directory.
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["togetherflow*"]
