@@ -1,0 +1,97 @@
+# Sensing radius inferred from r-free multi-scale observables
+
+**Variant:** `v3c-rfree-observables`  
+**Addresses:** Reviewer point 2 (option: richer observables)
+
+## Why this arm exists
+
+Two of the six published channels — neighbour count and average neighbour distance — are computed at the true sensing radius, so the observables are a direct function of the parameter being inferred. Any identifiability claim built on them is therefore circular. This arm replaces those channels with neighbour counts at four fixed reference radii, which describe spatial scale without presupposing r. If r recovers here, it is genuinely identifiable; if it does not, that is the formal negative result the reviewer's third option asks for.
+
+## Generative Configuration
+
+| Setting | Value |
+|---------|-------|
+| Reviewer point addressed | Reviewer point 2 (option: richer observables) |
+| Prior | complete_pooling_prior |
+| Inferred parameters | w, r, v, noise |
+| Observable channels | positions, rotations, angular_velocities, radii_counts |
+| Reference radii (r-free counts) | [0.5, 1.0, 2.0, 4.0] |
+| Beacon strengths | uniform |
+| Beacon spread | 50 |
+| Agents / beacons | 49 / 4 |
+| Time horizon / dt | 60s / 0.1 |
+| Seed | 20260803 |
+
+## Training and Network Configuration
+
+| Setting | Value |
+|---------|-------|
+| Inference network | FlowMatching (Base, widths 256x4, time_embedding_dim 32) |
+| Summary network | SummaryNet — BiLSTM (summary_dim=12) |
+| Epochs | 300 |
+| Batch size | 32 |
+| Validation data | 300 simulations |
+| Test data | 300 simulations |
+| Training mode | offline |
+| Simulation budget | 5000 training simulations |
+| Wall-clock | 13.2 min |
+
+## Convergence
+
+![Training loss](loss.png)
+
+The training loss curve shows the optimization objective over epochs. A healthy curve decreases smoothly and plateaus. Key warning signs: (i) a growing gap between training and validation loss indicates overfitting; (ii) loss still visibly decreasing at the final epoch means the network could benefit from more epochs; (iii) NaN spikes indicate numerical instability, often caused by extreme simulator outputs or missing standardization.
+
+**Assessment:** Training completed with the following flags: Overfitting detected (avg val/train ratio 9.544x over last 10% of epochs) — reduce capacity, add regularization, or increase simulation budget. Treat the downstream diagnostics as provisional until these are addressed.
+
+## Parameter Recovery
+
+![Parameter recovery](recovery.png)
+
+Each panel plots the posterior median (point estimate) against the true parameter value across held-out simulations. Points falling on the diagonal indicate perfect recovery. Vertical bars represent 95% posterior credible intervals — their width reflects estimation uncertainty. Systematic deviations from the diagonal reveal bias; wide intervals indicate the data are only weakly informative for that parameter.
+
+**Assessment:** w, r, v, noise fall short.
+
+## Calibration and Coverage
+
+![Calibration ECDF](calibration_ecdf.png)
+
+**Calibration ECDF** — Simulation-based calibration (SBC) plots show the empirical CDF of posterior ranks. Well-calibrated posteriors produce ECDFs close to the uniform diagonal. Lines consistently above the diagonal indicate overconfident (too narrow) posteriors; lines below indicate underconfident (too wide) posteriors.
+
+![Coverage](coverage.png)
+
+**Coverage** — Shows the fraction of held-out true values falling within nominal credible intervals (e.g., 50%, 80%, 95%). Well-calibrated models yield empirical coverage matching the nominal level. Under-coverage means the credible intervals are too narrow; over-coverage means they are too wide.
+
+**Assessment:** w, r, v, noise fall short.
+
+## Posterior Z-Score and Contraction
+
+![Z-score and contraction](z_score_contraction.png)
+
+The z-score–contraction plot summarizes posterior quality in two dimensions. The x-axis shows **posterior contraction** — the fraction by which the posterior variance has shrunk relative to the prior variance. Values near 0 indicate no information gain (the data are uninformative for that parameter); values near 1 indicate near-complete information gain. The y-axis shows the **posterior z-score** — the average standardized deviation between the posterior mean and the true value. Symmetric values around 0 indicate an unbiased (Gaussian-like) posterior. The ideal region is the middle-right corner (z-scores distributed around 0, high contraction).
+
+**Assessment:** noise show contraction in the acceptable range; w, r, v fall short.
+
+## Numerical Diagnostic Summary
+
+| Metric | w | r | v | noise |
+|--------|-----|-----|-----|-----|
+| NRMSE | 0.441 | 0.438 | 0.271 | 0.661 |
+| Log-gamma | -inf | -inf | -inf | -inf |
+| ECE | 0.378 | 0.413 | 0.318 | 0.403 |
+| Post. Contraction | 0.968 | 0.978 | 0.981 | 0.948 |
+
+**w** — poor calibration; poor recovery; poor — overconfident
+
+**r** — poor calibration; poor recovery; poor — overconfident
+
+**v** — poor calibration; poor recovery; poor — overconfident
+
+**noise** — poor calibration; poor recovery; medium contraction
+
+## Suggested Next Steps
+
+1. Overfitting detected (val/train loss ratio 9.544x in final 10% of epochs) — reduce network capacity, add regularization, or increase simulation budget.
+2. Poor calibration for w, r, v, noise — increase summary network capacity or train for more epochs.
+3. Poor recovery for w, r, v, noise — increase network capacity and training duration; if no improvement, these parameters may be weakly identifiable.
+4. Overconfident posteriors for w, r, v — inspect the simulator for potential issues and consider increasing the simulation budget.
