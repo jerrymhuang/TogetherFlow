@@ -51,6 +51,11 @@ R_FREE_CHANNELS = [
 
 REFERENCE_RADII = [0.5, 1.0, 2.0, 4.0]
 
+# The six base channels plus the beacon salience schedule. Salience is a
+# property of the apparatus rather than of the agents, so it enters as four
+# extra features per timestep (one per beacon) rather than per-agent ones.
+SALIENCE_CHANNELS = BASE_CHANNELS + ["salience"]
+
 # Support bounds used by the adapter's .constrain() calls.
 PARAM_BOUNDS = {
     "w":     {"lower": 0.0, "upper": 1.0},
@@ -81,6 +86,17 @@ class Variant:
     beacon_strengths: list | None = None
     beacon_spread: float = 50.0
     time_horizon: float = 60.0
+
+    # Time-varying beacon salience. None leaves strengths static, which is every
+    # arm before V8. When set, beacon salience follows a shared log-OU process
+    # and is emitted as the `salience` observable channel: the room renders the
+    # beacons, so the schedule is a known experimental input, not a latent.
+    # These are DESIGN constants, deliberately not inference targets — see the
+    # V8 rationale for why inferring them was the wrong move.
+    salience_sigma: float | None = None      # stationary SD of log-salience
+    salience_tau: float = 40.0               # OU reversion timescale, seconds
+    salience_sensitivity: float = 0.0        # alpha; 1.0 = score is s_b(t)/d_ib
+    switch_margin: float = 1.0               # hysteresis; 1.0 = plain argmax
 
     num_agents: int = 49
     num_beacons: int = 4
@@ -309,6 +325,168 @@ V4_SHORT_HORIZON = Variant(
         "horizon is already past saturation rather than too short."
     ),
     time_horizon=20.0,
+    online=True,
+)
+
+V4_LONG_HORIZON = Variant(
+    slug="v4-long-horizon",
+    title="Hundred-second observation window",
+    addresses="Reviewer point 3",
+    rationale=(
+        "The other side of the horizon question. v4-short-horizon tests whether "
+        "cutting the window to 20 s costs anything; this arm tests whether "
+        "extending it to 100 s buys anything. Taken with v0-reference at 60 s the "
+        "three arms trace information against duration directly, which is what "
+        "reviewer point 3 asks about: the prior-predictive saturation argument "
+        "predicts 100 s should recover no better than 60 s, and if it does recover "
+        "better, the saturation reading is wrong and the reviewer is right. "
+        "Everything but the horizon is matched to v0-reference, so the comparison "
+        "is attributable to duration alone. The extra 40 s is spent in the milling "
+        "regime past the wall encounter, and attention cost grows with the square "
+        "of sequence length: 1000 timesteps against the reference 600."
+    ),
+    time_horizon=100.0,
+    online=True,
+)
+
+V4_HORIZON_80 = Variant(
+    slug="v4-horizon-80",
+    title="Eighty-second observation window",
+    addresses="Reviewer point 3",
+    rationale=(
+        "The interpolating point between v0-reference (60 s) and v4-long-horizon "
+        "(100 s). With 20/60/80/100 s the horizon curve has four points rather than "
+        "three, which matters for the two effects the 100 s arm produced: w "
+        "improved slightly and monotonically (NRMSE 0.371 -> 0.342 -> 0.328) while "
+        "eta degraded (0.442 -> 0.560, contraction 0.795 -> 0.687). Both were "
+        "measured on single runs at one seed, and a monotone trend through three "
+        "points spaced 20/60/100 is weak evidence. If 80 s falls between its "
+        "neighbours on both, the trends are real and the milling-regime dilution "
+        "reading of eta holds; if it does not, the differences are seed noise and "
+        "should be reported as such. Matched to v0-reference apart from the "
+        "horizon: 800 timesteps against the reference 600."
+    ),
+    time_horizon=80.0,
+    online=True,
+)
+
+V4_HORIZON_40 = Variant(
+    slug="v4-horizon-40",
+    title="Forty-second observation window",
+    addresses="Reviewer point 3",
+    rationale=(
+        "Fills the 20-to-60 s gap, the widest remaining one on the horizon curve. "
+        "It arrives after the 80 s arm has already answered the question the 80 s "
+        "arm was built to ask: 80 s beat BOTH its neighbours on every parameter "
+        "(w NRMSE 0.266 against 0.342 at 60 s and 0.328 at 100 s), so it is not an "
+        "interpolating point and the apparent 20->60->100 monotone trend in w was "
+        "not real. The arm-to-arm spread at one seed (0.062 between 80 and 100 s) "
+        "is about four times the 60->100 s 'trend' it was supposed to confirm. "
+        "This arm therefore measures the noise floor rather than a trend: five "
+        "points at one seed each will show how much of the variation across the "
+        "curve is horizon and how much is run-to-run. The honest fix is replicate "
+        "seeds per horizon, not more horizons; this is the cheaper diagnostic that "
+        "bounds the problem first."
+    ),
+    time_horizon=40.0,
+    online=True,
+)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# V8 — reviewer point 8, second attempt: switching driven by a salience schedule
+# ─────────────────────────────────────────────────────────────────────────────
+
+_V8_RATIONALE = (
+    "v2-salience-spread50 was built to measure beacon switching and contained "
+    "almost none: replaying its exact configuration and recomputing the "
+    "selection rule at every step gives 0.005 switches per agent per trial, with "
+    "99.7% of agents never re-targeting at all. The reason is structural. Under "
+    "a STATIC salience field the score s_b^alpha / d_ib changes only through "
+    "d_ib, and an agent moves toward its own target, so the choice is "
+    "self-reinforcing and the room is partitioned into fixed cells each agent "
+    "walks into. A posterior contraction of 0.094 on alpha was therefore not a "
+    "weak signal but a nearly inert parameter. (The same replay showed alpha did "
+    "not even control the initial partition: with strengths [1,1,1,8] and alpha "
+    "~ Gamma(2,1), s^alpha reaches 8-500x while beacons outside the room afford "
+    "distance ratios of only 1.5-3x, so the strong beacon won for 99.8% of "
+    "agents at every alpha in the prior.)\n\n"
+    "This arm makes salience time-varying instead: log s_b(t) is a shared "
+    "Ornstein-Uhlenbeck process, one path per beacon, identical for every agent "
+    "in a trial because salience is a property of the beacon rather than of the "
+    "observer. Now the world changes underneath the agents, and re-targeting is "
+    "driven by the beacon rather than by the agent's own geometry."
+)
+
+V8_SALIENCE_OBSERVED = Variant(
+    slug="v8-salience-observed",
+    title="Beacon switching driven by an observed salience schedule",
+    addresses="Reviewer point 8",
+    rationale=_V8_RATIONALE + (
+        "\n\nCrucially the salience schedule is an OBSERVABLE, not an inference "
+        "target. The immersive room renders the beacons, so what each beacon was "
+        "doing at each moment is something the experiment sets and records — "
+        "treating it as a latent to be recovered would model away information "
+        "the apparatus actually has. So sigma_s and tau_s are design constants, "
+        "the inferred parameters go back to the published four, and the question "
+        "becomes whether knowing the drive improves their recovery. It should "
+        "help w most: a turn that coincides with a beacon brightening is "
+        "attributable to the beacon rather than to unexplained noise, and w is "
+        "exactly the beacon-versus-neighbour balance.\n\n"
+        "This also avoids the trap the superstatistics route would have walked "
+        "into. Inferring the volatility of a parameter process has returned a "
+        "null three times here — tau in v5-timevarying-w at contraction 0.076, "
+        "alpha in v2 at 0.094, eta at ~0.09 — so an arm whose headline number "
+        "was the posterior for sigma_s had a poor prior of saying anything."
+    ),
+    channels=list(SALIENCE_CHANNELS),
+    # Chosen by prior predictive, not by guess. At sigma_s 0.7 / tau_s 40 s /
+    # margin 1.5 the model gives 2.0 switches per agent per 60 s trial (90th
+    # percentile 4, 9% of agents never switching, median dwell 14.5 s), which is
+    # the 3-4 maximum the switching should show. Higher sigma_s or lower tau_s
+    # runs it up: 5.25 switches/agent at sigma_s 1.0, tau_s 20, margin 1.5.
+    salience_sigma=0.7,
+    salience_tau=40.0,
+    salience_sensitivity=1.0,
+    # Hysteresis is required, not cosmetic. With a plain argmax over a
+    # continuously varying field the leader flickers at the discretization
+    # scale rather than at tau_s — measured median dwell 0.30 s against a
+    # tau_s of 20-40 s, and 59% of dwells under half a second — because the
+    # difference between two OU paths recrosses zero densely near a tie. A
+    # challenger must beat the incumbent by 1.5x to take over. Note this does
+    # NOT rescue the trajectories: straightness is 0.102 with switching against
+    # 0.090 with none, so agents mill either way (see gotcha 7 on the room not
+    # containing them); the margin is about the switching being real, not about
+    # the motion.
+    switch_margin=1.5,
+    online=True,
+)
+
+V8_SALIENCE_HIDDEN = Variant(
+    slug="v8-salience-hidden",
+    title="Same switching dynamics, salience schedule unobserved",
+    addresses="Reviewer point 8",
+    rationale=(
+        "The control that makes v8-salience-observed readable. Identical "
+        "generative process — same OU salience schedule, same hysteresis, same "
+        "switching — but the `salience` channel is withheld, so the network sees "
+        "exactly the six published observables while the world changes "
+        "underneath the agents for reasons it cannot see.\n\n"
+        "The pair isolates the value of the observable rather than the value of "
+        "the mechanism. Without it, an improvement in the observed arm could "
+        "just as well come from the switching dynamics themselves making "
+        "trajectories more informative. Read w first: the difference between "
+        "these two arms is what the room's knowledge of its own beacons is "
+        "worth, and it is the honest form of the answer to reviewer point 8. If "
+        "the hidden arm also does poorly against v0-reference, that is a "
+        "separate and reportable finding — that unmodelled switching degrades "
+        "recovery, which is an argument for instrumenting the schedule."
+    ),
+    channels=list(BASE_CHANNELS),
+    salience_sigma=0.7,
+    salience_tau=40.0,
+    salience_sensitivity=1.0,
+    switch_margin=1.5,
     online=True,
 )
 
@@ -565,8 +743,9 @@ ALL_VARIANTS = [
     V0, V0_BDLSTM, V0_LEGACY_HEADING, V0_DIFFUSION, V0_BDLSTM_DIFFUSION,
     V1_COLLISION, V1_COLLISION_KAPPA,
     V2_SPREAD50,
+    V8_SALIENCE_OBSERVED, V8_SALIENCE_HIDDEN,
     V3A_FIXED, V3C_RFREE,
-    V4_SHORT_HORIZON,
+    V4_SHORT_HORIZON, V4_HORIZON_40, V4_HORIZON_80, V4_LONG_HORIZON,
     V5_TIMEVARYING_W,
     V6A_PARTIAL_POOLING,
     V7_WIDE, V7_TIGHT, V7_BOUNDED_R, V7_SLOW_V,

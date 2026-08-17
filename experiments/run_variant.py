@@ -32,7 +32,10 @@ sys.path.insert(0, str(pathlib.Path(__file__).parent))
 sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / ".claude" / "skills" / "amortized-workflow"))
 
 from togetherflow import TogetherFlowSimulator
-from togetherflow.simulator import make_logit_random_walk_expander
+from togetherflow.simulator import (
+    make_logit_random_walk_expander,
+    make_ou_salience_process,
+)
 from togetherflow.networks import SummaryNet, TransformerSummaryNet
 from variants import ALL_VARIANTS, BY_SLUG, PARAM_BOUNDS
 from scripts.inspect_training import inspect_history
@@ -103,8 +106,25 @@ def build_simulator(variant, seed):
     else:
         raise ValueError(f"unknown expander '{variant.expander}'")
 
+    # Time-varying beacon salience. The paths are emitted whenever the process
+    # is on, but only reach the network if the variant lists "salience" among
+    # its channels — that difference is exactly the v8 observed/hidden pair.
+    if variant.salience_sigma is None:
+        salience_process = None
+    else:
+        salience_process = make_ou_salience_process(
+            num_beacons=variant.num_beacons,
+            dt=variant.dt,
+            sigma_s=variant.salience_sigma,
+            tau_s=variant.salience_tau,
+        )
+
     return TogetherFlowSimulator(
         expander=expander,
+        salience_process=salience_process,
+        include_salience_paths=salience_process is not None,
+        salience_sensitivity=variant.salience_sensitivity,
+        switch_margin=variant.switch_margin,
         num_agents=variant.num_agents,
         num_beacons=variant.num_beacons,
         dt=variant.dt,

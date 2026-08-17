@@ -19,6 +19,8 @@ def simulator_fun(
     internal_focus: float = 0.1,
     time_horizon: float = 30.,
     beacon_strengths=None,
+    beacon_strength_path=None,
+    switch_margin: float = 1.0,
     salience_sensitivity: float = 0.0,
     reference_radii=None,
     beacon_spread: float = 50.,
@@ -95,6 +97,9 @@ def simulator_fun(
     # that resamples every step. Under complete pooling (sigma_slot < 0) the
     # array is simply filled with the shared value each step.
     agent_weights = np.zeros(num_agents)
+    # Salience buffer, refilled each step when a path is supplied. Copying keeps
+    # the static case byte-identical to the published behaviour.
+    current_strengths = beacon_strengths.copy()
     if sigma_slot >= 0:
         mu = theta[0, 0]
         if mu < 1e-6:
@@ -122,6 +127,22 @@ def simulator_fun(
             num_beacons, room_sensing_range=beacon_spread, room_size=room_size
         )
 
+    # Which beacon each agent is currently committed to. Only consulted when a
+    # salience path and a margin are supplied; seeded from the plain rule at t=0
+    # so the first step is unaffected by hysteresis.
+    agent_targets = np.zeros(num_agents, dtype=np.int64)
+    if beacon_strength_path.shape[0] > 0 and switch_margin > 1.0:
+        for i in range(num_agents):
+            best = -np.inf
+            for b in range(num_beacons):
+                bx = beacon_positions[b, 0] - positions[0, i, 0]
+                by = beacon_positions[b, 1] - positions[0, i, 1]
+                d_b = (bx * bx + by * by) ** 0.5 + 1e-8
+                sc = beacon_strength_path[0, b] ** salience_sensitivity / d_b
+                if sc > best:
+                    best = sc
+                    agent_targets[i] = b
+
     for t in range(1, num_timesteps):
         # Parameters are read per timestep. For a static model every row is
         # identical and this is equivalent to the previous behaviour.
@@ -136,11 +157,60 @@ def simulator_fun(
         if kappa_slot >= 0:
             repulsion_gain = theta[t, kappa_slot]
 
+        # Beacon salience is a property of the world, not of the agent, so one
+        # path is shared by every agent in the trial: when a beacon brightens,
+        # all agents see it brighten at the same instant. Empty path = static
+        # strengths, i.e. the published behaviour. Written into the preallocated
+        # buffer rather than rebound, so numba sees a single array type here.
+        if beacon_strength_path.shape[0] > 0:
+            for b in range(num_beacons):
+                current_strengths[b] = beacon_strength_path[t, b]
+
+            # Hysteresis. Under a continuously varying field a plain argmax is
+            # not a switching model: near a crossing the difference between two
+            # salience paths recrosses zero densely, so the leader flickers at
+            # the discretization scale rather than at tau_s. Measured without a
+            # margin: median dwell 0.30 s against tau_s of 2-20 s, 59% of dwells
+            # under 0.5 s, and trajectory straightness collapsing to 0.13
+            # because no target survives long enough to be walked toward.
+            #
+            # Requiring a challenger to beat the incumbent by a factor makes
+            # commitment explicit: the agent re-targets when the world clearly
+            # changes, not when it ties. switch_margin = 1.0 restores the plain
+            # argmax. A scripted assignment still wins outright.
+            if switch_margin > 1.0 and beacon_assignment.shape[0] == 0:
+                for i in range(num_agents):
+                    incumbent = agent_targets[i]
+                    bx = beacon_positions[incumbent, 0] - positions[t - 1, i, 0]
+                    by = beacon_positions[incumbent, 1] - positions[t - 1, i, 1]
+                    d_inc = (bx * bx + by * by) ** 0.5 + 1e-8
+                    inc_score = (current_strengths[incumbent] ** salience_sensitivity
+                                 / d_inc)
+                    best_score = -np.inf
+                    best_b = incumbent
+                    for b in range(num_beacons):
+                        if b == incumbent:
+                            continue
+                        cx = beacon_positions[b, 0] - positions[t - 1, i, 0]
+                        cy = beacon_positions[b, 1] - positions[t - 1, i, 1]
+                        d_b = (cx * cx + cy * cy) ** 0.5 + 1e-8
+                        sc = current_strengths[b] ** salience_sensitivity / d_b
+                        if sc > best_score:
+                            best_score = sc
+                            best_b = b
+                    if best_score > inc_score * switch_margin:
+                        agent_targets[i] = best_b
+                active_assignment = agent_targets
+            else:
+                active_assignment = beacon_assignment
+        else:
+            active_assignment = beacon_assignment
+
         ps, rs, nn, ad, rc = combined_influences(
             agent_positions=positions[t - 1],
             agent_rotations=rotations[t - 1],
             beacon_positions=beacon_positions,
-            beacon_strengths=beacon_strengths,
+            beacon_strengths=current_strengths,
             salience_sensitivity=salience_sensitivity,
             reference_radii=reference_radii,
             room_size=room_size,
@@ -157,7 +227,7 @@ def simulator_fun(
             door_wall=door_wall,
             door_center=door_center,
             door_half_width=door_half_width,
-            beacon_assignment=beacon_assignment,
+            beacon_assignment=active_assignment,
             diffusive_heading=diffusive_heading,
         )
         positions[t]  = ps
@@ -279,6 +349,89 @@ def make_logit_random_walk_expander(w_col=0, tau_col=4, dt=0.1):
     return expander
 
 
+def make_ou_salience_process(num_beacons, dt=0.1, sigma_s=None, tau_s=None,
+                             sigma_col=None, tau_col=None):
+    """Beacon salience as a shared, mean-reverting log-Ornstein-Uhlenbeck process.
+
+        log s_b(t) = log s_b(t-1) * exp(-dt/tau_s)
+                     + sigma_s * sqrt(1 - exp(-2 dt/tau_s)) * xi_t
+
+    with log s_b(0) ~ N(0, sigma_s^2), i.e. started from the stationary
+    distribution so no beacon is privileged at t=0 and the trial contains no
+    burn-in transient. Each beacon gets an independent path; all agents in a
+    trial see the same paths, because salience is a property of the beacon
+    rather than of the observer. That is what makes the mechanism identifiable:
+    a brightening beacon re-targets many agents at the same instant, and
+    synchronised turning is a far louder signature than the incidental,
+    geometry-driven re-targeting a static salience field can produce.
+
+    The parameterisation is chosen so that the two hyper-parameters separate:
+
+      sigma_s : stationary SD of log-salience — HOW FAR apart beacons get.
+                sigma_s = 0 makes every beacon identical and constant at s = 1,
+                which reduces the selection rule to nearest-beacon exactly.
+      tau_s   : reversion timescale in seconds — HOW OFTEN the ordering changes.
+                Switching requires the log-salience gap to overcome log(d_ratio),
+                and with beacons outside the room that ratio is only ~1.5-3x.
+
+    Two modes. Supplying `sigma_s`/`tau_s` fixes them as constants: the salience
+    schedule is then part of the experimental design, which is the honest
+    reading of the apparatus — the immersive room renders the beacons, so their
+    salience is something the experimenter sets and records rather than
+    something an observer must infer. Supplying `sigma_col`/`tau_col` instead
+    reads them per-simulation from the prior draw, for the superstatistics
+    formulation where they ARE inference targets. In that mode they shape the
+    path here and are never read inside the kernel, so — like tau in
+    `make_logit_random_walk_expander` — they must not be named "alpha" or
+    "kappa", which the kernel does read by slot.
+
+    Parameters
+    ----------
+    num_beacons : int
+    dt          : float — must match the simulator's dt, so tau_s is in seconds
+                  and means the same thing at any dt or horizon.
+    sigma_s     : float or None — fixed stationary SD of log-salience
+    tau_s       : float or None — fixed reversion timescale, seconds
+    sigma_col   : int or None — theta column holding sigma_s instead
+    tau_col     : int or None — theta column holding tau_s instead
+
+    Returns
+    -------
+    callable(thetas, num_timesteps) -> (B, T, num_beacons), strictly positive
+    """
+    if (sigma_s is None) == (sigma_col is None):
+        raise ValueError("supply exactly one of sigma_s (fixed) or sigma_col (inferred)")
+    if (tau_s is None) == (tau_col is None):
+        raise ValueError("supply exactly one of tau_s (fixed) or tau_col (inferred)")
+
+    def process(thetas, num_timesteps):
+        batch_size = thetas.shape[0]
+        if sigma_col is None:
+            sigma = np.full((batch_size, 1), float(sigma_s))
+        else:
+            sigma = np.maximum(thetas[:, sigma_col], 0.0)[:, None]      # (B, 1)
+        # Floor tau_s: as tau_s -> 0 the process becomes white noise and the
+        # decay/innovation split degenerates.
+        if tau_col is None:
+            tau = np.full((batch_size, 1), max(float(tau_s), 1e-3))
+        else:
+            tau = np.maximum(thetas[:, tau_col], 1e-3)[:, None]         # (B, 1)
+
+        decay = np.exp(-dt / tau)                                       # (B, 1)
+        innov = sigma * np.sqrt(1.0 - decay ** 2)                       # (B, 1)
+
+        log_s = np.zeros((batch_size, num_timesteps, num_beacons))
+        # Stationary initial draw: SD sigma_s, not 0, so t=0 is already a sample
+        # from the process rather than a common starting point.
+        log_s[:, 0, :] = sigma * np.random.normal(size=(batch_size, num_beacons))
+        xi = np.random.normal(size=(batch_size, num_timesteps, num_beacons))
+        for t in range(1, num_timesteps):
+            log_s[:, t, :] = decay * log_s[:, t - 1, :] + innov * xi[:, t, :]
+
+        return np.ascontiguousarray(np.exp(log_s))
+    return process
+
+
 @njit
 def _seed_numba_rng(seed):
     """Seed numba's RNG on the calling thread. Numba's state is independent of
@@ -288,7 +441,8 @@ def _seed_numba_rng(seed):
 
 @njit(parallel=True)
 def _batch_simulator(thetas, num_agents, num_beacons, room_size, dt, time_horizon,
-                     beacon_strengths, salience_sensitivity, reference_radii,
+                     beacon_strengths, beacon_strength_paths, switch_margin,
+                     salience_sensitivity, reference_radii,
                      beacon_spread, relative_heading, base_seed,
                      repulsion_radius, repulsion_gain, obstacles, max_turn_rate,
                      door_wall, door_center, door_half_width,
@@ -314,9 +468,15 @@ def _batch_simulator(thetas, num_agents, num_beacons, room_size, dt, time_horizo
         if base_seed >= 0:
             np.random.seed(base_seed + b)
 
+        if beacon_strength_paths.shape[0] > 0:
+            strength_path = beacon_strength_paths[b]
+        else:
+            strength_path = beacon_strength_paths[:, 0, :]   # empty (0, N) slice
+
         pos, rot, nbr, dst, av, nf, ms = simulator_fun(
             thetas[b], num_agents, num_beacons, room_size, 1.0, dt, 0.7, 2.5, 0.1, time_horizon,
-            beacon_strengths, salience_sensitivity, reference_radii, beacon_spread,
+            beacon_strengths, strength_path, switch_margin,
+            salience_sensitivity, reference_radii, beacon_spread,
             relative_heading,
             repulsion_radius, repulsion_gain, obstacles, max_turn_rate,
             door_wall, door_center, door_half_width,
@@ -383,6 +543,9 @@ class TogetherFlowSimulator:
         beacon_assignment=None,
         diffusive_heading: bool = False,
         include_parameter_paths: bool = False,
+        salience_process=None,
+        include_salience_paths: bool = False,
+        switch_margin: float = 1.0,
     ):
         self.relative_heading = bool(relative_heading)
         # Whether eta is a diffusion coefficient on the heading (True) or a
@@ -397,6 +560,18 @@ class TogetherFlowSimulator:
         # nuisance — the superstatistics formulation, where the estimator
         # produces a posterior over w_t at every step instead of over (w0, tau).
         self.include_parameter_paths = bool(include_parameter_paths)
+        # Turns prior draws into a (B, T, num_beacons) salience field shared by
+        # every agent. None keeps `beacon_strengths` static, which is what every
+        # arm before the time-varying-salience work used.
+        self.salience_process = salience_process
+        # Emit those paths alongside the observables. They are a latent world
+        # state, not an observable — never route them into summary_variables.
+        self.include_salience_paths = bool(include_salience_paths)
+        # Factor by which a challenger beacon must beat the incumbent before an
+        # agent re-targets. 1.0 is a plain argmax, which under a continuous
+        # salience field is not a switching model but a flicker (see the
+        # hysteresis note in simulator_fun).
+        self.switch_margin = float(switch_margin)
         # Derived from param_names so a variant declares its parameters once and
         # the kernel is told explicitly where to find them.
         self.alpha_slot = self.param_names.index("alpha") if "alpha" in self.param_names else -1
@@ -538,9 +713,24 @@ class TogetherFlowSimulator:
                 f"got {thetas_t.shape}"
             )
 
+        # float32 throughout: it must unify with self.beacon_strengths inside the
+        # kernel, and numba will not join a float32 and a float64 array.
+        if self.salience_process is None:
+            strength_paths = np.zeros((0, 0, self.num_beacons), dtype=np.float32)
+        else:
+            strength_paths = np.ascontiguousarray(
+                self.salience_process(thetas, num_timesteps), dtype=np.float32
+            )
+            if strength_paths.shape != (batch_size, num_timesteps, self.num_beacons):
+                raise ValueError(
+                    f"salience_process must return shape ({batch_size}, "
+                    f"{num_timesteps}, {self.num_beacons}); got {strength_paths.shape}"
+                )
+
         all_pos, all_rot, all_nbr, all_dst, all_av, all_nf, all_ms = _batch_simulator(
             thetas_t, self.num_agents, self.num_beacons, self.room_size, self.dt, self.time_horizon,
-            self.beacon_strengths, self.salience_sensitivity, self.reference_radii,
+            self.beacon_strengths, strength_paths, self.switch_margin,
+            self.salience_sensitivity, self.reference_radii,
             self.beacon_spread, self.relative_heading, base_seed,
             self.repulsion_radius, self.repulsion_gain, self.obstacles, self.max_turn_rate,
             self.door_wall, self.door_center, self.door_half_width,
@@ -579,6 +769,24 @@ class TogetherFlowSimulator:
             # constant down the time axis by construction.
             for i, name in enumerate(self.param_names):
                 out[f"{name}_path"] = thetas_t[:, :, i:i + 1].astype(np.float32)
+        if self.include_salience_paths and self.salience_process is not None:
+            # The salience field the kernel used, as an OBSERVABLE rather than a
+            # latent. The immersive room renders the beacons, so their salience
+            # is something the experiment sets and records — unlike `neighbors`
+            # and `distances`, which are computed at the true sensing radius,
+            # this channel presupposes nothing that is being inferred, so
+            # routing it into summary_variables is legitimate.
+            sal = strength_paths
+            if self.downsample:
+                sal = np.ascontiguousarray(sal[:, ::self.downsample_factor, :])
+            if self.output_mode == "summary":
+                out["salience"] = np.concatenate(
+                    [sal.mean(axis=1), sal.std(axis=1)], axis=-1
+                ).astype(np.float32)
+            else:
+                # (B, T, num_beacons) — already flat in the feature axis, and it
+                # is per-beacon rather than per-agent in every mode.
+                out["salience"] = sal.astype(np.float32)
 
         if self.output_mode == "flat":
             out |= {

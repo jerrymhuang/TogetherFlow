@@ -198,6 +198,47 @@ def prior_nonstationary():
     return np.array([weight, radius, v, focus, tau], dtype=np.float32)
 
 
+# ── Reviewer point 8: time-varying beacon salience ───────────────────────────
+
+@njit
+def salience_ou_prior():
+    """[w, r, v, eta, sigma_s, tau_s] — hyper-parameters of the salience process.
+
+    Beacon salience follows a shared log-Ornstein-Uhlenbeck process (see
+    `simulator.make_ou_salience_process`); these two govern it.
+
+    sigma_s ~ 2.0 * Beta(1.5, 2) is the stationary SD of log-salience. It has
+    density at zero because sigma_s = 0 collapses every beacon to s = 1, which
+    makes the selection rule exactly nearest-beacon — the published model. So
+    "salience does not vary" is a restriction the data can reject rather than an
+    assumption, the same structure prior_nonstationary gives tau. The upper reach
+    matters for a different reason: switching needs the log-salience gap between
+    two beacons to exceed log(d_ratio), and with beacons outside the room those
+    ratios are only about 1.5-3x, i.e. log-gaps of 0.4-1.1. A gap between two
+    independent paths has SD sigma_s*sqrt(2), so sigma_s near 1 is where
+    crossings start, and the prior must reach well past it.
+
+    tau_s ~ 2 + 18 * Beta(2, 2) seconds is the reversion timescale, spanning
+    roughly 2-20 s: at the bottom the field flickers faster than an agent can
+    steer toward anything, at the top a 60 s trial contains only a few crossings.
+    It is bounded away from zero because tau_s -> 0 degenerates to white noise,
+    which is not a switching model at all — it would just add heading noise and
+    duplicate eta.
+
+    Note alpha is NOT inferred here and is held at 1.0 by the variant: with a
+    time-varying field the exponent is redundant, since any large alpha makes the
+    rule a pure argmax over salience regardless of its value. Inferring both is
+    what made v2-salience-spread50 unidentifiable.
+    """
+    weight  = np.random.beta(2., 2.)
+    radius  = np.random.lognormal(0., 0.5)
+    v       = np.random.beta(2., 2.) * 2.
+    focus   = np.random.beta(2., 2.)
+    sigma_s = np.random.beta(1.5, 2.) * 2.0
+    tau_s   = 2.0 + np.random.beta(2., 2.) * 18.0
+    return np.array([weight, radius, v, focus, sigma_s, tau_s], dtype=np.float32)
+
+
 # ── Reviewer point 4: partial pooling ────────────────────────────────────────
 
 @njit

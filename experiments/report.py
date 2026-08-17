@@ -83,6 +83,14 @@ def write_report(results_dir, variant, metrics, training_report, diag_report,
         ("Reference radii (r-free counts)", str(variant.reference_radii) if variant.reference_radii else "—"),
         ("Beacon strengths", str(variant.beacon_strengths) if variant.beacon_strengths else "uniform"),
         ("Beacon spread", f"{variant.beacon_spread:g}"),
+        ("Beacon salience",
+         "static"
+         if getattr(variant, "salience_sigma", None) is None
+         else (f"shared log-OU, sigma_s={variant.salience_sigma:g}, "
+               f"tau_s={variant.salience_tau:g}s, alpha="
+               f"{variant.salience_sensitivity:g}, "
+               f"switch margin {variant.switch_margin:g}x"
+               f"{' — OBSERVED' if 'salience' in variant.channels else ' — hidden'}")),
         ("Heading update",
          "relative bearing (rotationally invariant)"
          if getattr(variant, "relative_heading", False)
