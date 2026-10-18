@@ -1,0 +1,401 @@
+variant,metric,parameter,value
+v0-bdlstm-diffusion,NRMSE,w,0.34660179128036567
+v0-bdlstm-diffusion,NRMSE,r,0.0631015228785074
+v0-bdlstm-diffusion,NRMSE,v,0.24989809694620188
+v0-bdlstm-diffusion,NRMSE,noise,0.6787409298215552
+v0-bdlstm-diffusion,Log-gamma,w,2.395469521873494
+v0-bdlstm-diffusion,Log-gamma,r,-8.398519422865267
+v0-bdlstm-diffusion,Log-gamma,v,-2.439685955588436
+v0-bdlstm-diffusion,Log-gamma,noise,-0.8675127634841917
+v0-bdlstm-diffusion,ECE,w,0.011578947368421078
+v0-bdlstm-diffusion,ECE,r,0.012631578947368428
+v0-bdlstm-diffusion,ECE,v,0.02429824561403504
+v0-bdlstm-diffusion,ECE,noise,0.030175438596491244
+v0-bdlstm-diffusion,Post. Contraction,w,0.8869390456291084
+v0-bdlstm-diffusion,Post. Contraction,r,0.9965582892680385
+v0-bdlstm-diffusion,Post. Contraction,v,0.9373455645843085
+v0-bdlstm-diffusion,Post. Contraction,noise,0.5220137511577858
+v0-bdlstm-online,NRMSE,w,0.2895927537336336
+v0-bdlstm-online,NRMSE,r,0.07721003108776997
+v0-bdlstm-online,NRMSE,v,0.21100890055794214
+v0-bdlstm-online,NRMSE,noise,0.5095797127007292
+v0-bdlstm-online,Log-gamma,w,0.1791960481831598
+v0-bdlstm-online,Log-gamma,r,-11.393720679333256
+v0-bdlstm-online,Log-gamma,v,1.1461272447289936
+v0-bdlstm-online,Log-gamma,noise,1.3046646782118347
+v0-bdlstm-online,ECE,w,0.026403508771929804
+v0-bdlstm-online,ECE,r,0.06859649122807018
+v0-bdlstm-online,ECE,v,0.04622807017543856
+v0-bdlstm-online,ECE,noise,0.005877192982456161
+v0-bdlstm-online,Post. Contraction,w,0.9161638282059632
+v0-bdlstm-online,Post. Contraction,r,0.9937702832545119
+v0-bdlstm-online,Post. Contraction,v,0.9543744520110171
+v0-bdlstm-online,Post. Contraction,noise,0.7316499080520709
+v0-diffusion,NRMSE,w,0.7063853880454452
+v0-diffusion,NRMSE,r,0.053151626029327215
+v0-diffusion,NRMSE,v,0.27607429258925303
+v0-diffusion,NRMSE,noise,0.8442752982338024
+v0-diffusion,Log-gamma,w,1.7447352961591107
+v0-diffusion,Log-gamma,r,0.7020954389650642
+v0-diffusion,Log-gamma,v,2.9395795661847477
+v0-diffusion,Log-gamma,noise,2.6664658763767193
+v0-diffusion,ECE,w,0.03859649122807016
+v0-diffusion,ECE,r,0.05307017543859649
+v0-diffusion,ECE,v,0.008859649122807012
+v0-diffusion,ECE,noise,0.009649122807017574
+v0-diffusion,Post. Contraction,w,0.5217302461193776
+v0-diffusion,Post. Contraction,r,0.9973941290087454
+v0-diffusion,Post. Contraction,v,0.9172757783726699
+v0-diffusion,Post. Contraction,noise,0.2685305632294909
+v0-legacy-heading,NRMSE,w,1.014328691967782
+v0-legacy-heading,NRMSE,r,0.029327280508005864
+v0-legacy-heading,NRMSE,v,0.12848550504807515
+v0-legacy-heading,NRMSE,noise,0.9718631456917808
+v0-legacy-heading,Log-gamma,w,3.818820127592919
+v0-legacy-heading,Log-gamma,r,-11.220590009987081
+v0-legacy-heading,Log-gamma,v,1.7146716490926845
+v0-legacy-heading,Log-gamma,noise,1.480810302809089
+v0-legacy-heading,ECE,w,0.008245614035087723
+v0-legacy-heading,ECE,r,0.12894736842105264
+v0-legacy-heading,ECE,v,0.011140350877192978
+v0-legacy-heading,ECE,noise,0.022894736842105246
+v0-legacy-heading,Post. Contraction,w,0.0032699335284399056
+v0-legacy-heading,Post. Contraction,r,0.9991141976469167
+v0-legacy-heading,Post. Contraction,v,0.9821600074436814
+v0-legacy-heading,Post. Contraction,noise,0.10283124273596406
+v0-reference,NRMSE,w,0.3423830023854076
+v0-reference,NRMSE,r,0.05907874809484841
+v0-reference,NRMSE,v,0.19630127967611494
+v0-reference,NRMSE,noise,0.4415417661418174
+v0-reference,Log-gamma,w,3.0767362856214477
+v0-reference,Log-gamma,r,-0.7157665330900497
+v0-reference,Log-gamma,v,1.7354006263266661
+v0-reference,Log-gamma,noise,2.8924833064777964
+v0-reference,ECE,w,0.015263157894736812
+v0-reference,ECE,r,0.028771929824561365
+v0-reference,ECE,v,0.0128070175438596
+v0-reference,ECE,noise,0.008157894736842114
+v0-reference,Post. Contraction,w,0.8895525105707691
+v0-reference,Post. Contraction,r,0.9967414358382516
+v0-reference,Post. Contraction,v,0.9616155312054467
+v0-reference,Post. Contraction,noise,0.7954057071306226
+v1-collision,NRMSE,w,0.22169252671255577
+v1-collision,NRMSE,r,0.04920472206343707
+v1-collision,NRMSE,v,0.16051645269496834
+v1-collision,NRMSE,noise,0.43530601467253516
+v1-collision,Log-gamma,w,2.3214804398901014
+v1-collision,Log-gamma,r,0.7620963405362193
+v1-collision,Log-gamma,v,0.3790424144471942
+v1-collision,Log-gamma,noise,2.2449605594796758
+v1-collision,ECE,w,0.024999999999999967
+v1-collision,ECE,r,0.030701754385964924
+v1-collision,ECE,v,0.012543859649122774
+v1-collision,ECE,noise,0.026140350877192964
+v1-collision,Post. Contraction,w,0.9497853318990257
+v1-collision,Post. Contraction,r,0.9978833759698522
+v1-collision,Post. Contraction,v,0.9756305712298213
+v1-collision,Post. Contraction,noise,0.8204263748360211
+v1-collision-kappa,NRMSE,w,0.261656326246998
+v1-collision-kappa,NRMSE,r,0.056002286053643796
+v1-collision-kappa,NRMSE,v,0.15267083246940769
+v1-collision-kappa,NRMSE,noise,0.6119373037233186
+v1-collision-kappa,NRMSE,kappa,0.671990612642916
+v1-collision-kappa,Log-gamma,w,4.385091044019026
+v1-collision-kappa,Log-gamma,r,0.0017971343548797332
+v1-collision-kappa,Log-gamma,v,3.3277673678399737
+v1-collision-kappa,Log-gamma,noise,2.9312239387848584
+v1-collision-kappa,Log-gamma,kappa,1.31019825854416
+v1-collision-kappa,ECE,w,0.018684210526315817
+v1-collision-kappa,ECE,r,0.05596491228070172
+v1-collision-kappa,ECE,v,0.01859649122807014
+v1-collision-kappa,ECE,noise,0.013157894736842035
+v1-collision-kappa,ECE,kappa,0.020175438596491208
+v1-collision-kappa,Post. Contraction,w,0.9339056865145494
+v1-collision-kappa,Post. Contraction,r,0.9972574268105627
+v1-collision-kappa,Post. Contraction,v,0.9743543195612547
+v1-collision-kappa,Post. Contraction,noise,0.631676131653914
+v1-collision-kappa,Post. Contraction,kappa,0.6168720687806887
+v2-salience-spread10,NRMSE,w,0.10750598493730532
+v2-salience-spread10,NRMSE,r,0.07305514141953218
+v2-salience-spread10,NRMSE,v,0.17847918335104018
+v2-salience-spread10,NRMSE,noise,0.5946117306184744
+v2-salience-spread10,NRMSE,alpha,0.9585694207126602
+v2-salience-spread10,Log-gamma,w,3.394237378726975
+v2-salience-spread10,Log-gamma,r,-2.7659307318701347
+v2-salience-spread10,Log-gamma,v,2.0095427536386583
+v2-salience-spread10,Log-gamma,noise,2.126714215269328
+v2-salience-spread10,Log-gamma,alpha,3.1729749157508507
+v2-salience-spread10,ECE,w,0.023070175438596477
+v2-salience-spread10,ECE,r,0.03043859649122807
+v2-salience-spread10,ECE,v,0.006491228070175492
+v2-salience-spread10,ECE,noise,0.033859649122807034
+v2-salience-spread10,ECE,alpha,0.015438596491228078
+v2-salience-spread10,Post. Contraction,w,0.9877011913879921
+v2-salience-spread10,Post. Contraction,r,0.9952031291424244
+v2-salience-spread10,Post. Contraction,v,0.9635076313049618
+v2-salience-spread10,Post. Contraction,noise,0.6894699038711317
+v2-salience-spread10,Post. Contraction,alpha,0.02218793907821337
+v2-salience-spread50,NRMSE,w,0.23740841594650025
+v2-salience-spread50,NRMSE,r,0.057630897339212
+v2-salience-spread50,NRMSE,v,0.15739432707060586
+v2-salience-spread50,NRMSE,noise,0.41038964356348473
+v2-salience-spread50,NRMSE,alpha,0.9666505842577985
+v2-salience-spread50,Log-gamma,w,3.052739465588631
+v2-salience-spread50,Log-gamma,r,-0.13111319550447734
+v2-salience-spread50,Log-gamma,v,3.602196690453199
+v2-salience-spread50,Log-gamma,noise,4.340342666989151
+v2-salience-spread50,Log-gamma,alpha,1.7907314089490087
+v2-salience-spread50,ECE,w,0.02692982456140347
+v2-salience-spread50,ECE,r,0.06078947368421056
+v2-salience-spread50,ECE,v,0.01394736842105259
+v2-salience-spread50,ECE,noise,0.009824561403508791
+v2-salience-spread50,ECE,alpha,0.015438596491228113
+v2-salience-spread50,Post. Contraction,w,0.9354318308237154
+v2-salience-spread50,Post. Contraction,r,0.996988328664574
+v2-salience-spread50,Post. Contraction,v,0.9757719588417674
+v2-salience-spread50,Post. Contraction,noise,0.8280789076721935
+v2-salience-spread50,Post. Contraction,alpha,0.09441741063126918
+v3a-fixed-radius,NRMSE,w,0.17948346986979558
+v3a-fixed-radius,NRMSE,v,0.17137667217962024
+v3a-fixed-radius,NRMSE,noise,0.3552704410211391
+v3a-fixed-radius,Log-gamma,w,1.779173048910019
+v3a-fixed-radius,Log-gamma,v,1.850227637696893
+v3a-fixed-radius,Log-gamma,noise,0.9939717644788938
+v3a-fixed-radius,ECE,w,0.01298245614035088
+v3a-fixed-radius,ECE,v,0.02131578947368419
+v3a-fixed-radius,ECE,noise,0.01508771929824565
+v3a-fixed-radius,Post. Contraction,w,0.9705446926758315
+v3a-fixed-radius,Post. Contraction,v,0.968920040633084
+v3a-fixed-radius,Post. Contraction,noise,0.881318772240419
+v3c-rfree-observables,NRMSE,w,0.2691546194337309
+v3c-rfree-observables,NRMSE,r,0.8442251559878882
+v3c-rfree-observables,NRMSE,v,0.24253888179301067
+v3c-rfree-observables,NRMSE,noise,0.35419563866789916
+v3c-rfree-observables,Log-gamma,w,3.7428684954889704
+v3c-rfree-observables,Log-gamma,r,4.783120431971851
+v3c-rfree-observables,Log-gamma,v,2.604495978854207
+v3c-rfree-observables,Log-gamma,noise,0.06434169244150481
+v3c-rfree-observables,ECE,w,0.015263157894736812
+v3c-rfree-observables,ECE,r,0.009649122807017518
+v3c-rfree-observables,ECE,v,0.01947368421052631
+v3c-rfree-observables,ECE,noise,0.015789473684210548
+v3c-rfree-observables,Post. Contraction,w,0.9331113869724685
+v3c-rfree-observables,Post. Contraction,r,0.292793272629752
+v3c-rfree-observables,Post. Contraction,v,0.9472567514838046
+v3c-rfree-observables,Post. Contraction,noise,0.8734343945013991
+v4-horizon-40,NRMSE,w,0.35428423850294943
+v4-horizon-40,NRMSE,r,0.060158574783687066
+v4-horizon-40,NRMSE,v,0.20765485071649525
+v4-horizon-40,NRMSE,noise,0.5118162470929561
+v4-horizon-40,Log-gamma,w,3.910680741477881
+v4-horizon-40,Log-gamma,r,0.5787026275168946
+v4-horizon-40,Log-gamma,v,0.371372984093356
+v4-horizon-40,Log-gamma,noise,3.048788126006575
+v4-horizon-40,ECE,w,0.008421052631578954
+v4-horizon-40,ECE,r,0.03745614035087716
+v4-horizon-40,ECE,v,0.020789473684210497
+v4-horizon-40,ECE,noise,0.009824561403508805
+v4-horizon-40,Post. Contraction,w,0.8843849918269477
+v4-horizon-40,Post. Contraction,r,0.9967484075227369
+v4-horizon-40,Post. Contraction,v,0.9531306649089982
+v4-horizon-40,Post. Contraction,noise,0.7279652787375547
+v4-horizon-80,NRMSE,w,0.2659955045831349
+v4-horizon-80,NRMSE,r,0.053502383365872486
+v4-horizon-80,NRMSE,v,0.17772227350042732
+v4-horizon-80,NRMSE,noise,0.3933552058601266
+v4-horizon-80,Log-gamma,w,3.3824956252885676
+v4-horizon-80,Log-gamma,r,-0.6414322043091333
+v4-horizon-80,Log-gamma,v,3.7478100236631207
+v4-horizon-80,Log-gamma,noise,2.4649019149588627
+v4-horizon-80,ECE,w,0.012192982456140367
+v4-horizon-80,ECE,r,0.03263157894736843
+v4-horizon-80,ECE,v,0.02157894736842106
+v4-horizon-80,ECE,noise,0.021228070175438596
+v4-horizon-80,Post. Contraction,w,0.9351949268859796
+v4-horizon-80,Post. Contraction,r,0.9974174791235753
+v4-horizon-80,Post. Contraction,v,0.9658846324997964
+v4-horizon-80,Post. Contraction,noise,0.8411405886101131
+v4-long-horizon,NRMSE,w,0.32803244771894147
+v4-long-horizon,NRMSE,r,0.05769719097514737
+v4-long-horizon,NRMSE,v,0.21197162390410657
+v4-long-horizon,NRMSE,noise,0.5597572769466503
+v4-long-horizon,Log-gamma,w,3.212430434729075
+v4-long-horizon,Log-gamma,r,-4.403364901188501
+v4-long-horizon,Log-gamma,v,1.3930041811012137
+v4-long-horizon,Log-gamma,noise,3.4890191509723985
+v4-long-horizon,ECE,w,0.006403508771929856
+v4-long-horizon,ECE,r,0.054035087719298214
+v4-long-horizon,ECE,v,0.020350877192982453
+v4-long-horizon,ECE,noise,0.012280701754385975
+v4-long-horizon,Post. Contraction,w,0.8930097822877185
+v4-long-horizon,Post. Contraction,r,0.9968519811404719
+v4-long-horizon,Post. Contraction,v,0.9536245674413821
+v4-long-horizon,Post. Contraction,noise,0.6867891669893718
+v4-short-horizon,NRMSE,w,0.371232732187867
+v4-short-horizon,NRMSE,r,0.06343048859801872
+v4-short-horizon,NRMSE,v,0.19792798592927138
+v4-short-horizon,NRMSE,noise,0.45740483565154866
+v4-short-horizon,Log-gamma,w,3.0460272080554023
+v4-short-horizon,Log-gamma,r,3.600952723185938
+v4-short-horizon,Log-gamma,v,0.013187009588950409
+v4-short-horizon,Log-gamma,noise,2.4848383494665245
+v4-short-horizon,ECE,w,0.02894736842105268
+v4-short-horizon,ECE,r,0.012631578947368428
+v4-short-horizon,ECE,v,0.023596491228070116
+v4-short-horizon,ECE,noise,0.00473684210526315
+v4-short-horizon,Post. Contraction,w,0.8811335251461553
+v4-short-horizon,Post. Contraction,r,0.9965832682341824
+v4-short-horizon,Post. Contraction,v,0.960519929160112
+v4-short-horizon,Post. Contraction,noise,0.7839580594569204
+v5-timevarying-w,NRMSE,w0,0.47337776932335685
+v5-timevarying-w,NRMSE,r,0.05434510135231635
+v5-timevarying-w,NRMSE,v,0.22116130050319704
+v5-timevarying-w,NRMSE,noise,0.5563305073354958
+v5-timevarying-w,NRMSE,tau,0.9784097074900029
+v5-timevarying-w,Log-gamma,w0,2.8001294506893943
+v5-timevarying-w,Log-gamma,r,-3.001650731503004
+v5-timevarying-w,Log-gamma,v,2.4067926250353215
+v5-timevarying-w,Log-gamma,noise,1.8218688681502215
+v5-timevarying-w,Log-gamma,tau,3.9484438673132463
+v5-timevarying-w,ECE,w0,0.017456140350877197
+v5-timevarying-w,ECE,r,0.04754385964912278
+v5-timevarying-w,ECE,v,0.018508771929824502
+v5-timevarying-w,ECE,noise,0.01438596491228071
+v5-timevarying-w,ECE,tau,0.03210526315789469
+v5-timevarying-w,Post. Contraction,w0,0.7994021259100197
+v5-timevarying-w,Post. Contraction,r,0.9972663671603952
+v5-timevarying-w,Post. Contraction,v,0.9528604475464042
+v5-timevarying-w,Post. Contraction,noise,0.6920242327052324
+v5-timevarying-w,Post. Contraction,tau,0.07640407707126223
+v6a-partial-pooling,NRMSE,mu_w,0.5264856366032262
+v6a-partial-pooling,NRMSE,r,0.06096371580391664
+v6a-partial-pooling,NRMSE,v,0.302771832456406
+v6a-partial-pooling,NRMSE,noise,0.9478829868617744
+v6a-partial-pooling,NRMSE,sigma_w,0.9505752303371847
+v6a-partial-pooling,Log-gamma,mu_w,1.1359346972170523
+v6a-partial-pooling,Log-gamma,r,-2.6999243128525467
+v6a-partial-pooling,Log-gamma,v,-0.0011408182055902864
+v6a-partial-pooling,Log-gamma,noise,1.0987718074161976
+v6a-partial-pooling,Log-gamma,sigma_w,3.053480582706474
+v6a-partial-pooling,ECE,mu_w,0.009561403508771923
+v6a-partial-pooling,ECE,r,0.02824561403508774
+v6a-partial-pooling,ECE,v,0.02307017543859649
+v6a-partial-pooling,ECE,noise,0.009035087719298257
+v6a-partial-pooling,ECE,sigma_w,0.033859649122807034
+v6a-partial-pooling,Post. Contraction,mu_w,0.7637321447258542
+v6a-partial-pooling,Post. Contraction,r,0.9970257955131068
+v6a-partial-pooling,Post. Contraction,v,0.9069222789192526
+v6a-partial-pooling,Post. Contraction,noise,0.08112697132331742
+v6a-partial-pooling,Post. Contraction,sigma_w,0.09213030956976687
+v7-prior-bounded-radius,NRMSE,w,0.22174761511440952
+v7-prior-bounded-radius,NRMSE,r,0.05939530688192604
+v7-prior-bounded-radius,NRMSE,v,0.17259990514657475
+v7-prior-bounded-radius,NRMSE,noise,0.398810933278744
+v7-prior-bounded-radius,Log-gamma,w,3.014755340192674
+v7-prior-bounded-radius,Log-gamma,r,0.23848794183548117
+v7-prior-bounded-radius,Log-gamma,v,-1.166891866177373
+v7-prior-bounded-radius,Log-gamma,noise,3.206765734674803
+v7-prior-bounded-radius,ECE,w,0.004035087719298239
+v7-prior-bounded-radius,ECE,r,0.020175438596491208
+v7-prior-bounded-radius,ECE,v,0.027456140350877234
+v7-prior-bounded-radius,ECE,noise,0.007192982456140366
+v7-prior-bounded-radius,Post. Contraction,w,0.9533322999747795
+v7-prior-bounded-radius,Post. Contraction,r,0.9964605932403502
+v7-prior-bounded-radius,Post. Contraction,v,0.969714252769507
+v7-prior-bounded-radius,Post. Contraction,noise,0.8485466143400142
+v7-prior-eta-diffuse,NRMSE,w,0.3392528456339632
+v7-prior-eta-diffuse,NRMSE,r,0.05512990659471992
+v7-prior-eta-diffuse,NRMSE,v,0.1964513832513778
+v7-prior-eta-diffuse,NRMSE,noise,0.36344731171841144
+v7-prior-eta-diffuse,Log-gamma,w,4.272499906087152
+v7-prior-eta-diffuse,Log-gamma,r,-1.9001856759527596
+v7-prior-eta-diffuse,Log-gamma,v,4.631872329695217
+v7-prior-eta-diffuse,Log-gamma,noise,-1.2425921861928317
+v7-prior-eta-diffuse,ECE,w,0.013245614035087765
+v7-prior-eta-diffuse,ECE,r,0.05070175438596489
+v7-prior-eta-diffuse,ECE,v,0.009473684210526329
+v7-prior-eta-diffuse,ECE,noise,0.03149122807017549
+v7-prior-eta-diffuse,Post. Contraction,w,0.8795738550469234
+v7-prior-eta-diffuse,Post. Contraction,r,0.9971485501482498
+v7-prior-eta-diffuse,Post. Contraction,v,0.9633069884892513
+v7-prior-eta-diffuse,Post. Contraction,noise,0.8708931927632281
+v7-prior-eta-smooth,NRMSE,w,0.29080674135998236
+v7-prior-eta-smooth,NRMSE,r,0.056248827524192864
+v7-prior-eta-smooth,NRMSE,v,0.20454139455511477
+v7-prior-eta-smooth,NRMSE,noise,0.5619286625394598
+v7-prior-eta-smooth,Log-gamma,w,3.6170592784175613
+v7-prior-eta-smooth,Log-gamma,r,2.7170032050318347
+v7-prior-eta-smooth,Log-gamma,v,1.583143693873763
+v7-prior-eta-smooth,Log-gamma,noise,4.76027564767586
+v7-prior-eta-smooth,ECE,w,0.009649122807017546
+v7-prior-eta-smooth,ECE,r,0.04508771929824562
+v7-prior-eta-smooth,ECE,v,0.017105263157894735
+v7-prior-eta-smooth,ECE,noise,0.01315789473684207
+v7-prior-eta-smooth,Post. Contraction,w,0.9184920601290376
+v7-prior-eta-smooth,Post. Contraction,r,0.9973781460126319
+v7-prior-eta-smooth,Post. Contraction,v,0.9602304810321944
+v7-prior-eta-smooth,Post. Contraction,noise,0.6921854716375806
+v7-prior-slow-velocity,NRMSE,w,0.3235347661499126
+v7-prior-slow-velocity,NRMSE,r,0.06349250778629689
+v7-prior-slow-velocity,NRMSE,v,0.21226156443529448
+v7-prior-slow-velocity,NRMSE,noise,0.4158043461518548
+v7-prior-slow-velocity,Log-gamma,w,1.1627958910120826
+v7-prior-slow-velocity,Log-gamma,r,-2.67555922617579
+v7-prior-slow-velocity,Log-gamma,v,2.034270762992459
+v7-prior-slow-velocity,Log-gamma,noise,3.0527286244346796
+v7-prior-slow-velocity,ECE,w,0.007280701754385999
+v7-prior-slow-velocity,ECE,r,0.021666666666666612
+v7-prior-slow-velocity,ECE,v,0.008947368421052648
+v7-prior-slow-velocity,ECE,noise,0.026403508771929804
+v7-prior-slow-velocity,Post. Contraction,w,0.9074374858163317
+v7-prior-slow-velocity,Post. Contraction,r,0.9964175600323228
+v7-prior-slow-velocity,Post. Contraction,v,0.9565529432301187
+v7-prior-slow-velocity,Post. Contraction,noise,0.8320456386807747
+v7-prior-tight,NRMSE,w,0.3577645735725712
+v7-prior-tight,NRMSE,r,0.08837821296572193
+v7-prior-tight,NRMSE,v,0.2552598276896806
+v7-prior-tight,NRMSE,noise,0.7290457770950766
+v7-prior-tight,Log-gamma,w,4.225116634427543
+v7-prior-tight,Log-gamma,r,3.9036860326933223
+v7-prior-tight,Log-gamma,v,2.5791175979091805
+v7-prior-tight,Log-gamma,noise,1.4143143614429563
+v7-prior-tight,ECE,w,0.01175438596491224
+v7-prior-tight,ECE,r,0.0128070175438596
+v7-prior-tight,ECE,v,0.008508771929824577
+v7-prior-tight,ECE,noise,0.020526315789473726
+v7-prior-tight,Post. Contraction,w,0.8848926958388486
+v7-prior-tight,Post. Contraction,r,0.9928069411197682
+v7-prior-tight,Post. Contraction,v,0.9285314123728533
+v7-prior-tight,Post. Contraction,noise,0.48140901543838943
+v7-prior-wide,NRMSE,w,0.2582264825958708
+v7-prior-wide,NRMSE,r,0.04512945494439864
+v7-prior-wide,NRMSE,v,0.15486643240636855
+v7-prior-wide,NRMSE,noise,0.36676811095707945
+v7-prior-wide,Log-gamma,w,-0.09942094584821382
+v7-prior-wide,Log-gamma,r,1.2192569350630549
+v7-prior-wide,Log-gamma,v,1.4278856946600944
+v7-prior-wide,Log-gamma,noise,-1.0727724137313195
+v7-prior-wide,ECE,w,0.02035087719298248
+v7-prior-wide,ECE,r,0.03631578947368419
+v7-prior-wide,ECE,v,0.024122807017543865
+v7-prior-wide,ECE,noise,0.018771929824561454
+v7-prior-wide,Post. Contraction,w,0.9248323028458889
+v7-prior-wide,Post. Contraction,r,0.9981697489784878
+v7-prior-wide,Post. Contraction,v,0.9724666531998933
+v7-prior-wide,Post. Contraction,noise,0.8647709455478505
+v8-salience-observed,NRMSE,w,0.36041547310594013
+v8-salience-observed,NRMSE,r,0.05564448891207044
+v8-salience-observed,NRMSE,v,0.21439532045964604
+v8-salience-observed,NRMSE,noise,0.4535635742491325
+v8-salience-observed,Log-gamma,w,0.332330209500563
+v8-salience-observed,Log-gamma,r,-3.011081072321605
+v8-salience-observed,Log-gamma,v,3.6736431333622646
+v8-salience-observed,Log-gamma,noise,3.454930191196632
+v8-salience-observed,ECE,w,0.02105263157894735
+v8-salience-observed,ECE,r,0.1006140350877193
+v8-salience-observed,ECE,v,0.011315789473684223
+v8-salience-observed,ECE,noise,0.010175438596491223
+v8-salience-observed,Post. Contraction,w,0.8822680835946342
+v8-salience-observed,Post. Contraction,r,0.9970188497443695
+v8-salience-observed,Post. Contraction,v,0.955296183145297
+v8-salience-observed,Post. Contraction,noise,0.7713119474989858

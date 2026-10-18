@@ -45,6 +45,7 @@ import keras
 import bayesflow as bf
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
+sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
 
 from superstats.workflow import Workflow
 import superstats.diagnostics as ssd
@@ -135,17 +136,41 @@ def as_estimate_array(samples, n_sim, T):
 
 
 def main():
+    global OUT, TIME_HORIZON, NUM_AGENTS, TARGET_KEYS, TARGET_NAMES
     ap = argparse.ArgumentParser()
     ap.add_argument("--smoke", action="store_true", help="tiny run to validate the pipeline")
+    ap.add_argument("--fixed-radius", action="store_true", help="Revision specification: radius fixed at 2.5, excluded from targets")
     args = ap.parse_args()
+    OUT = ROOT / "outputs" / "revision" / ("superstats-fixed-path" if args.fixed_radius else "superstats-path")
+    if args.fixed_radius:
+        global prior_nonstationary
+        from revision_variants import fix_radius
+        prior_nonstationary = fix_radius(prior_nonstationary)
+        TARGET_KEYS = ["w_t", "v_t", "eta_t", "tau_t"]
+        TARGET_NAMES = [r"$w_t$", r"$v$", r"$\eta$", r"$\tau$"]
+    if args.smoke:
+        OUT = OUT.with_name(OUT.name + "-smoke")
+        TIME_HORIZON, NUM_AGENTS = 2.0, 4
+    if (OUT / "history.json").exists():
+        raise FileExistsError(f"Preserving existing run at {OUT}; use a new output directory for reruns")
 
     if args.smoke:
-        n_train, n_val, n_test, epochs, num_samples = 120, 40, 24, 2, 40
+        n_train, n_val, n_test, epochs, num_samples = 16, 4, 4, 1, 20
     else:
         n_train, n_val, n_test, epochs, num_samples = 4000, 400, 300, 150, 250
 
     OUT.mkdir(parents=True, exist_ok=True)
     T = int(TIME_HORIZON / DT)
+    import importlib.metadata
+    (OUT / "manifest.json").write_text(json.dumps({
+        "superstats": importlib.metadata.version("superstats"),
+        "bayesflow": importlib.metadata.version("bayesflow"),
+        "fixed_radius": 2.5 if args.fixed_radius else None,
+        "smoke": args.smoke, "seed": SEED,
+        "time_horizon": TIME_HORIZON, "num_agents": NUM_AGENTS,
+        "targets": TARGET_KEYS, "n_train": n_train, "n_test": n_test,
+        "n_val": n_val, "epochs": epochs, "num_samples": num_samples,
+    }, indent=2))
 
     print(f"simulating {n_train + n_val + n_test} datasets at T={T} ...")
     train = simulate(n_train, SEED)
@@ -154,6 +179,7 @@ def main():
     gb = sum(v.nbytes for v in train.values()) / 1e9
     print(f"  train bank {gb:.2f} GB")
 
+    keras.utils.set_random_seed(SEED)
     workflow = Workflow(
         simulator=None,                      # data comes from our own kernel
         adapter=build_adapter(),
@@ -185,6 +211,14 @@ def main():
     ece = ssd.calibration_error_per_step(est, tgt)
 
     np.savez(OUT / "per_step_metrics.npz", nrmse=nrmse, contraction=contr, ece=ece)
+    import csv
+    with (OUT / "per_step_metrics.csv").open("w") as f:
+        writer = csv.writer(f)
+        writer.writerow(["time_s", "parameter", "NRMSE", "contraction", "ECE"])
+        for i in range(T):
+            for j, name in enumerate(TARGET_KEYS):
+                writer.writerow([i * DT, name, nrmse[i,j], contr[i,j], ece[i,j]])
+    np.savez_compressed(OUT / "posterior_examples.npz", estimates=est[:3], targets=tgt[:3])
 
     print(f"\n{'param':<8}{'NRMSE (early/mid/late)':>30}{'contraction (early/mid/late)':>32}")
     thirds = [slice(0, T // 3), slice(T // 3, 2 * T // 3), slice(2 * T // 3, T)]
@@ -212,7 +246,7 @@ def main():
         # variable_keys must be explicit: with simulator=None the helper would
         # otherwise introspect self.simulator.local_keys and fail.
         f = workflow.plot_time_varying_posterior(
-            estimates=est, targets=tgt,
+            estimates=est[:3], targets=tgt[:3],
             variable_keys=TARGET_KEYS, variable_names=TARGET_NAMES,
         )
         figure = f if isinstance(f, plt.Figure) else getattr(f, "figure", None)

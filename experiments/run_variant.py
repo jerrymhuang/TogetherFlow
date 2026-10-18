@@ -29,7 +29,7 @@ import keras
 import bayesflow as bf
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent / ".claude" / "skills" / "amortized-workflow"))
+
 
 from togetherflow import TogetherFlowSimulator
 from togetherflow.simulator import (
@@ -38,8 +38,7 @@ from togetherflow.simulator import (
 )
 from togetherflow.networks import SummaryNet, TransformerSummaryNet
 from variants import ALL_VARIANTS, BY_SLUG, PARAM_BOUNDS
-from scripts.inspect_training import inspect_history
-from scripts.check_diagnostics import check_diagnostics, suggest_next_steps
+from revision_diagnostics import inspect_history, check_diagnostics, suggest_next_steps
 from report import write_report
 
 ROOT = pathlib.Path(__file__).parent.parent
@@ -67,7 +66,8 @@ LATEX_NAMES = {
 # 4.47 GiB on a 12 GB card *after* training had completed. Chunking costs nothing
 # numerically: each batch is an independent draw from the same posterior.
 DIAGNOSTIC_BATCH_SIZE = 25
-DIAGNOSTIC_KWARGS = {"approximator_kwargs": {"batch_size": DIAGNOSTIC_BATCH_SIZE}}
+DIAGNOSTIC_KWARGS = {"approximator_kwargs": {"batch_size": DIAGNOSTIC_BATCH_SIZE},
+                     "root_mean_squared_error_kwargs": {"normalize": "prior"}}
 
 # BayesFlow 2.0.12 labels diagnostic rows differently from the names the skill's
 # check_diagnostics() looks up. Without this mapping the lookups miss silently
@@ -231,6 +231,22 @@ def run(variant, force=False, diagnostics_only=False):
         return "skipped"
     results_dir.mkdir(parents=True, exist_ok=True)
 
+    from dataclasses import fields
+    import importlib.metadata
+    import subprocess
+    manifest = {f.name: getattr(variant, f.name) for f in fields(variant)}
+    manifest["prior"] = variant.prior.__name__
+    manifest["packages"] = {name: importlib.metadata.version(name)
+                            for name in ("bayesflow", "keras", "jax", "numpy")}
+    manifest["git_commit"] = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    manifest["git_dirty"] = bool(subprocess.check_output(
+        ["git", "status", "--porcelain"], cwd=ROOT, text=True).strip())
+    manifest["nrmse_normalization"] = "prior"
+    manifest["purpose"] = "smoke validation only" if variant.slug.endswith("-smoke") else "research"
+    manifest_path = results_dir / "manifest.json"
+    if not diagnostics_only:
+        manifest_path.write_text(json.dumps(manifest, indent=2))
     t_start = time.time()
     logging.info("[%s] %s", variant.slug, variant.title)
 
@@ -238,6 +254,7 @@ def run(variant, force=False, diagnostics_only=False):
     # One bank, split into train/val/test. Offline rather than online: the
     # simulator is fast enough that regenerating every epoch costs ~8x more
     # wall-clock than training on a fixed bank.
+    keras.utils.set_random_seed(variant.seed)
     sim = build_simulator(variant, seed=variant.seed)
     # Online training generates its own training batches, so only the validation
     # and test splits need to come from a bank.

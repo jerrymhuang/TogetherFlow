@@ -1,0 +1,20 @@
+{
+  "superstats": "0.0.2",
+  "bayesflow": "2.0.12",
+  "fixed_radius": 2.5,
+  "smoke": false,
+  "seed": 20260809,
+  "time_horizon": 30.0,
+  "num_agents": 49,
+  "targets": [
+    "w_t",
+    "v_t",
+    "eta_t",
+    "tau_t"
+  ],
+  "n_train": 4000,
+  "n_test": 300,
+  "n_val": 400,
+  "epochs": 150,
+  "num_samples": 250
+}

@@ -5,19 +5,19 @@ description = "Amortized Bayesian inference for multi-agent motion dynamics in i
 requires-python = ">=3.12,<3.14"
 
 dependencies = [
-    # superstats pins bayesflow==2.0.12 exactly and, via the [cuda] extra, pulls
-    # jax[cuda13]>=0.11.0 — which keeps jax, jaxlib, jax-cuda13-pjrt and
-    # jax-cuda13-plugin on matching versions. Installing plain `superstats`
-    # instead upgrades jax while leaving the CUDA plugins behind, which breaks
-    # GPU support.
-    "superstats[cuda]>=0.0.2",
-    "bayesflow==2.0.12",
-    "numba>=0.65",
-    "numpy>=2.4,<2.5",   # superstats requires <2.5; numba is also sensitive here
+    # Trajectory inference uses environments/superstats/requirements.txt:
+    # its released dependency pins conflict with the current BayesFlow release.
+    "bayesflow==2.0.14",
+    "jax>=0.11.0",
+    "numba>=0.68",
+    "numpy>=2.5.1",
     "matplotlib>=3.10",
     "pandas>=3.0",
     "scipy>=1.17",
 ]
+
+[project.optional-dependencies]
+cuda = ["jax[cuda13]==0.11.2"]
 
 [dependency-groups]
 # Installed by `uv sync` by default; not required to run the experiments.

@@ -25,8 +25,8 @@ DESC_RECOVERY = (
 DESC_CALIBRATION = (
     "**Calibration ECDF** — Simulation-based calibration (SBC) plots show the empirical CDF of "
     "posterior ranks. Well-calibrated posteriors produce ECDFs close to the uniform diagonal. "
-    "Lines consistently above the diagonal indicate overconfident (too narrow) posteriors; lines "
-    "below indicate underconfident (too wide) posteriors."
+    "Systematic deviations indicate non-uniform ranks; their shape can reflect bias or dispersion errors. "
+    "Use the coverage plot to assess interval width rather than assigning dispersion from the sign alone."
 )
 
 DESC_COVERAGE = (
@@ -51,8 +51,7 @@ def _assess_convergence(tr):
     ok = tr.get("overall", {}).get("ok", False)
     issues = tr.get("overall", {}).get("issues", [])
     if ok and not issues:
-        return ("Training converged without detected issues: the loss decreased and plateaued, "
-                "and no divergence between training and validation loss was flagged.")
+        return "No non-finite losses detected. This check does not establish convergence; inspect the loss curves."
     return ("Training completed with the following flags: " + "; ".join(issues) + ". "
             "Treat the downstream diagnostics as provisional until these are addressed.")
 
@@ -101,7 +100,7 @@ def write_report(results_dir, variant, metrics, training_report, diag_report,
     ]
 
     train_cfg = [
-        ("Inference network", "FlowMatching (Base, widths 256x4, time_embedding_dim 32)"),
+        ("Inference network", f"{variant.inference_net} (widths 256x4, time_embedding_dim 32)"),
         ("Summary network",
          {"bdlstm": f"SummaryNet — Conv1D + BiLSTM (summary_dim={summary_dim})",
           "transformer": f"TransformerSummaryNet — TimeSeriesTransformer, Base "

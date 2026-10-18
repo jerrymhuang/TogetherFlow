@@ -191,3 +191,6 @@ feedback.md
 outputs/docs/figures
 outputs/scenarios/figures
 .idea/*
+# Tiny revision validation runs are not scientific results.
+outputs/revision/*-smoke/
+outputs/revision/bayesflow-2.0.12-validation/

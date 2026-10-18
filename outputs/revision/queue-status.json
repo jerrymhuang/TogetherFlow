@@ -1,0 +1,104 @@
+{
+  "rev-fixed-reference": {
+    "status": "complete",
+    "started_utc": "2026-10-17T18:34:00.828212+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T19:03:19.656739+00:00"
+  },
+  "rev-fixed-switching": {
+    "status": "complete",
+    "started_utc": "2026-10-17T19:03:19.657058+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T19:33:33.304306+00:00"
+  },
+  "switching-transfer": {
+    "status": "complete",
+    "started_utc": "2026-10-17T19:33:33.304779+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T19:38:46.923943+00:00"
+  },
+  "rev-fixed-partial-control": {
+    "status": "complete",
+    "started_utc": "2026-10-17T19:38:46.924294+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T19:50:03.331091+00:00"
+  },
+  "rev-fixed-partial": {
+    "status": "complete",
+    "started_utc": "2026-10-17T19:50:03.331405+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T20:01:30.660452+00:00"
+  },
+  "superstats-fixed-path": {
+    "status": "complete",
+    "started_utc": "2026-10-17T20:01:30.660777+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T20:05:31.829903+00:00"
+  },
+  "rev-fixed-timevarying": {
+    "status": "complete",
+    "started_utc": "2026-10-17T20:05:31.830249+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T20:35:21.799567+00:00"
+  },
+  "rev-fixed-radius-1.25": {
+    "status": "complete",
+    "started_utc": "2026-10-17T20:35:21.799897+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T21:02:55.976383+00:00"
+  },
+  "rev-fixed-radius-4": {
+    "status": "complete",
+    "started_utc": "2026-10-17T21:02:55.976714+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T21:32:51.886768+00:00"
+  },
+  "rev-fixed-prior-wide": {
+    "status": "complete",
+    "started_utc": "2026-10-17T21:32:51.887105+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T22:01:58.788012+00:00"
+  },
+  "rev-fixed-prior-tight": {
+    "status": "complete",
+    "started_utc": "2026-10-17T22:01:58.788356+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T22:30:49.825515+00:00"
+  },
+  "rev-fixed-prior-slow-velocity": {
+    "status": "complete",
+    "started_utc": "2026-10-17T22:30:49.825880+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T22:59:19.825327+00:00"
+  },
+  "rev-fixed-prior-eta-smooth": {
+    "status": "complete",
+    "started_utc": "2026-10-17T22:59:19.825766+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T23:28:09.670198+00:00"
+  },
+  "rev-fixed-prior-eta-diffuse": {
+    "status": "complete",
+    "started_utc": "2026-10-17T23:28:09.670617+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-17T23:57:06.929676+00:00"
+  },
+  "rev-fixed-offline-3k": {
+    "status": "complete",
+    "started_utc": "2026-10-17T23:57:06.929996+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T00:03:07.647737+00:00"
+  },
+  "rev-fixed-legacy-heading": {
+    "status": "complete",
+    "started_utc": "2026-10-18T00:03:07.648109+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T00:28:48.378038+00:00"
+  },
+  "rev-fixed-legacy-noise": {
+    "status": "complete",
+    "started_utc": "2026-10-18T00:28:48.378386+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T00:57:26.941149+00:00"
+  }
+}
