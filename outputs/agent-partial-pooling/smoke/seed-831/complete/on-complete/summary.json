@@ -1,0 +1,14 @@
+{
+  "seed": 831,
+  "estimator": "complete",
+  "generator": "complete",
+  "agent_rmse": 0.24422903141432903,
+  "centered_rmse": 0.0,
+  "zero_difference_rmse": 0.0,
+  "agent_coverage90": 0.625,
+  "centered_coverage90": 1.0,
+  "mean_interval_width": 0.5248156817979179,
+  "prior_mean_rmse": 0.2906810939311981,
+  "sigma_rmse": 0.0,
+  "centered_correlation": null
+}

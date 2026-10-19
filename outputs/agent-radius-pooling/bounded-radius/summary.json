@@ -1,0 +1,14 @@
+{
+  "weight": {
+    "centered_rmse": 0.060527253877458075,
+    "zero_difference_rmse": 0.08791776351111485,
+    "centered_correlation": 0.7329400688261626,
+    "centered_coverage95": 0.9502777777777778
+  },
+  "radius": {
+    "centered_rmse": 0.7618538213141126,
+    "zero_difference_rmse": 0.7551456657241514,
+    "centered_correlation": 0.25334906798268814,
+    "centered_coverage95": 0.8530555555555556
+  }
+}

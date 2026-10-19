@@ -1,0 +1,18 @@
+{
+  "train": 4096,
+  "validation": 512,
+  "test": 128,
+  "epochs": 50,
+  "samples": 256,
+  "agents": 4,
+  "seed": 731,
+  "out": "outputs/agent-compositional/pilot",
+  "bayesflow": "2.0.14",
+  "workflow": "CompositionalWorkflow",
+  "composition_blocks": 1,
+  "sampling_method": "sample",
+  "radius": 2.5,
+  "time_horizon": 20,
+  "backend": "jax-cpu",
+  "purpose": "exploratory reduced-agent pilot; not comparable to full suite"
+}

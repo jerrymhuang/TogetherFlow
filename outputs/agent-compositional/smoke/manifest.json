@@ -1,0 +1,17 @@
+{
+  "train": 64,
+  "validation": 16,
+  "test": 8,
+  "epochs": 1,
+  "samples": 16,
+  "agents": 4,
+  "seed": 731,
+  "out": "outputs/agent-compositional/smoke",
+  "bayesflow": "2.0.14",
+  "workflow": "CompositionalWorkflow",
+  "composition_blocks": 1,
+  "radius": 2.5,
+  "time_horizon": 20,
+  "backend": "jax-cpu",
+  "purpose": "exploratory reduced-agent pilot; not comparable to full suite"
+}

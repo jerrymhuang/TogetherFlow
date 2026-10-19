@@ -40,6 +40,10 @@ def simulator_fun(
     alpha_slot: int = -1,
     kappa_slot: int = -1,
     sigma_slot: int = -1,
+    agent_weights_out=None,
+    sigma_r_slot: int = -1,
+    agent_radii_out=None,
+    radius_upper: float = np.inf,
 ):
     """
     Run one simulation trajectory and return per-channel time series.
@@ -111,6 +115,33 @@ def simulator_fun(
         for i in range(num_agents):
             z = logit_mu + sigma * np.random.normal(0.0, 1.0)
             agent_weights[i] = 1.0 / (1.0 + np.exp(-z))
+
+    if agent_weights_out is not None:
+        agent_weights_out[:] = agent_weights
+
+    # Radius hierarchy: slot 1 is the positive population median. Draw once
+    # per agent and trial; do not consume extra random numbers in legacy arms.
+    # A finite radius_upper R swaps the lognormal for a scaled logit-normal,
+    # logit(r/R) ~ N(logit(mu_r/R), sigma_r^2), which keeps every r_i in (0, R).
+    agent_radii = None
+    if sigma_r_slot >= 0:
+        agent_radii = np.empty(num_agents)
+        logit_u = 0.0
+        if radius_upper < np.inf:
+            u = theta[0, 1] / radius_upper
+            if u < 1e-6:
+                u = 1e-6
+            elif u > 1.0 - 1e-6:
+                u = 1.0 - 1e-6
+            logit_u = np.log(u / (1.0 - u))
+        for i in range(num_agents):
+            z = theta[0, sigma_r_slot] * np.random.normal(0.0, 1.0)
+            if radius_upper < np.inf:
+                agent_radii[i] = radius_upper / (1.0 + np.exp(-(logit_u + z)))
+            else:
+                agent_radii[i] = theta[0, 1] * np.exp(z)
+        if agent_radii_out is not None:
+            agent_radii_out[:] = agent_radii
 
     # Scenarios specify their own layout; everything else samples one. An empty
     # array is the sentinel because numba cannot branch on a None-or-array type.
@@ -229,6 +260,7 @@ def simulator_fun(
             door_half_width=door_half_width,
             beacon_assignment=active_assignment,
             diffusive_heading=diffusive_heading,
+            agent_radii=agent_radii,
         )
         positions[t]  = ps
         rotations[t]  = rs
@@ -447,7 +479,8 @@ def _batch_simulator(thetas, num_agents, num_beacons, room_size, dt, time_horizo
                      repulsion_radius, repulsion_gain, obstacles, max_turn_rate,
                      door_wall, door_center, door_half_width,
                      init_positions, init_rotations, fixed_beacons, beacon_assignment,
-                     diffusive_heading, alpha_slot, kappa_slot, sigma_slot):
+                     diffusive_heading, alpha_slot, kappa_slot, sigma_slot, sigma_r_slot,
+                     radius_upper):
     batch_size    = thetas.shape[0]
     num_timesteps = int(time_horizon / dt)
     num_radii     = reference_radii.shape[0]
@@ -459,6 +492,8 @@ def _batch_simulator(thetas, num_agents, num_beacons, room_size, dt, time_horizo
     all_av  = np.zeros((batch_size, num_timesteps, num_agents))
     all_nf  = np.zeros((batch_size, num_timesteps, num_agents))
     all_ms  = np.zeros((batch_size, num_timesteps, num_agents, num_radii))
+    all_weights = np.zeros((batch_size, num_agents))
+    all_radii = np.zeros((batch_size, num_agents))
 
     for b in prange(batch_size):
         # Seed per simulation, not per thread: numba gives each worker thread its
@@ -481,7 +516,8 @@ def _batch_simulator(thetas, num_agents, num_beacons, room_size, dt, time_horizo
             repulsion_radius, repulsion_gain, obstacles, max_turn_rate,
             door_wall, door_center, door_half_width,
             init_positions, init_rotations, fixed_beacons, beacon_assignment,
-            diffusive_heading, alpha_slot, kappa_slot, sigma_slot,
+            diffusive_heading, alpha_slot, kappa_slot, sigma_slot, all_weights[b],
+            sigma_r_slot, all_radii[b], radius_upper,
         )
         all_pos[b] = pos
         all_rot[b] = rot
@@ -491,7 +527,7 @@ def _batch_simulator(thetas, num_agents, num_beacons, room_size, dt, time_horizo
         all_nf[b]  = nf
         all_ms[b]  = ms
 
-    return all_pos, all_rot, all_nbr, all_dst, all_av, all_nf, all_ms
+    return all_pos, all_rot, all_nbr, all_dst, all_av, all_nf, all_ms, all_weights, all_radii
 
 
 class TogetherFlowSimulator:
@@ -503,6 +539,15 @@ class TogetherFlowSimulator:
     prior        : callable returning np.ndarray of shape (4,)
                    Defaults to complete_pooling_prior. Inject a different prior
                    to change the generative model without touching this class.
+    include_agent_radii : bool
+                   Export realized positive radii as (B, A) latent targets.
+                   Presence of sigma_r enables a lognormal radius hierarchy.
+    radius_upper : float
+                   Finite values bound individual radii to (0, radius_upper)
+                   via a scaled logit-normal hierarchy. Default inf: lognormal.
+    include_agent_weights : bool
+                   Export the realized hierarchical weights as (B, A) latent
+                   targets. Requires sigma_w; never use as observed features.
     output_mode  : str, one of "flat" | "raw" | "summary"
                    "flat"    — time series with agents flattened into the feature dim
                                positions (B,T,2A), others (B,T,A)  [default]
@@ -546,6 +591,9 @@ class TogetherFlowSimulator:
         salience_process=None,
         include_salience_paths: bool = False,
         switch_margin: float = 1.0,
+        include_agent_weights: bool = False,
+        include_agent_radii: bool = False,
+        radius_upper: float = np.inf,
     ):
         self.relative_heading = bool(relative_heading)
         # Whether eta is a diffusion coefficient on the heading (True) or a
@@ -577,8 +625,18 @@ class TogetherFlowSimulator:
         self.alpha_slot = self.param_names.index("alpha") if "alpha" in self.param_names else -1
         self.kappa_slot = self.param_names.index("kappa") if "kappa" in self.param_names else -1
         # Presence of sigma_w is what switches the model from complete to
-        # partial pooling; slot 0 is then read as the population mean.
+        # partial pooling; slot 0 is then read as the population median.
         self.sigma_slot = self.param_names.index("sigma_w") if "sigma_w" in self.param_names else -1
+        self.sigma_r_slot = self.param_names.index("sigma_r") if "sigma_r" in self.param_names else -1
+        self.include_agent_radii = bool(include_agent_radii)
+        self.radius_upper = float(radius_upper)
+        if not self.radius_upper > 0:
+            raise ValueError("radius_upper must be positive")
+        if self.include_agent_radii and self.sigma_r_slot < 0:
+            raise ValueError("include_agent_radii requires a hierarchical sigma_r prior")
+        self.include_agent_weights = bool(include_agent_weights)
+        if self.include_agent_weights and self.sigma_slot < 0:
+            raise ValueError("include_agent_weights requires a hierarchical sigma_w prior")
         self.num_agents = num_agents
         self.num_beacons = num_beacons
         self.room_size = room_size
@@ -727,7 +785,7 @@ class TogetherFlowSimulator:
                     f"{num_timesteps}, {self.num_beacons}); got {strength_paths.shape}"
                 )
 
-        all_pos, all_rot, all_nbr, all_dst, all_av, all_nf, all_ms = _batch_simulator(
+        all_pos, all_rot, all_nbr, all_dst, all_av, all_nf, all_ms, all_weights, all_radii = _batch_simulator(
             thetas_t, self.num_agents, self.num_beacons, self.room_size, self.dt, self.time_horizon,
             self.beacon_strengths, strength_paths, self.switch_margin,
             self.salience_sensitivity, self.reference_radii,
@@ -736,7 +794,8 @@ class TogetherFlowSimulator:
             self.door_wall, self.door_center, self.door_half_width,
             self.init_positions, self.init_rotations, self.fixed_beacons,
             self.beacon_assignment, self.diffusive_heading,
-            self.alpha_slot, self.kappa_slot, self.sigma_slot,
+            self.alpha_slot, self.kappa_slot, self.sigma_slot, self.sigma_r_slot,
+            self.radius_upper,
         )
 
         positions  = all_pos   # (B, T, A, 2)
@@ -763,6 +822,12 @@ class TogetherFlowSimulator:
         R = self.reference_radii.shape[0]
 
         out = {name: thetas[:, i:i + 1] for i, name in enumerate(self.param_names)}
+        if self.include_agent_radii:
+            # Latent targets, not observed neighbor features.
+            out["agent_radii"] = all_radii.astype(np.float32)
+        if self.include_agent_weights:
+            # Latent targets only: never route these into observed features.
+            out["agent_weights"] = all_weights.astype(np.float32)
         if self.include_parameter_paths:
             # (B, T, 1) per parameter — the values the kernel actually used at
             # each step, after the expander. For a static expander these are

@@ -1,0 +1,14 @@
+{
+  "seed": 832,
+  "estimator": "partial",
+  "generator": "partial",
+  "agent_rmse": 0.052067491263017754,
+  "centered_rmse": 0.04580532519890168,
+  "zero_difference_rmse": 0.08371897786855698,
+  "agent_coverage90": 0.828125,
+  "centered_coverage90": 0.84765625,
+  "mean_interval_width": 0.14314459704587534,
+  "prior_mean_rmse": 0.2406419813632965,
+  "sigma_rmse": 0.18936192565178744,
+  "centered_correlation": 0.8370464309667157
+}

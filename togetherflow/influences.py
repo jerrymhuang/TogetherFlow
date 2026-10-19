@@ -78,6 +78,7 @@ def combined_influences(
     door_half_width=0.0,
     beacon_assignment=None,
     diffusive_heading=False,
+    agent_radii=None,
 ):
     """
     Advance all agents by one time step under beacon attraction and Vicsek alignment.
@@ -103,6 +104,8 @@ def combined_influences(
         empty array to skip.
     room_size        : tuple (width, height)
     velocity         : float
+    agent_radii      : optional (A,) positive radii, overriding sensing_radius
+                       for each receiving agent; interactions may be asymmetric.
     sensing_radius   : float  — used consistently for both stats and dynamics
     dt               : float
     influence_weights: np.ndarray of shape (A,) — per-agent weight on beacon
@@ -176,6 +179,7 @@ def combined_influences(
     radii_counts = np.zeros((num_agents, num_radii))
 
     for i in range(num_agents):
+        local_radius = sensing_radius if agent_radii is None else agent_radii[i]
 
         # Single neighbor scan — shared by statistics, Vicsek update, and the
         # fixed-radius counts. The r-free counts ride along on the same pass.
@@ -193,7 +197,7 @@ def combined_influences(
                 for k in range(num_radii):
                     if d <= reference_radii[k]:
                         radii_counts[i, k] += 1.0
-            if 0.0 < d <= sensing_radius:
+            if 0.0 < d <= local_radius:
                 nbr_rots.append(agent_rotations[j])
                 nbr_dists.append(d)
             if separating and 0.0 < d <= repulsion_radius:

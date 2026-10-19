@@ -1,0 +1,25 @@
+{
+  "seed": 831,
+  "source": "outputs/agent-partial-pooling/example/seed-831/partial/on-partial/posterior.npz",
+  "num_test_groups": 128,
+  "diagnostic": "bayesflow.diagnostics.plots.recovery",
+  "point_estimate": "median",
+  "credible_interval": 0.95,
+  "global_color": "#132a70",
+  "agent_color": "#6969ff",
+  "figure_title": null,
+  "parameters": [
+    "mu_w",
+    "v",
+    "eta",
+    "sigma_w",
+    "w_1",
+    "w_2",
+    "w_3",
+    "w_4",
+    "w_5",
+    "w_6",
+    "w_7",
+    "w_8"
+  ]
+}

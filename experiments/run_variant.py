@@ -298,7 +298,8 @@ def run(variant, force=False, diagnostics_only=False):
     if variant.inference_net == "flow_matching":
         inference_net = bf.networks.FlowMatching(subnet_kwargs=subnet_kwargs)
     elif variant.inference_net == "diffusion":
-        # Required by CompositionalWorkflow, which the partial-pooling work needs.
+        # Diffusion supports later composition; this runner uses BasicWorkflow
+        # for population-only inference, including the partial-pooling arms.
         inference_net = bf.networks.DiffusionModel(subnet_kwargs=subnet_kwargs)
     else:
         raise ValueError(f"unknown inference_net '{variant.inference_net}'")
