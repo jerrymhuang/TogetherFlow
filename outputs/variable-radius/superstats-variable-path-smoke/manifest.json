@@ -1,0 +1,33 @@
+{
+  "superstats": "0.0.2",
+  "bayesflow": "2.0.12",
+  "fixed_radius": null,
+  "smoke": true,
+  "seed": 20260809,
+  "time_horizon": 2.0,
+  "num_agents": 4,
+  "data_keys": [
+    "positions",
+    "rotations",
+    "angular_velocities",
+    "radii_counts"
+  ],
+  "reference_radii": [
+    0.5,
+    1.0,
+    2.0,
+    4.0
+  ],
+  "targets": [
+    "w_t",
+    "r_t",
+    "v_t",
+    "eta_t",
+    "tau_t"
+  ],
+  "n_train": 16,
+  "n_test": 4,
+  "n_val": 4,
+  "epochs": 1,
+  "num_samples": 20
+}

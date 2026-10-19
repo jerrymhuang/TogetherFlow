@@ -1,0 +1,71 @@
+{
+  "slug": "rev-variable-collision-kappa",
+  "title": "Separation gain inferred",
+  "addresses": "R1 point 1",
+  "rationale": "Radius is drawn per trial from LogNormal(0, 0.5) and inferred. Inputs use observed trajectories and counts at fixed reference distances; no neighbor statistics computed at the true radius enter inference. This companion analysis preserves all fixed-radius results.",
+  "prior": "collision_prior",
+  "param_names": [
+    "w",
+    "r",
+    "v",
+    "noise",
+    "kappa"
+  ],
+  "infer": [
+    "w",
+    "r",
+    "v",
+    "noise",
+    "kappa"
+  ],
+  "channels": [
+    "positions",
+    "rotations",
+    "angular_velocities",
+    "radii_counts"
+  ],
+  "reference_radii": [
+    0.5,
+    1.0,
+    2.0,
+    4.0
+  ],
+  "beacon_strengths": null,
+  "beacon_spread": 50.0,
+  "time_horizon": 60.0,
+  "salience_sigma": null,
+  "salience_tau": 40.0,
+  "salience_sensitivity": 0.0,
+  "switch_margin": 1.0,
+  "num_agents": 49,
+  "num_beacons": 4,
+  "dt": 0.1,
+  "summary_net": "transformer",
+  "relative_heading": true,
+  "repulsion_radius": 0.4,
+  "repulsion_gain": 0.0,
+  "diffusive_heading": true,
+  "inference_net": "flow_matching",
+  "param_bounds": null,
+  "expander": "static",
+  "constrain_parameters": true,
+  "n_train": 5000,
+  "n_val": 300,
+  "n_test": 300,
+  "epochs": 300,
+  "batch_size": 32,
+  "seed": 20260803,
+  "early_stopping_patience": 0,
+  "online": true,
+  "num_batches_per_epoch": 50,
+  "packages": {
+    "bayesflow": "2.0.14",
+    "keras": "3.15.1",
+    "jax": "0.11.2",
+    "numpy": "2.5.4"
+  },
+  "git_commit": "aaee2c60cf92d4e005db57dbe5200bebbfe47f4c",
+  "git_dirty": true,
+  "nrmse_normalization": "prior",
+  "purpose": "research"
+}

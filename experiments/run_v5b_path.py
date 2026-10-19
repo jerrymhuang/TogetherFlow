@@ -68,6 +68,8 @@ NUM_BEACONS = 4
 BEACON_SPREAD = 50.0
 SEED = 20260809
 
+REFERENCE_RADII = None
+
 DATA_KEYS = ["positions", "rotations", "neighbors", "distances",
              "angular_velocities", "neighbor_fluctuations"]
 
@@ -85,7 +87,7 @@ def simulate(n, seed):
         param_names=("w0", "r", "v", "noise", "tau"),
         relative_heading=True, diffusive_heading=True, beacon_spread=BEACON_SPREAD,
         expander=make_logit_random_walk_expander(0, 4, DT),
-        include_parameter_paths=True, seed=seed,
+        include_parameter_paths=True, seed=seed, reference_radii=REFERENCE_RADII,
     )
     raw = sim.sample(n)
     T = int(TIME_HORIZON / DT)
@@ -136,12 +138,20 @@ def as_estimate_array(samples, n_sim, T):
 
 
 def main():
-    global OUT, TIME_HORIZON, NUM_AGENTS, TARGET_KEYS, TARGET_NAMES
+    global OUT, TIME_HORIZON, NUM_AGENTS, TARGET_KEYS, TARGET_NAMES, DATA_KEYS, REFERENCE_RADII
     ap = argparse.ArgumentParser()
     ap.add_argument("--smoke", action="store_true", help="tiny run to validate the pipeline")
     ap.add_argument("--fixed-radius", action="store_true", help="Revision specification: radius fixed at 2.5, excluded from targets")
+    ap.add_argument("--variable-radius", action="store_true", help="Infer radius with radius-independent inputs in a separate companion suite")
     args = ap.parse_args()
+    if args.fixed_radius and args.variable_radius:
+        ap.error("Choose fixed or variable radius, not both")
     OUT = ROOT / "outputs" / "revision" / ("superstats-fixed-path" if args.fixed_radius else "superstats-path")
+    if args.variable_radius:
+        from variants import R_FREE_CHANNELS, REFERENCE_RADII as radii
+        DATA_KEYS = list(R_FREE_CHANNELS)
+        REFERENCE_RADII = list(radii)
+        OUT = ROOT / "outputs" / "variable-radius" / "superstats-variable-path"
     if args.fixed_radius:
         global prior_nonstationary
         from revision_variants import fix_radius
@@ -168,6 +178,7 @@ def main():
         "fixed_radius": 2.5 if args.fixed_radius else None,
         "smoke": args.smoke, "seed": SEED,
         "time_horizon": TIME_HORIZON, "num_agents": NUM_AGENTS,
+        "data_keys": DATA_KEYS, "reference_radii": REFERENCE_RADII,
         "targets": TARGET_KEYS, "n_train": n_train, "n_test": n_test,
         "n_val": n_val, "epochs": epochs, "num_samples": num_samples,
     }, indent=2))

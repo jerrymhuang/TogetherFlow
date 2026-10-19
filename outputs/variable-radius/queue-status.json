@@ -1,0 +1,68 @@
+{
+  "rev-variable-reference": {
+    "status": "complete",
+    "started_utc": "2026-10-18T16:52:59.323350+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T17:26:17.417057+00:00"
+  },
+  "rev-variable-switching": {
+    "status": "complete",
+    "started_utc": "2026-10-18T17:26:17.417382+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T18:00:55.130610+00:00"
+  },
+  "switching-transfer": {
+    "status": "complete",
+    "started_utc": "2026-10-18T18:00:55.131117+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T18:07:06.530196+00:00"
+  },
+  "rev-variable-collision": {
+    "status": "complete",
+    "started_utc": "2026-10-18T18:07:06.530532+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T18:41:18.517194+00:00"
+  },
+  "rev-variable-collision-kappa": {
+    "status": "complete",
+    "started_utc": "2026-10-18T18:41:18.517568+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T19:15:32.156260+00:00"
+  },
+  "rev-variable-salience": {
+    "status": "complete",
+    "started_utc": "2026-10-18T19:15:32.156616+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T19:49:57.635788+00:00"
+  },
+  "rev-variable-switching-observed": {
+    "status": "complete",
+    "started_utc": "2026-10-18T19:49:57.636158+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T20:24:18.320473+00:00"
+  },
+  "rev-variable-timevarying": {
+    "status": "complete",
+    "started_utc": "2026-10-18T20:24:18.320840+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T20:57:45.576525+00:00"
+  },
+  "rev-variable-partial-control": {
+    "status": "complete",
+    "started_utc": "2026-10-18T20:57:45.576889+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T21:10:37.045457+00:00"
+  },
+  "rev-variable-partial": {
+    "status": "complete",
+    "started_utc": "2026-10-18T21:10:37.045819+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T21:23:34.592767+00:00"
+  },
+  "superstats-variable-path": {
+    "status": "complete",
+    "started_utc": "2026-10-18T21:23:34.593140+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-18T21:27:30.145221+00:00"
+  }
+}
