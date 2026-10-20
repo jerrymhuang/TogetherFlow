@@ -194,3 +194,18 @@ outputs/scenarios/figures
 # Tiny revision validation runs are not scientific results.
 outputs/revision/*-smoke/
 outputs/revision/bayesflow-2.0.12-validation/
+
+# Generated simulation banks stay local, like posterior archives and checkpoints.
+*.npy
+
+# Main-paper pipeline validation runs are not scientific results.
+outputs/main-paper-revision/smoke/
+outputs/main-paper-revision/smoke-full-shape/
+
+# Duplicate extracted manuscript bundle and temporary LaTeX build files.
+outputs/docs/model_extensions_revision (2)/
+outputs/docs/**/*.aux
+outputs/docs/**/*.out
+outputs/docs/**/*.fdb_latexmk
+outputs/docs/**/*.fls
+outputs/docs/**/*.synctex.gz

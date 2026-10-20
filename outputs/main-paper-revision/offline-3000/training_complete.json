@@ -1,0 +1,5 @@
+{
+  "epochs": 43,
+  "best_epoch": 23,
+  "best_val_loss": 0.9999597668647766
+}

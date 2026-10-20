@@ -1,0 +1,36 @@
+{
+  "purpose": "deterministic mechanism illustration, not an inference experiment",
+  "beacons": [
+    [
+      -12.0,
+      -12.0
+    ],
+    [
+      -12.0,
+      12.0
+    ],
+    [
+      12.0,
+      -12.0
+    ],
+    [
+      12.0,
+      12.0
+    ]
+  ],
+  "strengths": [
+    1.0,
+    1.0,
+    1.0,
+    8.0
+  ],
+  "room": [
+    8,
+    10
+  ],
+  "grid_shape": [
+    151,
+    121
+  ],
+  "rule": "argmax(s_b ** alpha / distance)"
+}

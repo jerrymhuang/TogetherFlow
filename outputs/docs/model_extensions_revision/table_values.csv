@@ -1,0 +1,204 @@
+table,arm,metric,parameter,value,source
+tab:collision-recovery,Reference,NRMSE,w,0.30678664494890323,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,NRMSE,r,0.8266737867234282,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,NRMSE,v,0.25787988238691695,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,NRMSE,noise,0.42339605460693763,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,Post. Contraction,w,0.9101022630817297,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,Post. Contraction,r,0.3020415390004603,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,Post. Contraction,v,0.9364811003017811,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,Post. Contraction,noise,0.8258996284025266,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,ECE,w,0.03157894736842104,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,ECE,r,0.009122807017543838,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,ECE,v,0.01622807017543859,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Reference,ECE,noise,0.016315789473684228,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:collision-recovery,Collision avoidance,NRMSE,w,0.2815924662163444,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,NRMSE,r,0.8388471294927597,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,NRMSE,v,0.26527863970094534,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,NRMSE,noise,0.4589411865842989,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,Post. Contraction,w,0.922915477411784,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,Post. Contraction,r,0.33731370227987356,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,Post. Contraction,v,0.9415135453543824,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,Post. Contraction,noise,0.7768542513781906,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,ECE,w,0.019736842105263153,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,ECE,r,0.010175438596491199,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,ECE,v,0.017105263157894735,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:collision-recovery,Collision avoidance,ECE,noise,0.009473684210526329,outputs/variable-radius/rev-variable-collision/metrics.csv
+tab:salience-recovery,Reference,NRMSE,w,0.30678664494890323,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,NRMSE,r,0.8266737867234282,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,NRMSE,v,0.25787988238691695,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,NRMSE,noise,0.42339605460693763,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,Post. Contraction,w,0.9101022630817297,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,Post. Contraction,r,0.3020415390004603,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,Post. Contraction,v,0.9364811003017811,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,Post. Contraction,noise,0.8258996284025266,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,ECE,w,0.03157894736842104,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,ECE,r,0.009122807017543838,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,ECE,v,0.01622807017543859,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Reference,ECE,noise,0.016315789473684228,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:salience-recovery,Salience,NRMSE,w,0.2644873253961598,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,NRMSE,r,0.7897320631514958,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,NRMSE,v,0.20481472868233336,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,NRMSE,noise,0.4044518998414911,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,NRMSE,alpha,0.9565616173242669,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,Post. Contraction,w,0.9302138728505712,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,Post. Contraction,r,0.3384882431771317,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,Post. Contraction,v,0.9577379483967828,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,Post. Contraction,noise,0.8475095241665697,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,Post. Contraction,alpha,0.10520370002495438,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,ECE,w,0.041315789473684195,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,ECE,r,0.020526315789473656,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,ECE,v,0.011315789473684237,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,ECE,noise,0.01087719298245611,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:salience-recovery,Salience,ECE,alpha,0.009736842105263169,outputs/variable-radius/rev-variable-salience/metrics.csv
+tab:timevarying-recovery,Reference,NRMSE,w,0.30678664494890323,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,NRMSE,r,0.8266737867234282,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,NRMSE,v,0.25787988238691695,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,NRMSE,noise,0.42339605460693763,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,Post. Contraction,w,0.9101022630817297,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,Post. Contraction,r,0.3020415390004603,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,Post. Contraction,v,0.9364811003017811,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,Post. Contraction,noise,0.8258996284025266,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,ECE,w,0.03157894736842104,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,ECE,r,0.009122807017543838,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,ECE,v,0.01622807017543859,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Reference,ECE,noise,0.016315789473684228,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:timevarying-recovery,Time-varying,NRMSE,w0,0.46601114609821015,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,NRMSE,r,0.7523534845530793,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,NRMSE,v,0.2802338252444687,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,NRMSE,noise,0.4775417234186242,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,NRMSE,tau,0.9407719915737892,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,Post. Contraction,w0,0.7973995735099312,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,Post. Contraction,r,0.4446334866455191,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,Post. Contraction,v,0.9138799301798416,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,Post. Contraction,noise,0.7671211311000274,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,Post. Contraction,tau,0.09004999221164789,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,ECE,w0,0.014210526315789479,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,ECE,r,0.016578947368421054,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,ECE,v,0.029035087719298247,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,ECE,noise,0.01991228070175438,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:timevarying-recovery,Time-varying,ECE,tau,0.027192982456140352,outputs/variable-radius/rev-variable-timevarying/metrics.csv
+tab:radius-identification,Inferred radius,NRMSE,w,0.30678664494890323,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,NRMSE,r,0.8266737867234282,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,NRMSE,v,0.25787988238691695,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,NRMSE,noise,0.42339605460693763,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,Post. Contraction,w,0.9101022630817297,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,Post. Contraction,r,0.3020415390004603,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,Post. Contraction,v,0.9364811003017811,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,Post. Contraction,noise,0.8258996284025266,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,ECE,w,0.03157894736842104,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,ECE,r,0.009122807017543838,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,ECE,v,0.01622807017543859,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Inferred radius,ECE,noise,0.016315789473684228,outputs/variable-radius/rev-variable-reference/metrics.csv
+tab:radius-identification,Fixed $r=2.5$,NRMSE,w,0.18484637860172648,outputs/revision/rev-fixed-reference/metrics.csv
+tab:radius-identification,Fixed $r=2.5$,NRMSE,v,0.20294922067161467,outputs/revision/rev-fixed-reference/metrics.csv
+tab:radius-identification,Fixed $r=2.5$,NRMSE,noise,0.384843778673412,outputs/revision/rev-fixed-reference/metrics.csv
+tab:radius-identification,Fixed $r=2.5$,Post. Contraction,w,0.9679318107259183,outputs/revision/rev-fixed-reference/metrics.csv
+tab:radius-identification,Fixed $r=2.5$,Post. Contraction,v,0.9570811987737099,outputs/revision/rev-fixed-reference/metrics.csv
+tab:radius-identification,Fixed $r=2.5$,Post. Contraction,noise,0.847294584024328,outputs/revision/rev-fixed-reference/metrics.csv
+tab:radius-identification,Fixed $r=2.5$,ECE,w,0.012017543859649094,outputs/revision/rev-fixed-reference/metrics.csv
+tab:radius-identification,Fixed $r=2.5$,ECE,v,0.016315789473684172,outputs/revision/rev-fixed-reference/metrics.csv
+tab:radius-identification,Fixed $r=2.5$,ECE,noise,0.008859649122807012,outputs/revision/rev-fixed-reference/metrics.csv
+tab:radius-identification,Fixed $r=1.25$,NRMSE,w,0.2076101981175583,outputs/revision/rev-fixed-radius-1.25/metrics.csv
+tab:radius-identification,Fixed $r=1.25$,NRMSE,v,0.16830849929279976,outputs/revision/rev-fixed-radius-1.25/metrics.csv
+tab:radius-identification,Fixed $r=1.25$,NRMSE,noise,0.33466135263331687,outputs/revision/rev-fixed-radius-1.25/metrics.csv
+tab:radius-identification,Fixed $r=1.25$,Post. Contraction,w,0.9544240232739154,outputs/revision/rev-fixed-radius-1.25/metrics.csv
+tab:radius-identification,Fixed $r=1.25$,Post. Contraction,v,0.9682812599281377,outputs/revision/rev-fixed-radius-1.25/metrics.csv
+tab:radius-identification,Fixed $r=1.25$,Post. Contraction,noise,0.8837672180954763,outputs/revision/rev-fixed-radius-1.25/metrics.csv
+tab:radius-identification,Fixed $r=1.25$,ECE,w,0.009210526315789447,outputs/revision/rev-fixed-radius-1.25/metrics.csv
+tab:radius-identification,Fixed $r=1.25$,ECE,v,0.041929824561403484,outputs/revision/rev-fixed-radius-1.25/metrics.csv
+tab:radius-identification,Fixed $r=1.25$,ECE,noise,0.011403508771929804,outputs/revision/rev-fixed-radius-1.25/metrics.csv
+tab:radius-identification,Fixed $r=4$,NRMSE,w,0.17320877881181124,outputs/revision/rev-fixed-radius-4/metrics.csv
+tab:radius-identification,Fixed $r=4$,NRMSE,v,0.21657383822635579,outputs/revision/rev-fixed-radius-4/metrics.csv
+tab:radius-identification,Fixed $r=4$,NRMSE,noise,0.40897306489179514,outputs/revision/rev-fixed-radius-4/metrics.csv
+tab:radius-identification,Fixed $r=4$,Post. Contraction,w,0.9704151151626806,outputs/revision/rev-fixed-radius-4/metrics.csv
+tab:radius-identification,Fixed $r=4$,Post. Contraction,v,0.953535133315041,outputs/revision/rev-fixed-radius-4/metrics.csv
+tab:radius-identification,Fixed $r=4$,Post. Contraction,noise,0.820478770953355,outputs/revision/rev-fixed-radius-4/metrics.csv
+tab:radius-identification,Fixed $r=4$,ECE,w,0.014561403508771942,outputs/revision/rev-fixed-radius-4/metrics.csv
+tab:radius-identification,Fixed $r=4$,ECE,v,0.0193859649122807,outputs/revision/rev-fixed-radius-4/metrics.csv
+tab:radius-identification,Fixed $r=4$,ECE,noise,0.012982456140350908,outputs/revision/rev-fixed-radius-4/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,rmse,mu_w,0.03478893,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,prior_median_rmse,mu_w,0.2270967,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,coverage95,mu_w,0.9866666666666667,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,contraction,mu_w,0.95327395,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,rmse,sigma_w,0.18834358,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,prior_median_rmse,sigma_w,0.29553518,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,coverage95,sigma_w,0.9566666666666667,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,contraction,sigma_w,0.40838867,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,rmse,mu_r,0.48824608,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,prior_median_rmse,mu_r,1.0210674,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,coverage95,mu_r,0.9366666666666666,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,contraction,mu_r,0.7356881,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,rmse,sigma_r,0.16081245,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,prior_median_rmse,sigma_r,0.17543526,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,coverage95,sigma_r,0.9366666666666666,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,contraction,sigma_r,0.15450633,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,rmse,v,0.040390603,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,prior_median_rmse,v,0.42664647,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,coverage95,v,0.9933333333333333,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,contraction,v,0.9507654,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,rmse,eta,0.018294415,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,prior_median_rmse,eta,0.22861183,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,coverage95,eta,0.9866666666666667,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,contraction,eta,0.95873344,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,rmse,w_*,0.053748186,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,prior_median_rmse,w_*,0.2400763191666667,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,coverage95,w_*,0.9580555555555555,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,contraction,w_*,0.9279035366666667,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,rmse,r_*,0.8240869416666667,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,prior_median_rmse,r_*,1.272411275,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,coverage95,r_*,0.9266666666666666,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:heterogeneity-recovery,12-agent hierarchy,contraction,r_*,0.6112447008333334,outputs/agent-radius-pooling/bounded-radius-online/metrics.csv
+tab:prior-sensitivity,Reference,NRMSE,w,0.18484637860172648,outputs/revision/rev-fixed-reference/metrics.csv
+tab:prior-sensitivity,Reference,NRMSE,v,0.20294922067161467,outputs/revision/rev-fixed-reference/metrics.csv
+tab:prior-sensitivity,Reference,NRMSE,noise,0.384843778673412,outputs/revision/rev-fixed-reference/metrics.csv
+tab:prior-sensitivity,Reference,Post. Contraction,w,0.9679318107259183,outputs/revision/rev-fixed-reference/metrics.csv
+tab:prior-sensitivity,Reference,Post. Contraction,v,0.9570811987737099,outputs/revision/rev-fixed-reference/metrics.csv
+tab:prior-sensitivity,Reference,Post. Contraction,noise,0.847294584024328,outputs/revision/rev-fixed-reference/metrics.csv
+tab:prior-sensitivity,Reference,ECE,w,0.012017543859649094,outputs/revision/rev-fixed-reference/metrics.csv
+tab:prior-sensitivity,Reference,ECE,v,0.016315789473684172,outputs/revision/rev-fixed-reference/metrics.csv
+tab:prior-sensitivity,Reference,ECE,noise,0.008859649122807012,outputs/revision/rev-fixed-reference/metrics.csv
+tab:prior-sensitivity,Wide,NRMSE,w,0.19022099058333464,outputs/revision/rev-fixed-prior-wide/metrics.csv
+tab:prior-sensitivity,Wide,NRMSE,v,0.1462819952242764,outputs/revision/rev-fixed-prior-wide/metrics.csv
+tab:prior-sensitivity,Wide,NRMSE,noise,0.35792315409669717,outputs/revision/rev-fixed-prior-wide/metrics.csv
+tab:prior-sensitivity,Wide,Post. Contraction,w,0.9610184433535901,outputs/revision/rev-fixed-prior-wide/metrics.csv
+tab:prior-sensitivity,Wide,Post. Contraction,v,0.9738484602645032,outputs/revision/rev-fixed-prior-wide/metrics.csv
+tab:prior-sensitivity,Wide,Post. Contraction,noise,0.8662582074928097,outputs/revision/rev-fixed-prior-wide/metrics.csv
+tab:prior-sensitivity,Wide,ECE,w,0.013947368421052653,outputs/revision/rev-fixed-prior-wide/metrics.csv
+tab:prior-sensitivity,Wide,ECE,v,0.02614035087719302,outputs/revision/rev-fixed-prior-wide/metrics.csv
+tab:prior-sensitivity,Wide,ECE,noise,0.006315789473684247,outputs/revision/rev-fixed-prior-wide/metrics.csv
+tab:prior-sensitivity,Concentrated,NRMSE,w,0.20122103052089085,outputs/revision/rev-fixed-prior-tight/metrics.csv
+tab:prior-sensitivity,Concentrated,NRMSE,v,0.2525140179638172,outputs/revision/rev-fixed-prior-tight/metrics.csv
+tab:prior-sensitivity,Concentrated,NRMSE,noise,0.5773716170205434,outputs/revision/rev-fixed-prior-tight/metrics.csv
+tab:prior-sensitivity,Concentrated,Post. Contraction,w,0.9598771912068846,outputs/revision/rev-fixed-prior-tight/metrics.csv
+tab:prior-sensitivity,Concentrated,Post. Contraction,v,0.9384827765976139,outputs/revision/rev-fixed-prior-tight/metrics.csv
+tab:prior-sensitivity,Concentrated,Post. Contraction,noise,0.7073619989858271,outputs/revision/rev-fixed-prior-tight/metrics.csv
+tab:prior-sensitivity,Concentrated,ECE,w,0.012543859649122788,outputs/revision/rev-fixed-prior-tight/metrics.csv
+tab:prior-sensitivity,Concentrated,ECE,v,0.014473684210526305,outputs/revision/rev-fixed-prior-tight/metrics.csv
+tab:prior-sensitivity,Concentrated,ECE,noise,0.009298245614035083,outputs/revision/rev-fixed-prior-tight/metrics.csv
+tab:prior-sensitivity,Slower speed,NRMSE,w,0.22411446982900446,outputs/revision/rev-fixed-prior-slow-velocity/metrics.csv
+tab:prior-sensitivity,Slower speed,NRMSE,v,0.20660025116972008,outputs/revision/rev-fixed-prior-slow-velocity/metrics.csv
+tab:prior-sensitivity,Slower speed,NRMSE,noise,0.4219754924928601,outputs/revision/rev-fixed-prior-slow-velocity/metrics.csv
+tab:prior-sensitivity,Slower speed,Post. Contraction,w,0.9476911275810708,outputs/revision/rev-fixed-prior-slow-velocity/metrics.csv
+tab:prior-sensitivity,Slower speed,Post. Contraction,v,0.9599194117129632,outputs/revision/rev-fixed-prior-slow-velocity/metrics.csv
+tab:prior-sensitivity,Slower speed,Post. Contraction,noise,0.823156397936877,outputs/revision/rev-fixed-prior-slow-velocity/metrics.csv
+tab:prior-sensitivity,Slower speed,ECE,w,0.015964912280701737,outputs/revision/rev-fixed-prior-slow-velocity/metrics.csv
+tab:prior-sensitivity,Slower speed,ECE,v,0.009561403508771882,outputs/revision/rev-fixed-prior-slow-velocity/metrics.csv
+tab:prior-sensitivity,Slower speed,ECE,noise,0.014736842105263132,outputs/revision/rev-fixed-prior-slow-velocity/metrics.csv
+tab:prior-sensitivity,Lower noise,NRMSE,w,0.21480138642106478,outputs/revision/rev-fixed-prior-eta-smooth/metrics.csv
+tab:prior-sensitivity,Lower noise,NRMSE,v,0.21743549882598523,outputs/revision/rev-fixed-prior-eta-smooth/metrics.csv
+tab:prior-sensitivity,Lower noise,NRMSE,noise,0.5828017206374236,outputs/revision/rev-fixed-prior-eta-smooth/metrics.csv
+tab:prior-sensitivity,Lower noise,Post. Contraction,w,0.9591664493485232,outputs/revision/rev-fixed-prior-eta-smooth/metrics.csv
+tab:prior-sensitivity,Lower noise,Post. Contraction,v,0.9497348925962363,outputs/revision/rev-fixed-prior-eta-smooth/metrics.csv
+tab:prior-sensitivity,Lower noise,Post. Contraction,noise,0.6767774684942532,outputs/revision/rev-fixed-prior-eta-smooth/metrics.csv
+tab:prior-sensitivity,Lower noise,ECE,w,0.008421052631578996,outputs/revision/rev-fixed-prior-eta-smooth/metrics.csv
+tab:prior-sensitivity,Lower noise,ECE,v,0.02263157894736839,outputs/revision/rev-fixed-prior-eta-smooth/metrics.csv
+tab:prior-sensitivity,Lower noise,ECE,noise,0.014999999999999958,outputs/revision/rev-fixed-prior-eta-smooth/metrics.csv
+tab:prior-sensitivity,Higher noise,NRMSE,w,0.1976103800260675,outputs/revision/rev-fixed-prior-eta-diffuse/metrics.csv
+tab:prior-sensitivity,Higher noise,NRMSE,v,0.1831969060977911,outputs/revision/rev-fixed-prior-eta-diffuse/metrics.csv
+tab:prior-sensitivity,Higher noise,NRMSE,noise,0.27449593657461047,outputs/revision/rev-fixed-prior-eta-diffuse/metrics.csv
+tab:prior-sensitivity,Higher noise,Post. Contraction,w,0.958653669164012,outputs/revision/rev-fixed-prior-eta-diffuse/metrics.csv
+tab:prior-sensitivity,Higher noise,Post. Contraction,v,0.9633846281819611,outputs/revision/rev-fixed-prior-eta-diffuse/metrics.csv
+tab:prior-sensitivity,Higher noise,Post. Contraction,noise,0.9233180984455649,outputs/revision/rev-fixed-prior-eta-diffuse/metrics.csv
+tab:prior-sensitivity,Higher noise,ECE,w,0.027631578947368396,outputs/revision/rev-fixed-prior-eta-diffuse/metrics.csv
+tab:prior-sensitivity,Higher noise,ECE,v,0.021228070175438585,outputs/revision/rev-fixed-prior-eta-diffuse/metrics.csv
+tab:prior-sensitivity,Higher noise,ECE,noise,0.02280701754385961,outputs/revision/rev-fixed-prior-eta-diffuse/metrics.csv

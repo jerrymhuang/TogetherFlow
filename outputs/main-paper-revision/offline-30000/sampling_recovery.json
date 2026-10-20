@@ -1,0 +1,10 @@
+{
+  "started_at_unix": 1792512961.656345,
+  "reason": "Original sampling pass stopped advancing after 150/300 test cases; training was complete.",
+  "method": "Reload saved validation-selected checkpoint; retain original sampler, batch size and shared seed sequence; save completed batches.",
+  "entrypoint_sha256": "10a97aea8d28826f9bfcc996b7fb45da10075bfddcfa099f1416245e10bf3c05",
+  "completed_at_unix": 1792513273.2976599,
+  "completed_test_cases": 300,
+  "outcome": "complete",
+  "validation": "Chunked recovery matched monolithic sampling on a small held-out fixture; cached batches restored exactly."
+}

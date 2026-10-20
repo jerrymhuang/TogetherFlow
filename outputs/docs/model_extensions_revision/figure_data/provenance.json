@@ -1,0 +1,19 @@
+{
+  "collision": {
+    "source": "outputs/scenarios/figures/crossing-groups.png",
+    "metrics": "outputs/scenarios/report.md",
+    "purpose": "saved fixed-parameter behavioral example; not prior-averaged recovery"
+  },
+  "salience": {
+    "source": "analytic score rule; see salience_design.json",
+    "purpose": "illustration, not a new inference result"
+  },
+  "time_varying": {
+    "source": "outputs/variable-radius/superstats-variable-path/time_varying_posterior.png",
+    "selection": "first three test datasets, as selected by run_v5b_path.py"
+  },
+  "hierarchy": {
+    "source": "outputs/agent-radius-pooling/bounded-radius-online/agent_posteriors.csv",
+    "selection": "trial indices 0 and 1; all 12 agents per trial"
+  }
+}

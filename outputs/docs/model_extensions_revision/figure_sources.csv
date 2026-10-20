@@ -1,0 +1,16 @@
+asset,source
+figures/ext-recovery-m0.png,outputs/variable-radius/rev-variable-reference/recovery.png
+figures/ext-recovery-m1.png,outputs/variable-radius/rev-variable-collision/recovery.png
+figures/ext-recovery-m2.png,outputs/variable-radius/rev-variable-salience/recovery.png
+figures/ext-recovery-m3.png,outputs/variable-radius/rev-variable-timevarying/recovery.png
+figures/ext-coverage-m0.png,outputs/variable-radius/rev-variable-reference/coverage.png
+figures/ext-coverage-m1.png,outputs/variable-radius/rev-variable-collision/coverage.png
+figures/ext-coverage-m2.png,outputs/variable-radius/rev-variable-salience/coverage.png
+figures/ext-recovery-m4.pdf,outputs/agent-radius-pooling/bounded-radius-online/parameter_recovery.pdf
+figures/ext-collision-crossing.png,outputs/scenarios/figures/crossing-groups.png
+figures/ext-salience-selection.pdf,build_extension_figures.py:salience_selection (deterministic illustration)
+figures/ext-timevarying-paths.png,outputs/variable-radius/superstats-variable-path/time_varying_posterior.png
+figures/ext-individual-posteriors.pdf,outputs/agent-radius-pooling/bounded-radius-online/agent_posteriors.csv; trial indices 0 and 1
+figures/ext-recovery-prior-reference.png,outputs/revision/rev-fixed-reference/recovery.png
+figures/ext-recovery-prior-wide.png,outputs/revision/rev-fixed-prior-wide/recovery.png
+figures/ext-recovery-prior-tight.png,outputs/revision/rev-fixed-prior-tight/recovery.png

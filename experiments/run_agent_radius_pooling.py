@@ -159,7 +159,7 @@ def plot_recovery(root):
     names += [rf'$r_{{{i+1}}}$' for i in range(AGENTS)]
     fig=bf.diagnostics.plots.recovery(estimates=samples,targets=truth,
         variable_names=names,num_row=5,num_col=6,figsize=(21,17.5),
-        uncertainty_agg_kwargs={'prob':.95},xlabel='Ground truth',ylabel='Posterior median',
+        uncertainty_agg_kwargs={'prob':.95},xlabel='Ground truth',ylabel='Estimate',
         label_fontsize=16,title_fontsize=22,metric_fontsize=10,tick_fontsize=9,markersize=2)
     # Global panels keep the default; weights and radii get their own colors.
     for ax,color in zip(fig.axes[6:],[WEIGHT_COLOR]*AGENTS+[RADIUS_COLOR]*AGENTS):

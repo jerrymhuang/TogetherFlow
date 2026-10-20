@@ -1,0 +1,36 @@
+{
+  "spec": {
+    "size": 300,
+    "seed": 20460803,
+    "chunk_size": 64,
+    "channels": [
+      "positions",
+      "rotations",
+      "angular_velocities",
+      "radii_counts"
+    ],
+    "infer": [
+      "w",
+      "r",
+      "v",
+      "noise"
+    ],
+    "agents": 49,
+    "horizon": 60.0,
+    "dt": 0.1,
+    "prior": "complete_pooling_prior",
+    "reference_radii": [
+      0.5,
+      1.0,
+      2.0,
+      4.0
+    ],
+    "relative_heading": true,
+    "diffusive_heading": true,
+    "source_sha256": {
+      "togetherflow/simulator.py": "7a1d08ccf392010cd98a58ad6782269b43cf3127e66c11e481fb586cb8a1d966",
+      "togetherflow/priors.py": "facc5037fbbc7a35159c68f15b9afdf28f8bfed867bfbc957e5e1df452efbcde"
+    }
+  },
+  "completed": 300
+}
