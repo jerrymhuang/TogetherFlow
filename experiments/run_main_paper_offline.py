@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from run_variant import build_adapter, build_simulator, LATEX_NAMES, FIGURE_NAMES, normalize_metric_index
-from togetherflow.networks import TransformerSummaryNet
+from togetherflow.networks import SummaryNet, TransformerSummaryNet
 from variable_radius_variants import BASE
 
 
@@ -100,25 +100,27 @@ class EpochRecord(keras.callbacks.Callback):
 
 
 def manifest(variant, budget, args):
-    config = asdict(replace(variant, online=False, n_train=budget, epochs=args.epochs,
+    config = asdict(replace(variant, online=getattr(args, "online", False), n_train=budget, epochs=args.epochs,
                            batch_size=args.batch_size, early_stopping_patience=args.patience,
                            n_val=args.n_eval, n_test=args.n_eval))
     config["prior"] = variant.prior.__name__
     files = ["experiments/run_main_paper_offline.py", "experiments/run_variant.py",
              "experiments/variants.py", "experiments/variable_radius_variants.py",
+             "experiments/run_matched_retraining.py",
              "togetherflow/simulator.py", "togetherflow/priors.py",
              "togetherflow/networks/transformer.py"]
     return dict(
         purpose="smoke validation only" if args.smoke else "main-paper revised offline recovery",
         variant=config, training_budget=budget, maximum_epochs=args.epochs,
         batch_size=args.batch_size, early_stopping_patience=args.patience,
-        checkpoint_selection="minimum validation loss; restore best weights",
+        checkpoint_selection=("minimum validation loss; restore best weights" if args.patience else "final epoch; no early stopping"),
         validation_size=args.n_eval, test_size=args.n_eval, posterior_draws=args.draws,
         seeds={"training_bank": BASE.seed, "validation_bank": BASE.seed + 100000,
                "test_bank": BASE.seed + 200000, "network": BASE.seed,
                "posterior": BASE.seed + 300000, "diagnostics": BASE.seed + 400000},
-        training_design="nested fixed training banks; shared independent validation and test banks",
-        optimizer="BayesFlow offline default AdamW, weight decay 0.005, cosine schedule, 5% warmup",
+        sampling_design="batches of 5, seed=posterior seed + first dataset index" if getattr(args, "matched", False) else "batch size 25, shared seed generator",
+        training_design=("fresh online simulations; shared validation and test banks" if getattr(args, "online", False) else "nested fixed training banks; shared independent validation and test banks"),
+        optimizer=("BayesFlow online default Adam" if getattr(args, "online", False) else "BayesFlow offline default AdamW, weight decay 0.005, cosine schedule, 5% warmup"),
         nrmse_normalization="prior", diagnostics_aggregation="BayesFlow default median",
         packages={p: importlib.metadata.version(p) for p in
                   ("bayesflow", "keras", "jax", "jaxlib", "numpy", "numba", "matplotlib", "pandas")},
@@ -126,6 +128,44 @@ def manifest(variant, budget, args):
         git_commit=subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         source_sha256={p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in files},
         comparison_note="Online reference uses 480000 fresh simulations and Adam; the original paper also differs in dynamics, inputs, architecture and NRMSE definition.")
+
+
+def sample_chunks(workflow, variant, test, directory, args):
+    """Retain completed sampling batches so a sampler failure loses little work."""
+    chunks = directory / "posterior_chunks"
+    chunks.mkdir(exist_ok=True)
+    checkpoint_hash = hashlib.sha256((directory / "checkpoints/model.keras").read_bytes()).hexdigest()
+    spec = dict(checkpoint_sha256=checkpoint_hash, draws=args.draws, batch_size=5,
+                test_size=args.n_eval, seed=BASE.seed + 300000)
+    path = chunks / "spec.json"
+    if path.exists() and json.loads(path.read_text()) != spec:
+        raise ValueError("Posterior chunks belong to a different sampling specification")
+    write_json(path, spec)
+    collected = {k: [] for k in variant.infer}
+    for start in range(0, args.n_eval, 5):
+        stop = min(start + 5, args.n_eval)
+        path = chunks / f"{start:04d}.npz"
+        if path.exists():
+            with np.load(path) as saved:
+                for k in variant.infer:
+                    np.testing.assert_array_equal(saved[f"truth_{k}"], test[k][start:stop])
+                draws = {k: saved[f"samples_{k}"] for k in variant.infer}
+        else:
+            write_json(directory / "status.json", dict(stage="posterior sampling", completed=start, total=args.n_eval))
+            draws = workflow.sample(num_samples=args.draws,
+                conditions={k: np.asarray(v[start:stop]) for k, v in test.items()},
+                batch_size=5, seed=BASE.seed + 300000 + start)
+            draws = {k: np.asarray(draws[k]) for k in variant.infer}
+            for key, value in draws.items():
+                if not np.isfinite(value).all() or value.shape != (stop-start, args.draws, 1):
+                    raise ValueError(f"Invalid posterior batch: {key}, {value.shape}")
+            tmp = path.with_suffix(".tmp.npz")
+            np.savez_compressed(tmp, **{f"samples_{k}": v for k, v in draws.items()},
+                                **{f"truth_{k}": test[k][start:stop] for k in variant.infer})
+            tmp.replace(path)
+        for k in variant.infer:
+            collected[k].append(draws[k])
+    return {k: np.concatenate(v) for k, v in collected.items()}
 
 
 def run_budget(variant, budget, train, validation, test, directory, args):
@@ -143,11 +183,11 @@ def run_budget(variant, budget, train, validation, test, directory, args):
     checkpoints.mkdir(exist_ok=True)
     workflow = bf.workflows.BasicWorkflow(
         simulator=build_simulator(variant, BASE.seed), adapter=build_adapter(variant),
-        summary_network=TransformerSummaryNet(summary_dim=3 * len(variant.infer)),
-        inference_network=bf.networks.FlowMatching(
+        summary_network=(TransformerSummaryNet if variant.summary_net == "transformer" else SummaryNet)(summary_dim=3 * len(variant.infer)),
+        inference_network=(bf.networks.FlowMatching if variant.inference_net == "flow_matching" else bf.networks.DiffusionModel)(
             subnet_kwargs={"widths": (256,) * 4, "time_embedding_dim": 32}),
         standardize="all", checkpoint_filepath=str(checkpoints),
-        checkpoint_name="best_model", save_best_only=True)
+        checkpoint_name="best_model" if args.patience else "final_model", save_best_only=bool(args.patience))
     final_model = checkpoints / "model.keras"
     if (directory / "training_complete.json").exists():
         workflow.approximator = keras.saving.load_model(final_model)
@@ -156,17 +196,24 @@ def run_budget(variant, budget, train, validation, test, directory, args):
     else:
         if (directory / "epochs.json").exists() and not args.restart_training:
             raise RuntimeError(f"Interrupted training at {directory}; use --restart-training to restart explicitly")
-        logging.info("Training fixed bank N=%d, maximum %d epochs", budget, args.epochs)
-        history = workflow.fit_offline(
-            data={k: v[:budget] for k, v in train.items()}, epochs=args.epochs,
-            batch_size=args.batch_size, validation_data=validation, verbose=2,
-            callbacks=[EpochRecord(directory), keras.callbacks.EarlyStopping(
-                monitor="val_loss", patience=args.patience, restore_best_weights=True, verbose=1)])
+        logging.info("Training %s N=%d, %d epochs", "online" if getattr(args, "online", False) else "fixed bank", budget, args.epochs)
+        callbacks = [EpochRecord(directory)]
+        if args.patience:
+            callbacks.append(keras.callbacks.EarlyStopping(
+                monitor="val_loss", patience=args.patience, restore_best_weights=True, verbose=1))
+        fit_args = dict(epochs=args.epochs, batch_size=args.batch_size,
+                        validation_data=validation, verbose=2, callbacks=callbacks)
+        if getattr(args, "online", False):
+            history = workflow.fit_online(num_batches_per_epoch=variant.num_batches_per_epoch, **fit_args)
+        else:
+            history = workflow.fit_offline(data={k: v[:budget] for k, v in train.items()}, **fit_args)
         write_json(directory / "history.json", history.history)
-        # EarlyStopping restores the validation-selected weights after the last epoch.
+        # With patience=0, retain final weights; otherwise early stopping restores the best.
         workflow.approximator.save(final_model)
         write_json(directory / "training_complete.json", dict(
             epochs=len(history.history["loss"]),
+            selected_epoch=(int(np.argmin(history.history["val_loss"])) + 1 if args.patience else len(history.history["loss"])),
+            selection="best validation" if args.patience else "final epoch",
             best_epoch=int(np.argmin(history.history["val_loss"])) + 1,
             best_val_loss=float(np.min(history.history["val_loss"]))))
     write_json(directory / "status.json", {"stage": "posterior sampling"})
@@ -178,8 +225,8 @@ def run_budget(variant, budget, train, validation, test, directory, args):
                 np.testing.assert_array_equal(saved[f"truth_{k}"], test[k])
     else:
         # Small condition batches bound the memory needed for ODE integration.
-        samples = workflow.sample(num_samples=args.draws, conditions=test, batch_size=25,
-                                  seed=BASE.seed + 300000)
+        samples = sample_chunks(workflow, variant, test, directory, args) if getattr(args, "matched", False) else workflow.sample(
+            num_samples=args.draws, conditions=test, batch_size=25, seed=BASE.seed + 300000)
         samples = {k: np.asarray(samples[k]) for k in variant.infer}
         for k, value in samples.items():
             if not np.isfinite(value).all() or value.shape[:2] != (args.n_eval, args.draws):
@@ -209,9 +256,9 @@ def run_budget(variant, budget, train, validation, test, directory, args):
         fig.savefig(path.with_suffix(".pdf"), bbox_inches="tight")
         plt.close(fig)
     (directory / "report.md").write_text(
-        f"# Revised offline reference: {budget:,} simulations\n\n"
-        "Fixed training bank; independent shared validation and test banks. "
-        "Checkpoint selected by validation loss. Metrics and figures use the same saved posterior draws.\n\n"
+        f"# Matched reference: {budget:,} simulations\n\n"
+        f"{spec['training_design']}. "
+        f"Checkpoint selection: {spec['checkpoint_selection']}. Metrics and figures use the same saved posterior draws.\n\n"
         + metrics.to_string() + "\n\n"
         "Primary NRMSE is prior-normalized; the separate range-normalized CSV is for auditing. "
         "These runs change the original simulator dynamics, observable inputs, and summary architecture, "

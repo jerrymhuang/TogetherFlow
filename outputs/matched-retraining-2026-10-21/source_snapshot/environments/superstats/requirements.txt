@@ -1,0 +1,7 @@
+# Upstream dev as checked 2026-10-21; pin the commit for reproducibility.
+superstats @ git+https://github.com/LuSchumacher/superstats.git@e9142e5a6d7916e971bdab7d8dbe59452683aacf
+bayesflow==2.0.14
+numpy>=2.5.1,<2.6
+numba>=0.67
+pandas>=3.0
+matplotlib>=3.10

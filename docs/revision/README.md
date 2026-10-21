@@ -45,7 +45,7 @@ Existing variable-radius results remain historical secondary evidence. New fixed
 
 Main project: BayesFlow 2.0.14 (latest stable verified on PyPI), with CPU JAX by default. Install using `uv sync` or `uv pip install --python <environment-python> -e .`. For GPU execution, provision a compatible JAX CUDA runtime and working driver explicitly.
 
-Superstats 0.0.2 requires BayesFlow 2.0.12 and NumPy <2.5, while BayesFlow 2.0.14 requires NumPy >=2.5.1. Keep a separate environment:
+Superstats is pinned to upstream dev commit `e9142e5a6d7916e971bdab7d8dbe59452683aacf` (verified 2026-10-21), with BayesFlow 2.0.14 and NumPy >=2.5.1,<2.6. Its package version still reads 0.0.2; the commit identifies the development code. Keep a dedicated environment:
 
 ```bash
 uv venv /tmp/togetherflow-superstats --python python3.12
@@ -81,7 +81,7 @@ The original metrics and paper figures were not overwritten. Smoke artifacts are
 
 The loaded kernel module is 580.173.02, while the installed system libraries and on-disk module are 580.178.04. The user requested no reboot. The official NVIDIA 580.173.02 bundle was downloaded and integrity-checked by its extractor, without installing it; matching compute libraries are isolated under `/tmp/togetherflow-nvidia-580.173.02/lib`. A process-local `LD_LIBRARY_PATH` restores NVML access to the RTX 5000 Ada (32 GB). System libraries, modules, and desktop sessions are unchanged. This is temporary, not a system-wide driver repair; a later reboot should load the installed module. The launcher stops using the private libraries once that old module is no longer loaded.
 
-GPU installations: main `.venv` with BayesFlow 2.0.14; persistent `.venv-superstats` with Superstats 0.0.2/BayesFlow 2.0.12; both use JAX CUDA 13. To preserve the main GPU packages when syncing, use `uv sync --extra cuda`. To recreate the trajectory environment, install its requirements plus `jax[cuda13]==0.11.2`.
+GPU installations: main `.venv` with BayesFlow 2.0.14; persistent `.venv-superstats` now uses the pinned Superstats development commit/BayesFlow 2.0.14; both use JAX CUDA 13. To preserve the main GPU packages when syncing, use `uv sync --extra cuda`. To recreate the trajectory environment, install its requirements plus `jax[cuda13]==0.11.2`.
 
 Launch/resume all 17 full-budget stages using:
 
@@ -92,3 +92,32 @@ bash experiments/launch_revision_gpu.sh
 The queue validates actual GPU matrix multiplication in both environments, runs one analysis at a time, and records `outputs/revision/queue-status.json` plus per-stage logs in `outputs/revision/logs/`. Completed stages are skipped. A checkpoint with completed training history can resume diagnostics for ordinary variants. Failed stages remain explicit; failed reference/switching training blocks the transfer calculation. Interrupted superstats runs may require manual checkpoint recovery. No smoke results are counted as full analyses.
 
 The queue was launched in tmux session `togetherflow-revision` on October 17, 2026. Initial startup required enabling both `cuda,cpu` JAX platforms because BayesFlow uses CPU callbacks; GPU remains the asserted default. Early startup failures are retained in append-only logs, so consult the latest queue start and `queue-status.json` for current state.
+
+## Separate posterior plots (2026-10-21)
+
+Only `w_t` appears in `time_varying_posterior.png`. Constant parameters appear
+in `time_invariant_posterior_1.png` through `_3.png`, one held-out dataset per
+figure, using Superstats `plot_marginals`. Fixed-radius runs include v, eta,
+and tau; variable-radius runs also include r. The weight plot uses pointwise
+95%/65% equal-tailed intervals, without temporal smoothing.
+
+Regenerate the figures without training:
+
+```bash
+JAX_PLATFORMS=cpu .venv-superstats/bin/python experiments/plot_path_posteriors.py outputs/revision/superstats-fixed-path outputs/variable-radius/superstats-variable-path
+```
+
+The existing samples were trained with release 0.0.2 and predicted constants
+at every step. Superstats pools those stepwise marginals within each dataset
+and subsamples to the original draw count for the constant-parameter plots.
+These are mixtures of stepwise marginals, not newly inferred scalar posteriors.
+Original training manifests, checkpoints, samples, and metrics remain unchanged;
+`posterior_plot_manifest.json` records the plotting source separately.
+
+Future runs use the development API's separate varying/invariant networks:
+only w is a sequence target, and the other parameters are scalar targets.
+Scalar draws are broadcast across steps only for the existing export/metric
+format. This architecture change requires new training, not loading old
+checkpoints. Use `--output-dir` to keep new runs separate from existing results.
+
+See [the matched retraining design](matched_retraining_2026-10-21.md) for the new eight-arm suite, including full-epoch offline budgets without early stopping.

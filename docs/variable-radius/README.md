@@ -22,7 +22,9 @@ its earlier calibration problems remain unresolved and results require review.
 The trajectory model uses its separate pinned environment and offline training.
 
 Outputs: `outputs/variable-radius/`. Ordinary models infer radius explicitly;
-Superstats includes r_t as a time-invariant target predicted at every step.
+Superstats treats r as time-invariant. Historical runs predicted it at every
+step; new development-API runs infer it as a scalar. See the revision README
+for separate trajectory/marginal plots and saved-run plotting semantics.
 Smoke outputs are pipeline checks, not scientific results. Historical and
 fixed-radius results are not automatically numerically comparable to this suite.
 

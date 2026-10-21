@@ -1,0 +1,61 @@
+{
+  "superstats": "0.0.2",
+  "superstats_source": {
+    "url": "https://github.com/LuSchumacher/superstats.git",
+    "vcs_info": {
+      "vcs": "git",
+      "commit_id": "e9142e5a6d7916e971bdab7d8dbe59452683aacf",
+      "requested_revision": "e9142e5a6d7916e971bdab7d8dbe59452683aacf"
+    }
+  },
+  "bayesflow": "2.0.14",
+  "fixed_radius": null,
+  "smoke": false,
+  "seed": 20260803,
+  "matched_baseline": true,
+  "constrain_parameters": true,
+  "checkpoint_selection": "minimum validation loss; early stopping patience 20",
+  "comparison_note": "Dynamic-weight extension; fixed-radius arm conditions on r=2.5. Path diagnostics are not scalar baseline metrics.",
+  "time_horizon": 60.0,
+  "num_agents": 49,
+  "data_keys": [
+    "positions",
+    "rotations",
+    "angular_velocities",
+    "radii_counts"
+  ],
+  "reference_radii": [
+    0.5,
+    1.0,
+    2.0,
+    4.0
+  ],
+  "targets": [
+    "w_t",
+    "r_t",
+    "v_t",
+    "eta_t",
+    "tau_t"
+  ],
+  "n_train": 30000,
+  "n_test": 300,
+  "varying_targets": [
+    "w_t"
+  ],
+  "invariant_targets": [
+    "r_t",
+    "v_t",
+    "eta_t",
+    "tau_t"
+  ],
+  "approximator": "marginal",
+  "mode": "smoothing",
+  "n_val": 300,
+  "epochs": 300,
+  "num_samples": 1000,
+  "source_sha256": {
+    "experiments/run_v5b_path.py": "67a63d1d0ae6ad09c01aba9c8cc2c534f516ef49e491900c2ef727a3a57e2e2a",
+    "togetherflow/simulator.py": "7a1d08ccf392010cd98a58ad6782269b43cf3127e66c11e481fb586cb8a1d966",
+    "togetherflow/priors.py": "facc5037fbbc7a35159c68f15b9afdf28f8bfed867bfbc957e5e1df452efbcde"
+  }
+}

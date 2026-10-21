@@ -1,0 +1,108 @@
+{
+  "transformer-flow_matching": {
+    "status": "complete",
+    "started_utc": "2026-10-21T04:31:10.135431+00:00",
+    "command": [
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+      "experiments/run_matched_retraining.py",
+      "transformer-flow_matching",
+      "--output",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/matched-retraining-2026-10-21"
+    ],
+    "returncode": 0,
+    "ended_utc": "2026-10-21T05:06:37.461708+00:00"
+  },
+  "transformer-diffusion": {
+    "status": "complete",
+    "started_utc": "2026-10-21T05:06:37.462377+00:00",
+    "command": [
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+      "experiments/run_matched_retraining.py",
+      "transformer-diffusion",
+      "--output",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/matched-retraining-2026-10-21"
+    ],
+    "returncode": 0,
+    "ended_utc": "2026-10-21T05:40:36.400095+00:00"
+  },
+  "bdlstm-flow_matching": {
+    "status": "complete",
+    "started_utc": "2026-10-21T05:40:36.400740+00:00",
+    "command": [
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+      "experiments/run_matched_retraining.py",
+      "bdlstm-flow_matching",
+      "--output",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/matched-retraining-2026-10-21"
+    ],
+    "returncode": 0,
+    "ended_utc": "2026-10-21T06:11:54.492129+00:00"
+  },
+  "bdlstm-diffusion": {
+    "status": "complete",
+    "started_utc": "2026-10-21T06:11:54.492834+00:00",
+    "command": [
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+      "experiments/run_matched_retraining.py",
+      "bdlstm-diffusion",
+      "--output",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/matched-retraining-2026-10-21"
+    ],
+    "returncode": 0,
+    "ended_utc": "2026-10-21T06:41:57.652558+00:00"
+  },
+  "offline-3000": {
+    "status": "complete",
+    "started_utc": "2026-10-21T06:41:57.653294+00:00",
+    "command": [
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+      "experiments/run_matched_retraining.py",
+      "offline-3000",
+      "--output",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/matched-retraining-2026-10-21"
+    ],
+    "returncode": 0,
+    "ended_utc": "2026-10-21T07:01:25.223023+00:00"
+  },
+  "offline-30000": {
+    "status": "complete",
+    "started_utc": "2026-10-21T07:01:25.223796+00:00",
+    "command": [
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+      "experiments/run_matched_retraining.py",
+      "offline-30000",
+      "--output",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/matched-retraining-2026-10-21"
+    ],
+    "returncode": 0,
+    "ended_utc": "2026-10-21T09:14:43.668960+00:00"
+  },
+  "superstats-fixed": {
+    "status": "complete",
+    "started_utc": "2026-10-21T09:14:43.669863+00:00",
+    "command": [
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv-superstats/bin/python",
+      "experiments/run_v5b_path.py",
+      "--fixed-radius",
+      "--match-baseline",
+      "--output-dir",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/matched-retraining-2026-10-21/superstats-fixed"
+    ],
+    "returncode": 0,
+    "ended_utc": "2026-10-21T10:14:04.037981+00:00"
+  },
+  "superstats-variable": {
+    "status": "complete",
+    "started_utc": "2026-10-21T10:14:04.046835+00:00",
+    "command": [
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv-superstats/bin/python",
+      "experiments/run_v5b_path.py",
+      "--variable-radius",
+      "--match-baseline",
+      "--output-dir",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/matched-retraining-2026-10-21/superstats-variable"
+    ],
+    "returncode": 0,
+    "ended_utc": "2026-10-21T11:14:15.271609+00:00"
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "smoke_arms": {
+    "transformer-flow_matching": {
+      "status": "complete",
+      "started_utc": "2026-10-21T04:26:42.181335+00:00",
+      "command": [
+        "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+        "experiments/run_matched_retraining.py",
+        "transformer-flow_matching",
+        "--output",
+        "/tmp/togetherflow-retraining-validation",
+        "--smoke"
+      ],
+      "returncode": 0,
+      "ended_utc": "2026-10-21T04:27:11.672676+00:00"
+    },
+    "transformer-diffusion": {
+      "status": "complete",
+      "started_utc": "2026-10-21T04:27:11.673264+00:00",
+      "command": [
+        "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+        "experiments/run_matched_retraining.py",
+        "transformer-diffusion",
+        "--output",
+        "/tmp/togetherflow-retraining-validation",
+        "--smoke"
+      ],
+      "returncode": 0,
+      "ended_utc": "2026-10-21T04:27:41.764545+00:00"
+    },
+    "bdlstm-flow_matching": {
+      "status": "complete",
+      "started_utc": "2026-10-21T04:27:41.765074+00:00",
+      "command": [
+        "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+        "experiments/run_matched_retraining.py",
+        "bdlstm-flow_matching",
+        "--output",
+        "/tmp/togetherflow-retraining-validation",
+        "--smoke"
+      ],
+      "returncode": 0,
+      "ended_utc": "2026-10-21T04:28:10.035370+00:00"
+    },
+    "bdlstm-diffusion": {
+      "status": "complete",
+      "started_utc": "2026-10-21T04:28:10.035982+00:00",
+      "command": [
+        "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+        "experiments/run_matched_retraining.py",
+        "bdlstm-diffusion",
+        "--output",
+        "/tmp/togetherflow-retraining-validation",
+        "--smoke"
+      ],
+      "returncode": 0,
+      "ended_utc": "2026-10-21T04:28:45.085249+00:00"
+    },
+    "offline-3000": {
+      "status": "complete",
+      "started_utc": "2026-10-21T04:28:45.085991+00:00",
+      "command": [
+        "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+        "experiments/run_matched_retraining.py",
+        "offline-3000",
+        "--output",
+        "/tmp/togetherflow-retraining-validation",
+        "--smoke"
+      ],
+      "returncode": 0,
+      "ended_utc": "2026-10-21T04:29:15.799939+00:00"
+    },
+    "offline-30000": {
+      "status": "complete",
+      "started_utc": "2026-10-21T04:29:15.800662+00:00",
+      "command": [
+        "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+        "experiments/run_matched_retraining.py",
+        "offline-30000",
+        "--output",
+        "/tmp/togetherflow-retraining-validation",
+        "--smoke"
+      ],
+      "returncode": 0,
+      "ended_utc": "2026-10-21T04:29:27.358951+00:00"
+    },
+    "superstats-fixed": {
+      "status": "complete",
+      "started_utc": "2026-10-21T04:29:27.359707+00:00",
+      "command": [
+        "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv-superstats/bin/python",
+        "experiments/run_v5b_path.py",
+        "--fixed-radius",
+        "--match-baseline",
+        "--output-dir",
+        "/tmp/togetherflow-retraining-validation/superstats-fixed",
+        "--smoke"
+      ],
+      "returncode": 0,
+      "ended_utc": "2026-10-21T04:30:00.013614+00:00"
+    },
+    "superstats-variable": {
+      "status": "complete",
+      "started_utc": "2026-10-21T04:30:00.014432+00:00",
+      "command": [
+        "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv-superstats/bin/python",
+        "experiments/run_v5b_path.py",
+        "--variable-radius",
+        "--match-baseline",
+        "--output-dir",
+        "/tmp/togetherflow-retraining-validation/superstats-variable",
+        "--smoke"
+      ],
+      "returncode": 0,
+      "ended_utc": "2026-10-21T04:30:31.708244+00:00"
+    }
+  },
+  "bank_integrity_test": "passed",
+  "shared_static_truths": "passed",
+  "offline_no_early_stopping": "passed",
+  "superstats_full_shape_gpu": "passed, 49 agents, 600 steps, batch size 32",
+  "validation_only": true
+}

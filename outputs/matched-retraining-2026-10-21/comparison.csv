@@ -1,0 +1,125 @@
+arm,metric,parameter,value
+transformer-flow_matching,NRMSE,w,0.3321127939880486
+transformer-flow_matching,NRMSE,r,0.7364002710065118
+transformer-flow_matching,NRMSE,v,0.2424678374325969
+transformer-flow_matching,NRMSE,noise,0.43105341980066636
+transformer-flow_matching,Log-gamma,w,1.7426104086637864
+transformer-flow_matching,Log-gamma,r,2.2674382300673366
+transformer-flow_matching,Log-gamma,v,1.3329775730758757
+transformer-flow_matching,Log-gamma,noise,3.938610125404074
+transformer-flow_matching,ECE,w,0.011228070175438587
+transformer-flow_matching,ECE,r,0.03921052631578943
+transformer-flow_matching,ECE,v,0.0319298245614035
+transformer-flow_matching,ECE,noise,0.008859649122807012
+transformer-flow_matching,Post. Contraction,w,0.8996863217486706
+transformer-flow_matching,Post. Contraction,r,0.4596680321870342
+transformer-flow_matching,Post. Contraction,v,0.9389830002633195
+transformer-flow_matching,Post. Contraction,noise,0.8016458749954452
+transformer-diffusion,NRMSE,w,0.3705793969651
+transformer-diffusion,NRMSE,r,0.7677405137488329
+transformer-diffusion,NRMSE,v,0.2911800886335595
+transformer-diffusion,NRMSE,noise,0.48350643268691285
+transformer-diffusion,Log-gamma,w,1.1863907078589009
+transformer-diffusion,Log-gamma,r,4.467488328388915
+transformer-diffusion,Log-gamma,v,2.5841263503219576
+transformer-diffusion,Log-gamma,noise,3.631631710417703
+transformer-diffusion,ECE,w,0.017894736842105213
+transformer-diffusion,ECE,r,0.025701754385964892
+transformer-diffusion,ECE,v,0.0192105263157894
+transformer-diffusion,ECE,noise,0.007456140350877202
+transformer-diffusion,Post. Contraction,w,0.8712415638915081
+transformer-diffusion,Post. Contraction,r,0.43499167157911395
+transformer-diffusion,Post. Contraction,v,0.9126491521555476
+transformer-diffusion,Post. Contraction,noise,0.7456286113535923
+bdlstm-flow_matching,NRMSE,w,0.7069140746349667
+bdlstm-flow_matching,NRMSE,r,0.6438279905521216
+bdlstm-flow_matching,NRMSE,v,1.0922929490214799
+bdlstm-flow_matching,NRMSE,noise,0.8376520172035344
+bdlstm-flow_matching,Log-gamma,w,-inf
+bdlstm-flow_matching,Log-gamma,r,-120.44817810954613
+bdlstm-flow_matching,Log-gamma,v,-inf
+bdlstm-flow_matching,Log-gamma,noise,-285.2210967024067
+bdlstm-flow_matching,ECE,w,0.3666666666666667
+bdlstm-flow_matching,ECE,r,0.22903508771929829
+bdlstm-flow_matching,ECE,v,0.4
+bdlstm-flow_matching,ECE,noise,0.271140350877193
+bdlstm-flow_matching,Post. Contraction,w,0.8991009446912864
+bdlstm-flow_matching,Post. Contraction,r,0.8132791932318255
+bdlstm-flow_matching,Post. Contraction,v,0.862295693151425
+bdlstm-flow_matching,Post. Contraction,noise,0.7583497964228024
+bdlstm-diffusion,NRMSE,w,0.6983878101898724
+bdlstm-diffusion,NRMSE,r,0.8946711666146433
+bdlstm-diffusion,NRMSE,v,1.3369928744376356
+bdlstm-diffusion,NRMSE,noise,0.8728586608043538
+bdlstm-diffusion,Log-gamma,w,-inf
+bdlstm-diffusion,Log-gamma,r,-1.0036677601262594
+bdlstm-diffusion,Log-gamma,v,-inf
+bdlstm-diffusion,Log-gamma,noise,-32.5189772976466
+bdlstm-diffusion,ECE,w,0.31500000000000006
+bdlstm-diffusion,ECE,r,0.0348245614035088
+bdlstm-diffusion,ECE,v,0.41166666666666674
+bdlstm-diffusion,ECE,noise,0.16456140350877196
+bdlstm-diffusion,Post. Contraction,w,0.8709399675842531
+bdlstm-diffusion,Post. Contraction,r,0.29761075733176157
+bdlstm-diffusion,Post. Contraction,v,0.8510186136233722
+bdlstm-diffusion,Post. Contraction,noise,0.5036580944889153
+offline-3000,NRMSE,w,0.31651583380114123
+offline-3000,NRMSE,r,0.41970171822190483
+offline-3000,NRMSE,v,0.21846949888355982
+offline-3000,NRMSE,noise,0.36155073479239885
+offline-3000,Log-gamma,w,-inf
+offline-3000,Log-gamma,r,-inf
+offline-3000,Log-gamma,v,-inf
+offline-3000,Log-gamma,noise,-inf
+offline-3000,ECE,w,0.45500000000000007
+offline-3000,ECE,r,0.45833333333333337
+offline-3000,ECE,v,0.4333333333333334
+offline-3000,ECE,noise,0.4466666666666667
+offline-3000,Post. Contraction,w,0.9954521840607315
+offline-3000,Post. Contraction,r,0.9962409926819038
+offline-3000,Post. Contraction,v,0.9960522496501216
+offline-3000,Post. Contraction,noise,0.9934302225609952
+offline-30000,NRMSE,w,0.17726407506920597
+offline-30000,NRMSE,r,0.3093337834828231
+offline-30000,NRMSE,v,0.14110266828454535
+offline-30000,NRMSE,noise,0.2572970579975461
+offline-30000,Log-gamma,w,-inf
+offline-30000,Log-gamma,r,-inf
+offline-30000,Log-gamma,v,-inf
+offline-30000,Log-gamma,noise,-inf
+offline-30000,ECE,w,0.33333333333333337
+offline-30000,ECE,r,0.3766666666666667
+offline-30000,ECE,v,0.256140350877193
+offline-30000,ECE,noise,0.3433333333333334
+offline-30000,Post. Contraction,w,0.9898836329155498
+offline-30000,Post. Contraction,r,0.9849598686231509
+offline-30000,Post. Contraction,v,0.9907174467085014
+offline-30000,Post. Contraction,noise,0.9827420826693687
+superstats-fixed,NRMSE,v,0.14414423837008022
+superstats-fixed,NRMSE,noise,0.30752764783150605
+superstats-fixed,NRMSE,tau,0.8826304429497231
+superstats-fixed,Log-gamma,v,0.2653696044081033
+superstats-fixed,Log-gamma,noise,-17.44151706073007
+superstats-fixed,Log-gamma,tau,-1.0919467844704818
+superstats-fixed,ECE,v,0.01570175438596491
+superstats-fixed,ECE,noise,0.06464912280701757
+superstats-fixed,ECE,tau,0.05622807017543863
+superstats-fixed,Post. Contraction,v,0.9797494954481457
+superstats-fixed,Post. Contraction,noise,0.9225429280370258
+superstats-fixed,Post. Contraction,tau,0.3533165420952154
+superstats-variable,NRMSE,r,0.6913253910135523
+superstats-variable,NRMSE,v,0.1470623521874486
+superstats-variable,NRMSE,noise,0.3224488343323447
+superstats-variable,NRMSE,tau,0.8791123859757505
+superstats-variable,Log-gamma,r,-9.97735712235592
+superstats-variable,Log-gamma,v,-2.318824029934089
+superstats-variable,Log-gamma,noise,-inf
+superstats-variable,Log-gamma,tau,-4.338313711393238
+superstats-variable,ECE,r,0.0637719298245614
+superstats-variable,ECE,v,0.06859649122807018
+superstats-variable,ECE,noise,0.12517543859649122
+superstats-variable,ECE,tau,0.05280701754385969
+superstats-variable,Post. Contraction,r,0.5674527996199761
+superstats-variable,Post. Contraction,v,0.9817551915260421
+superstats-variable,Post. Contraction,noise,0.9288321369348522
+superstats-variable,Post. Contraction,tau,0.2967158414490425

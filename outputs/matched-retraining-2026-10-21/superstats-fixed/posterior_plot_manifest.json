@@ -1,0 +1,22 @@
+{
+  "superstats": "0.0.2",
+  "superstats_source": {
+    "url": "https://github.com/LuSchumacher/superstats.git",
+    "vcs_info": {
+      "vcs": "git",
+      "commit_id": "e9142e5a6d7916e971bdab7d8dbe59452683aacf",
+      "requested_revision": "e9142e5a6d7916e971bdab7d8dbe59452683aacf"
+    }
+  },
+  "varying_targets": [
+    "w_t"
+  ],
+  "invariant_targets": [
+    "v_t",
+    "eta_t",
+    "tau_t"
+  ],
+  "invariant_plot": "Superstats plot_marginals, per dataset; sample/step pooling and subsampling",
+  "trajectory_intervals": "pointwise 95% and 65% equal-tailed intervals",
+  "training_results_unchanged": true
+}
