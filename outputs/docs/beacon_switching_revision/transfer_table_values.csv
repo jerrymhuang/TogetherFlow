@@ -1,0 +1,49 @@
+trained,tested,metric,parameter,value,source
+Static,Static,NRMSE,w,0.306287972226587,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,NRMSE,r,0.8061785461418596,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,NRMSE,v,0.24360171488514792,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,NRMSE,noise,0.4281265309522688,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,Post. Contraction,w,0.9097252420410741,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,Post. Contraction,r,0.3705430208894691,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,Post. Contraction,v,0.9308407217154953,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,Post. Contraction,noise,0.8083887866809352,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,ECE,w,0.019736842105263178,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,ECE,r,0.026052631578947383,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,ECE,v,0.029210526315789437,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Static,ECE,noise,0.011578947368421078,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-reference.csv
+Static,Switching,NRMSE,w,0.3335044768157446,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,NRMSE,r,0.7723964722468329,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,NRMSE,v,0.2504625151450288,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,NRMSE,noise,0.45061451758075954,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,Post. Contraction,w,0.9259580027418646,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,Post. Contraction,r,0.4588191390202931,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,Post. Contraction,v,0.9380796219933492,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,Post. Contraction,noise,0.8296660255534537,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,ECE,w,0.12394736842105267,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,ECE,r,0.04807017543859648,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,ECE,v,0.005877192982456203,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Static,Switching,ECE,noise,0.05850877192982459,outputs/variable-radius/switching-transfer/rev-variable-reference__on__rev-variable-switching.csv
+Switching,Static,NRMSE,w,0.3325958319728577,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,NRMSE,r,0.7874672113494328,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,NRMSE,v,0.24736985925593116,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,NRMSE,noise,0.43526046461483464,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,Post. Contraction,w,0.8898154862094891,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,Post. Contraction,r,0.3475279500166929,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,Post. Contraction,v,0.9334333319630392,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,Post. Contraction,noise,0.8023636921843245,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,ECE,w,0.006491228070175492,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,ECE,r,0.027280701754385933,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,ECE,v,0.017807017543859605,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Static,ECE,noise,0.010526315789473661,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-reference.csv
+Switching,Switching,NRMSE,w,0.3124505606282609,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,NRMSE,r,0.8305905090448651,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,NRMSE,v,0.2193639559274299,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,NRMSE,noise,0.4164294180926542,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,Post. Contraction,w,0.9021706102067657,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,Post. Contraction,r,0.35393511876876504,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,Post. Contraction,v,0.9442855778490518,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,Post. Contraction,noise,0.8132351740581419,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,ECE,w,0.01614035087719301,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,ECE,r,0.009035087719298195,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,ECE,v,0.04570175438596491,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv
+Switching,Switching,ECE,noise,0.007280701754385971,outputs/variable-radius/switching-transfer/rev-variable-switching__on__rev-variable-switching.csv

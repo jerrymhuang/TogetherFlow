@@ -44,6 +44,8 @@ def simulator_fun(
     sigma_r_slot: int = -1,
     agent_radii_out=None,
     radius_upper: float = np.inf,
+    fixed_agent_weights=None,
+    fixed_agent_radii=None,
 ):
     """
     Run one simulation trajectory and return per-channel time series.
@@ -66,6 +68,9 @@ def simulator_fun(
     sensing_radius  : float  (fallback if theta has < 2 elements)
     internal_focus  : float  (fallback if theta has < 4 elements)
     time_horizon    : float
+    fixed_agent_weights, fixed_agent_radii : optional arrays of shape (num_agents,)
+                      Use supplied agent parameters instead of drawing them.
+                      Supplied weights remain constant throughout the trial.
 
     Returns
     -------
@@ -104,7 +109,9 @@ def simulator_fun(
     # Salience buffer, refilled each step when a path is supplied. Copying keeps
     # the static case byte-identical to the published behaviour.
     current_strengths = beacon_strengths.copy()
-    if sigma_slot >= 0:
+    if fixed_agent_weights is not None:
+        agent_weights[:] = fixed_agent_weights
+    elif sigma_slot >= 0:
         mu = theta[0, 0]
         if mu < 1e-6:
             mu = 1e-6
@@ -124,7 +131,11 @@ def simulator_fun(
     # A finite radius_upper R swaps the lognormal for a scaled logit-normal,
     # logit(r/R) ~ N(logit(mu_r/R), sigma_r^2), which keeps every r_i in (0, R).
     agent_radii = None
-    if sigma_r_slot >= 0:
+    if fixed_agent_radii is not None:
+        agent_radii = fixed_agent_radii.copy()
+        if agent_radii_out is not None:
+            agent_radii_out[:] = agent_radii
+    elif sigma_r_slot >= 0:
         agent_radii = np.empty(num_agents)
         logit_u = 0.0
         if radius_upper < np.inf:
@@ -177,7 +188,7 @@ def simulator_fun(
     for t in range(1, num_timesteps):
         # Parameters are read per timestep. For a static model every row is
         # identical and this is equivalent to the previous behaviour.
-        if sigma_slot < 0:
+        if sigma_slot < 0 and fixed_agent_weights is None:
             for i in range(num_agents):
                 agent_weights[i] = theta[t, 0]
         sensing_radius   = theta[t, 1]

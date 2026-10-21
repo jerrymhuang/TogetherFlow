@@ -1,0 +1,86 @@
+{
+  "out": "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/graphical-partial-pooling/offline",
+  "train": 5000,
+  "validation": 300,
+  "test": 300,
+  "epochs": 300,
+  "samples": 1000,
+  "batch_size": 32,
+  "seed": 831,
+  "smoke": false,
+  "bayesflow": "2.0.14",
+  "backend": "jax",
+  "simulator": "GraphicalSimulator",
+  "approximator": "GraphicalApproximator",
+  "training": "offline",
+  "agents": 12,
+  "duration": 20.0,
+  "radius_max": 10.0,
+  "parameters": [
+    "mu_w",
+    "sigma_w",
+    "mu_r",
+    "sigma_r",
+    "v",
+    "eta",
+    "w_1",
+    "w_2",
+    "w_3",
+    "w_4",
+    "w_5",
+    "w_6",
+    "w_7",
+    "w_8",
+    "w_9",
+    "w_10",
+    "w_11",
+    "w_12",
+    "r_1",
+    "r_2",
+    "r_3",
+    "r_4",
+    "r_5",
+    "r_6",
+    "r_7",
+    "r_8",
+    "r_9",
+    "r_10",
+    "r_11",
+    "r_12"
+  ],
+  "network": "FlowMatching",
+  "widths": [
+    256,
+    256,
+    256
+  ],
+  "time_embedding_dim": 32,
+  "network_composition": {
+    "0": [
+      "population"
+    ],
+    "1": [
+      "agents"
+    ]
+  },
+  "network_conditions": {
+    "0": [
+      "observations"
+    ],
+    "1": [
+      "population",
+      "observations"
+    ]
+  },
+  "checkpoint_selection": "minimum validation loss; patience 25; restore best weights",
+  "source_sha256": {
+    "experiments/run_graphical_partial_pooling.py": "851b1536943d1d3bb42749e5dc72e1f610600e9accd39d432c65fd5905a4243a",
+    "experiments/graphical_partial_pooling.py": "a56986dcc228ed0850bcc5de5159308f7f227a6811efe62827409b692aeef0a1",
+    "togetherflow/simulator.py": "922ebf7836d1ef33767d2058d89183a32563af501e0fb282552a55204f7d8755",
+    "experiments/run_agent_radius_pooling.py": "f609a0f28f4f60a329d5d0eaef68ad00462b757e4b50bb348c648309cdd6d844",
+    "experiments/run_agent_partial_pooling.py": "df97db9025ec02aab76e1cd6ecd8bafecfdde9c710619c2cbe176824bf508685"
+  },
+  "status": "complete",
+  "epochs_completed": 89,
+  "selected_epoch": 64
+}

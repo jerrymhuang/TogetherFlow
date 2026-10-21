@@ -1,0 +1,25 @@
+model,metric,parameter,value,source
+Reference,NRMSE,w,0.30678664494890323,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,NRMSE,r,0.8266737867234282,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,NRMSE,v,0.25787988238691695,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,NRMSE,noise,0.42339605460693763,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,Post. Contraction,w,0.9101022630817297,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,Post. Contraction,r,0.3020415390004603,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,Post. Contraction,v,0.9364811003017811,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,Post. Contraction,noise,0.8258996284025266,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,ECE,w,0.03157894736842104,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,ECE,r,0.009122807017543838,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,ECE,v,0.01622807017543859,outputs/variable-radius/rev-variable-reference/metrics.csv
+Reference,ECE,noise,0.016315789473684228,outputs/variable-radius/rev-variable-reference/metrics.csv
+Switching,NRMSE,w,0.34915357278719783,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,NRMSE,r,0.8201933648580142,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,NRMSE,v,0.23766155571242203,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,NRMSE,noise,0.40995848205840113,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,Post. Contraction,w,0.8875791386410021,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,Post. Contraction,r,0.33398520825062916,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,Post. Contraction,v,0.9470298639219445,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,Post. Contraction,noise,0.8273274005707335,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,ECE,w,0.008859649122807012,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,ECE,r,0.04140350877192982,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,ECE,v,0.029122807017543828,outputs/variable-radius/rev-variable-switching/metrics.csv
+Switching,ECE,noise,0.03728070175438594,outputs/variable-radius/rev-variable-switching/metrics.csv

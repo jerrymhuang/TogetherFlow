@@ -1,0 +1,33 @@
+{
+  "generative_edges": [
+    [
+      "population",
+      "agents"
+    ],
+    [
+      "population",
+      "observations"
+    ],
+    [
+      "agents",
+      "observations"
+    ]
+  ],
+  "network_composition": {
+    "0": [
+      "population"
+    ],
+    "1": [
+      "agents"
+    ]
+  },
+  "network_conditions": {
+    "0": [
+      "observations"
+    ],
+    "1": [
+      "population",
+      "observations"
+    ]
+  }
+}

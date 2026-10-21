@@ -1,0 +1,7 @@
+figure,source,sha256
+figures/ext-recovery-reference.png,outputs/variable-radius/rev-variable-reference/recovery.png,8677566b1e9a7115d7730e26aa14855e1a53e29e96810be2be08e4b2371509bf
+figures/ext-coverage-reference.png,outputs/variable-radius/rev-variable-reference/coverage.png,285c30e0692e3662d09a80818b7f2f01492bf745ce1ac57e0276264e025af15e
+figures/ext-calibration_ecdf-reference.png,outputs/variable-radius/rev-variable-reference/calibration_ecdf.png,485e9cb166d10ec4638bfa6d37a318c7ca4a566268bdaa9fac8b7ea78a2e09bb
+figures/ext-recovery-switching.png,outputs/variable-radius/rev-variable-switching/recovery.png,79bb4b6fb48fb83277fa647fdfe647cefb2fb040cfafa99f27fc17baf2695e93
+figures/ext-coverage-switching.png,outputs/variable-radius/rev-variable-switching/coverage.png,9fcc0d81cc88f36a3fdfe5accb8f3ec6bea2ca5eda11aa69a50182cfa060319e
+figures/ext-calibration_ecdf-switching.png,outputs/variable-radius/rev-variable-switching/calibration_ecdf.png,50c24567d3840b057c3aa8052617a81bb12179e3089afde336fee757f7af5cc9

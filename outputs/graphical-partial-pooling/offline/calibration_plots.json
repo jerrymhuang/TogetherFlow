@@ -1,0 +1,11 @@
+{
+  "bayesflow": "2.0.14",
+  "groups": 300,
+  "draws": 1000,
+  "parameters": 30,
+  "seed": 831,
+  "posterior_sha256": "e1584dbc8410fd40ffe860308c0a3d746c78883e970cb61fa2656914d46b259c",
+  "coverage": "Central credible-interval coverage; 95% beta-binomial uncertainty ribbons",
+  "calibration_ecdf": "Marginal fractional-rank ECDF minus uniform CDF; 95% simultaneous bands within each parameter",
+  "layout": "Six population/shared parameters, twelve weights, twelve radii"
+}
