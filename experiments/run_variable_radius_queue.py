@@ -20,7 +20,7 @@ SLUGS = ['rev-variable-reference', 'rev-variable-switching', 'switching-transfer
 
 def command(slug):
     if slug == 'superstats-variable-path':
-        return [str(SUPER), 'experiments/run_v5b_path.py', '--variable-radius']
+        return [str(SUPER), 'experiments/run_time_varying.py', '--variable-radius']
     return [str(MAIN), 'experiments/run_variable_radius.py',
             '--cross-evaluate' if slug == 'switching-transfer' else slug]
 

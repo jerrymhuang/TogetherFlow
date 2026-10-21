@@ -22,7 +22,7 @@ def write_json(path, data):
 
 def command(arm, output, smoke):
     if arm.startswith('superstats'):
-        cmd = [str(ROOT / '.venv-superstats/bin/python'), 'experiments/run_v5b_path.py',
+        cmd = [str(ROOT / '.venv-superstats/bin/python'), 'experiments/run_time_varying.py',
                '--fixed-radius' if arm.endswith('fixed') else '--variable-radius',
                '--match-baseline', '--output-dir', str(output / arm)]
     else:

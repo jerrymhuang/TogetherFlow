@@ -22,7 +22,7 @@ SLUGS = ['rev-fixed-reference', 'rev-fixed-switching', 'switching-transfer',
 
 def command(slug):
     if slug == 'superstats-fixed-path':
-        return [str(SUPER), 'experiments/run_v5b_path.py', '--fixed-radius']
+        return [str(SUPER), 'experiments/run_time_varying.py', '--fixed-radius']
     return [str(MAIN), 'experiments/run_revision.py',
             '--cross-evaluate' if slug == 'switching-transfer' else slug]
 

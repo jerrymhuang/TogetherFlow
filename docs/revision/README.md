@@ -50,7 +50,7 @@ Superstats is pinned to upstream dev commit `e9142e5a6d7916e971bdab7d8dbe5945268
 ```bash
 uv venv /tmp/togetherflow-superstats --python python3.12
 uv pip install --python /tmp/togetherflow-superstats/bin/python -r environments/superstats/requirements.txt
-PYTHONPATH=. KERAS_BACKEND=jax /tmp/togetherflow-superstats/bin/python experiments/run_v5b_path.py --fixed-radius
+PYTHONPATH=. KERAS_BACKEND=jax /tmp/togetherflow-superstats/bin/python experiments/run_time_varying.py --fixed-radius
 ```
 
 Current session environments: `/tmp/togetherflow-latest-venv` (main), `/tmp/togetherflow-revision-venv` (superstats). They are temporary; recreate from the tracked specifications if removed.

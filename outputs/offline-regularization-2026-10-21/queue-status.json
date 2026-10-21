@@ -18,7 +18,7 @@
     "ended_utc": "2026-10-21T12:19:41.406299+00:00"
   },
   "offline-30000": {
-    "status": "running",
+    "status": "complete",
     "command": [
       "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
       "experiments/run_matched_retraining.py",
@@ -31,6 +31,8 @@
       "--output",
       "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/offline-regularization-2026-10-21"
     ],
-    "started_utc": "2026-10-21T12:19:41.406642+00:00"
+    "started_utc": "2026-10-21T12:19:41.406642+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-21T14:32:18.295564+00:00"
   }
 }

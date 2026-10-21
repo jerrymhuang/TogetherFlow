@@ -1,0 +1,18 @@
+{
+  "3000": {
+    "original_final_validation": 3.0854995250701904,
+    "revised_final_validation": 1.2555415630340576,
+    "revised_best_validation": 1.0278315544128418,
+    "revised_final_10_mean": 1.167624258995056,
+    "original_final_10_mean": 2.878873515129089,
+    "epochs": 300
+  },
+  "30000": {
+    "original_final_validation": 1.0666215419769287,
+    "revised_final_validation": 0.5922419428825378,
+    "revised_best_validation": 0.5712040662765503,
+    "revised_final_10_mean": 0.6564945936203003,
+    "original_final_10_mean": 1.2178339958190918,
+    "epochs": 300
+  }
+}
