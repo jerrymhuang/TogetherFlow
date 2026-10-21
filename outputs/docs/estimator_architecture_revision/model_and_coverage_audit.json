@@ -1,0 +1,50 @@
+{
+  "bdlstm-flow_matching": {
+    "counts": {
+      "summary_network": 637900,
+      "inference_network": 996116
+    },
+    "coverage95": {
+      "w": 0.44666666666666666,
+      "r": 0.7233333333333334,
+      "v": 0.2966666666666667,
+      "noise": 0.5466666666666666
+    }
+  },
+  "transformer-flow_matching": {
+    "counts": {
+      "summary_network": 230463,
+      "inference_network": 996116
+    },
+    "coverage95": {
+      "w": 0.9533333333333334,
+      "r": 0.9433333333333334,
+      "v": 0.98,
+      "noise": 0.9366666666666666
+    }
+  },
+  "bdlstm-diffusion": {
+    "counts": {
+      "summary_network": 637900,
+      "inference_network": 996116
+    },
+    "coverage95": {
+      "w": 0.45666666666666667,
+      "r": 0.9033333333333333,
+      "v": 0.27,
+      "noise": 0.7533333333333333
+    }
+  },
+  "transformer-diffusion": {
+    "counts": {
+      "summary_network": 230463,
+      "inference_network": 996116
+    },
+    "coverage95": {
+      "w": 0.9666666666666667,
+      "r": 0.9533333333333334,
+      "v": 0.9633333333333334,
+      "noise": 0.9466666666666667
+    }
+  }
+}

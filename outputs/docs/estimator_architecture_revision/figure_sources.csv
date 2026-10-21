@@ -1,0 +1,17 @@
+figure,source,sha256
+figures/arch-recovery-bilstm-fm.pdf,outputs/matched-retraining-2026-10-21/bdlstm-flow_matching/recovery.pdf,bf04b22a26a18d9d70568ffff93208dc01dd799f6c651136e279ccc73ddd3994
+figures/arch-recovery-bilstm-fm.png,outputs/matched-retraining-2026-10-21/bdlstm-flow_matching/recovery.png,5b87124020143d98551e20f3143f492dc176af9b89190d47d01fe9c8e5b247c2
+figures/arch-coverage-bilstm-fm.pdf,outputs/matched-retraining-2026-10-21/bdlstm-flow_matching/coverage.pdf,3c70a2264ca25a1370b73072af8ce4a9b4264043d54b2b511d92639c057a8b51
+figures/arch-coverage-bilstm-fm.png,outputs/matched-retraining-2026-10-21/bdlstm-flow_matching/coverage.png,ec2c02b46c9899129f0f97a67f566876c7f5184091ec117116180fd68ed2f770
+figures/arch-recovery-transformer-fm.pdf,outputs/matched-retraining-2026-10-21/transformer-flow_matching/recovery.pdf,83f5707979b384d8754171996f218c02e5c5dea0170bd2e8c77d57e8ab50c4dd
+figures/arch-recovery-transformer-fm.png,outputs/matched-retraining-2026-10-21/transformer-flow_matching/recovery.png,9255d2e7a5553e8fc3e127a7168a0f51e3a05b2719df51dac625bbe45adda052
+figures/arch-coverage-transformer-fm.pdf,outputs/matched-retraining-2026-10-21/transformer-flow_matching/coverage.pdf,493bc5df9dfa91f9ee4e78a43f96a7a45cc376099033c45e7e5da42abd73dcae
+figures/arch-coverage-transformer-fm.png,outputs/matched-retraining-2026-10-21/transformer-flow_matching/coverage.png,8177539a04f7b685cdc6f4d8dcda8f58dd6f9de396fa3054c962eb587df2821e
+figures/arch-recovery-bilstm-diff.pdf,outputs/matched-retraining-2026-10-21/bdlstm-diffusion/recovery.pdf,eaf56006bf63f210eeac5830e1a0c820f78c22f7d08fbca482e0c83ace94c181
+figures/arch-recovery-bilstm-diff.png,outputs/matched-retraining-2026-10-21/bdlstm-diffusion/recovery.png,73cc67ca6a2d02bea629c9eec58414e4c1472e21d7fe5b683c3cdc902702d89d
+figures/arch-coverage-bilstm-diff.pdf,outputs/matched-retraining-2026-10-21/bdlstm-diffusion/coverage.pdf,90a13420ce469aec10b3254f8b660d5edb190f3d9e937f67d00d896353a3ae55
+figures/arch-coverage-bilstm-diff.png,outputs/matched-retraining-2026-10-21/bdlstm-diffusion/coverage.png,465c8c0b7fbc48d0e2c84010920b1f101f0d91589632f1591cc300738a6ec9ed
+figures/arch-recovery-transformer-diff.pdf,outputs/matched-retraining-2026-10-21/transformer-diffusion/recovery.pdf,f03870a0337614ecc62fca58dba561ac03b8c3e7bc9071d504713cb312fb328f
+figures/arch-recovery-transformer-diff.png,outputs/matched-retraining-2026-10-21/transformer-diffusion/recovery.png,af60fba618d93f783bde1346d9bf8214bf76d9aae952fe92edd4071ad2f3e955
+figures/arch-coverage-transformer-diff.pdf,outputs/matched-retraining-2026-10-21/transformer-diffusion/coverage.pdf,34075319ddde235a86fb624f91cf8158a0dd4a00df35a034b2e6eb14cd777329
+figures/arch-coverage-transformer-diff.png,outputs/matched-retraining-2026-10-21/transformer-diffusion/coverage.png,8059304c0cba3e329b582391983d13874f9cab7f47cf1ece8e6f98727851819c

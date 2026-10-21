@@ -1,0 +1,36 @@
+{
+  "offline-3000": {
+    "status": "complete",
+    "command": [
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+      "experiments/run_matched_retraining.py",
+      "offline-3000",
+      "--regularized-offline",
+      "--epochs",
+      "300",
+      "--banks",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/matched-retraining-2026-10-21/banks",
+      "--output",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/offline-regularization-2026-10-21"
+    ],
+    "started_utc": "2026-10-21T12:02:45.069047+00:00",
+    "returncode": 0,
+    "ended_utc": "2026-10-21T12:19:41.406299+00:00"
+  },
+  "offline-30000": {
+    "status": "running",
+    "command": [
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/.venv/bin/python",
+      "experiments/run_matched_retraining.py",
+      "offline-30000",
+      "--regularized-offline",
+      "--epochs",
+      "300",
+      "--banks",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/matched-retraining-2026-10-21/banks",
+      "--output",
+      "/home/a_huangm13/Documents/Research/Projects/TogetherFlow/outputs/offline-regularization-2026-10-21"
+    ],
+    "started_utc": "2026-10-21T12:19:41.406642+00:00"
+  }
+}

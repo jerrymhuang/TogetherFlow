@@ -1,0 +1,7 @@
+{
+  "epochs": 60,
+  "selected_epoch": 60,
+  "selection": "final epoch",
+  "best_epoch": 40,
+  "best_val_loss": 1.037332534790039
+}

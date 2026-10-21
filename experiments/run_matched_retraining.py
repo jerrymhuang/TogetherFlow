@@ -9,9 +9,8 @@ import argparse
 from dataclasses import replace
 import logging
 from pathlib import Path
-import numpy as np
 import jax
-from run_main_paper_offline import bank, run_budget, write_json, ROOT
+from run_main_paper_offline import bank, run_budget
 from variable_radius_variants import BASE
 
 NETWORKS = {f"{summary}-{inference}": (summary, inference)
@@ -25,16 +24,24 @@ def main():
     parser.add_argument("arm", choices=ARMS)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--smoke", action="store_true")
+    parser.add_argument("--regularized-offline", action="store_true")
+    parser.add_argument("--banks", type=Path, help="Reuse existing banks without changing simulated data")
+    parser.add_argument("--epochs", type=int, default=300)
+    parser.add_argument("--training-only", action="store_true", help="Validation pilot; do not evaluate test posteriors")
     args = parser.parse_args()
+    if args.epochs < 1:
+        parser.error("epochs must be positive")
+    if args.regularized_offline and args.arm in NETWORKS:
+        parser.error("regularized-offline applies only to the offline budgets")
     args.matched = True
     args.online = args.arm in NETWORKS
-    args.epochs, args.patience, args.batch_size = 300, 0, 32
+    args.patience, args.batch_size = 0, 32
     args.n_eval, args.draws, args.restart_training = 300, 1000, False
     variant = BASE
     if args.online:
         summary, inference = NETWORKS[args.arm]
         variant = replace(BASE, summary_net=summary, inference_net=inference)
-        budget = variant.epochs * variant.num_batches_per_epoch * variant.batch_size
+        budget = args.epochs * variant.num_batches_per_epoch * variant.batch_size
     else:
         budget = int(args.arm.split('-')[-1])
     if args.smoke:
@@ -46,9 +53,9 @@ def main():
     variant = replace(variant, online=args.online, epochs=args.epochs, batch_size=args.batch_size,
                       early_stopping_patience=0, n_val=args.n_eval, n_test=args.n_eval)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    data_root = args.output / "banks"
+    data_root = args.banks or args.output / "banks"
     validation = bank(data_root / "validation", variant, args.n_eval, BASE.seed + 100000)
-    test = bank(data_root / "test", variant, args.n_eval, BASE.seed + 200000)
+    test = None if args.training_only else bank(data_root / "test", variant, args.n_eval, BASE.seed + 200000)
     # Generate the common maximum bank even when the 3K arm is first.
     train = None if args.online else bank(data_root / "train", variant,
         16 if args.smoke else 30000, BASE.seed)

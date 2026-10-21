@@ -1,0 +1,12 @@
+{
+  "pilot_epochs": 60,
+  "training_budget": 3000,
+  "test_evaluated": false,
+  "original_mean_validation_epochs_51_60": 1.4064591526985168,
+  "revised_mean_validation_epochs_51_60": 1.1387690901756287,
+  "relative_reduction": 0.1903290699977187,
+  "original_best_validation_first_60": 1.0007861852645874,
+  "revised_best_validation": 1.037332534790039,
+  "final_learning_rate": 2.499999936844688e-05,
+  "decision": "Proceed to 300-epoch runs with identical settings for both budgets; full-run overfitting and calibration remain to be evaluated"
+}

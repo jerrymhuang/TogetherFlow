@@ -1,0 +1,12 @@
+{
+  "stage": "training",
+  "epoch": 103,
+  "elapsed_seconds": 2708.5548317432404,
+  "metrics": {
+    "epoch": 103,
+    "loss": 0.42529141902923584,
+    "val_loss": 0.6149531006813049,
+    "learning_rate": 1.56249996052793e-06,
+    "next_learning_rate": 1.56249996052793e-06
+  }
+}

@@ -99,6 +99,35 @@ class EpochRecord(keras.callbacks.Callback):
             metrics=self.rows[-1]))
 
 
+# Applied only by the explicit regularized offline profile. Network widths,
+# simulator, targets, banks, epoch count and final-weight selection stay matched.
+OFFLINE_REGULARIZATION = dict(learning_rate=2e-4, weight_decay=0.05,
+    summary_dropout=0.25, inference_dropout=0.15,
+    lr_factor=0.5, lr_patience=8, lr_min_delta=1e-3, min_learning_rate=1e-6)
+
+
+class LearningRateRecord(keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        if logs is not None:
+            logs["next_learning_rate"] = float(keras.ops.convert_to_numpy(self.model.optimizer.learning_rate))
+
+
+def regularized_components(args):
+    if not getattr(args, "regularized_offline", False):
+        return {}, {}, {}, []
+    if getattr(args, "online", False) or args.patience:
+        raise ValueError("Regularized offline profile requires offline training without early stopping")
+    settings = OFFLINE_REGULARIZATION
+    optimizer = keras.optimizers.AdamW(learning_rate=settings["learning_rate"],
+        weight_decay=settings["weight_decay"], clipnorm=1.5)
+    callback = keras.callbacks.ReduceLROnPlateau(monitor="val_loss", mode="min",
+        factor=settings["lr_factor"], patience=settings["lr_patience"],
+        min_delta=settings["lr_min_delta"], min_lr=settings["min_learning_rate"], verbose=1)
+    return ({"dropout": settings["summary_dropout"]},
+            {"dropout": settings["inference_dropout"]},
+            {"optimizer": optimizer}, [callback, LearningRateRecord()])
+
+
 def manifest(variant, budget, args):
     config = asdict(replace(variant, online=getattr(args, "online", False), n_train=budget, epochs=args.epochs,
                            batch_size=args.batch_size, early_stopping_patience=args.patience,
@@ -120,7 +149,8 @@ def manifest(variant, budget, args):
                "posterior": BASE.seed + 300000, "diagnostics": BASE.seed + 400000},
         sampling_design="batches of 5, seed=posterior seed + first dataset index" if getattr(args, "matched", False) else "batch size 25, shared seed generator",
         training_design=("fresh online simulations; shared validation and test banks" if getattr(args, "online", False) else "nested fixed training banks; shared independent validation and test banks"),
-        optimizer=("BayesFlow online default Adam" if getattr(args, "online", False) else "BayesFlow offline default AdamW, weight decay 0.005, cosine schedule, 5% warmup"),
+        regularization=OFFLINE_REGULARIZATION if getattr(args, "regularized_offline", False) else None,
+        optimizer=("Explicit AdamW with validation-plateau LR reductions" if getattr(args, "regularized_offline", False) else "BayesFlow online default Adam" if getattr(args, "online", False) else "BayesFlow offline default AdamW, weight decay 0.005, cosine schedule, 5% warmup"),
         nrmse_normalization="prior", diagnostics_aggregation="BayesFlow default median",
         packages={p: importlib.metadata.version(p) for p in
                   ("bayesflow", "keras", "jax", "jaxlib", "numpy", "numba", "matplotlib", "pandas")},
@@ -181,13 +211,15 @@ def run_budget(variant, budget, train, validation, test, directory, args):
     keras.utils.set_random_seed(BASE.seed)
     checkpoints = directory / "checkpoints"
     checkpoints.mkdir(exist_ok=True)
+    summary_kwargs, subnet_kwargs, workflow_kwargs, regularization_callbacks = regularized_components(args)
     workflow = bf.workflows.BasicWorkflow(
         simulator=build_simulator(variant, BASE.seed), adapter=build_adapter(variant),
-        summary_network=(TransformerSummaryNet if variant.summary_net == "transformer" else SummaryNet)(summary_dim=3 * len(variant.infer)),
+        summary_network=(TransformerSummaryNet if variant.summary_net == "transformer" else SummaryNet)(summary_dim=3 * len(variant.infer), **summary_kwargs),
         inference_network=(bf.networks.FlowMatching if variant.inference_net == "flow_matching" else bf.networks.DiffusionModel)(
-            subnet_kwargs={"widths": (256,) * 4, "time_embedding_dim": 32}),
+            subnet_kwargs={"widths": (256,) * 4, "time_embedding_dim": 32, **subnet_kwargs}),
         standardize="all", checkpoint_filepath=str(checkpoints),
-        checkpoint_name="best_model" if args.patience else "final_model", save_best_only=bool(args.patience))
+        checkpoint_name="best_model" if args.patience else "final_model", save_best_only=bool(args.patience),
+        **workflow_kwargs)
     final_model = checkpoints / "model.keras"
     if (directory / "training_complete.json").exists():
         workflow.approximator = keras.saving.load_model(final_model)
@@ -197,7 +229,7 @@ def run_budget(variant, budget, train, validation, test, directory, args):
         if (directory / "epochs.json").exists() and not args.restart_training:
             raise RuntimeError(f"Interrupted training at {directory}; use --restart-training to restart explicitly")
         logging.info("Training %s N=%d, %d epochs", "online" if getattr(args, "online", False) else "fixed bank", budget, args.epochs)
-        callbacks = [EpochRecord(directory)]
+        callbacks = [*regularization_callbacks, EpochRecord(directory)]
         if args.patience:
             callbacks.append(keras.callbacks.EarlyStopping(
                 monitor="val_loss", patience=args.patience, restore_best_weights=True, verbose=1))
@@ -216,6 +248,9 @@ def run_budget(variant, budget, train, validation, test, directory, args):
             selection="best validation" if args.patience else "final epoch",
             best_epoch=int(np.argmin(history.history["val_loss"])) + 1,
             best_val_loss=float(np.min(history.history["val_loss"]))))
+    if getattr(args, "training_only", False):
+        write_json(directory / "status.json", {"stage": "training complete; validation pilot only"})
+        return
     write_json(directory / "status.json", {"stage": "posterior sampling"})
     posterior_path = directory / "posterior.npz"
     if posterior_path.exists():
