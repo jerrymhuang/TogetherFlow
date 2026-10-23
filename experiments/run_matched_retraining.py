@@ -24,7 +24,9 @@ def main():
     parser.add_argument("arm", choices=ARMS)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--smoke", action="store_true")
-    parser.add_argument("--regularized-offline", action="store_true")
+    profiles = parser.add_mutually_exclusive_group()
+    profiles.add_argument("--regularized-offline", action="store_true")
+    profiles.add_argument("--regularized-online", action="store_true")
     parser.add_argument("--banks", type=Path, help="Reuse existing banks without changing simulated data")
     parser.add_argument("--epochs", type=int, default=300)
     parser.add_argument("--training-only", action="store_true", help="Validation pilot; do not evaluate test posteriors")
@@ -33,6 +35,8 @@ def main():
         parser.error("epochs must be positive")
     if args.regularized_offline and args.arm in NETWORKS:
         parser.error("regularized-offline applies only to the offline budgets")
+    if args.regularized_online and args.arm not in NETWORKS:
+        parser.error("regularized-online applies only to online network arms")
     args.matched = True
     args.online = args.arm in NETWORKS
     args.patience, args.batch_size = 0, 32

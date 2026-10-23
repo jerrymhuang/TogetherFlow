@@ -1,0 +1,21 @@
+{
+  "profile": "decay",
+  "settings": {
+    "learning_rate": 0.0002,
+    "weight_decay": 0.15,
+    "summary_dropout": 0.25,
+    "inference_dropout": 0.15,
+    "lr_factor": 0.5,
+    "lr_patience": 8,
+    "lr_min_delta": 0.001,
+    "min_learning_rate": 1e-06
+  },
+  "epochs": 120,
+  "training_budget": 3000,
+  "test_evaluated": false,
+  "source": "/home/jerry/Documents/research/projects/TogetherFlow/outputs/regularized-retraining-2026-10-22/source",
+  "runner_sha256": "38ffe72310685ea1433e8e6fedcbcaeaf174099ae626ad99c7381ef526ee8e13",
+  "source_manifest_sha256": "c76c9941fb9902939f6886cfdb9a6e4017d02e28da36f4d4dded03a9e3a72f08",
+  "selection_metric": "mean validation loss over final 30 epochs",
+  "design": "same initialization, banks, batch size and epoch budget; one seed, exploratory"
+}

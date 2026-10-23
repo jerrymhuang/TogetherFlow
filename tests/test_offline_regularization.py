@@ -35,6 +35,19 @@ class OfflineRegularizationTests(unittest.TestCase):
         self.assertEqual(subnet['dropout'], .15)
         self.assertFalse(any(isinstance(c, keras.callbacks.EarlyStopping) for c in callbacks))
 
+    def test_explicit_online_profile_matches_offline_settings(self):
+        summary, subnet, options, callbacks = regularized_components(
+            SimpleNamespace(regularized_online=True, online=True, patience=0))
+        self.assertEqual(summary['dropout'], .25)
+        self.assertEqual(subnet['dropout'], .15)
+        self.assertAlmostEqual(float(keras.ops.convert_to_numpy(options['optimizer'].learning_rate)), 2e-4)
+        self.assertEqual(options['optimizer'].weight_decay, .05)
+        self.assertTrue(any(isinstance(c, keras.callbacks.ReduceLROnPlateau) for c in callbacks))
+        with self.assertRaisesRegex(ValueError, 'online training'):
+            regularized_components(SimpleNamespace(regularized_online=True, online=False, patience=0))
+        with self.assertRaisesRegex(ValueError, 'without early stopping'):
+            regularized_components(SimpleNamespace(regularized_online=True, online=True, patience=20))
+
     def test_online_cannot_accidentally_use_offline_profile(self):
         with self.assertRaisesRegex(ValueError, 'offline training'):
             regularized_components(SimpleNamespace(regularized_offline=True, online=True, patience=0))

@@ -1,0 +1,7 @@
+{
+  "checkpoint_sha256": "fdd7313a3aefb092a008a2eaca4fa12d752225811632ff116512a6e748fcf556",
+  "draws": 1000,
+  "batch_size": 5,
+  "test_size": 300,
+  "seed": 20560803
+}

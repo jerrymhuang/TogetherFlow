@@ -1,0 +1,46 @@
+{
+  "test_evaluated": false,
+  "exploratory_single_seed": true,
+  "rows": {
+    "baseline": {
+      "epochs_compared": 120,
+      "mean_validation_epochs_91_120": 1.1694922884305319,
+      "validation_window_means": [
+        1.2933317144711813,
+        1.1417597651481628,
+        1.1782519976298014,
+        1.1694922884305319
+      ],
+      "best_validation": 1.0384016036987305,
+      "final_validation": 1.2083162069320679,
+      "relative_improvement": 0.0
+    },
+    "dropout": {
+      "epochs_compared": 120,
+      "mean_validation_epochs_91_120": 1.155422027905782,
+      "validation_window_means": [
+        1.3016365091005961,
+        1.127014966805776,
+        1.1624770561854045,
+        1.155422027905782
+      ],
+      "best_validation": 1.007371187210083,
+      "final_validation": 1.1877717971801758,
+      "relative_improvement": 0.01203108448336343
+    },
+    "decay": {
+      "epochs_compared": 120,
+      "mean_validation_epochs_91_120": 1.166076954205831,
+      "validation_window_means": [
+        1.2899501959482829,
+        1.1335049748420716,
+        1.1736838340759277,
+        1.166076954205831
+      ],
+      "best_validation": 1.0244319438934326,
+      "final_validation": 1.2029948234558105,
+      "relative_improvement": 0.0029203563447899317
+    }
+  },
+  "lowest_mean_validation": "dropout"
+}

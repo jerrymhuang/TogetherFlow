@@ -99,7 +99,7 @@ class EpochRecord(keras.callbacks.Callback):
             metrics=self.rows[-1]))
 
 
-# Applied only by the explicit regularized offline profile. Network widths,
+# Applied only by explicit regularized offline or online profiles. Network widths,
 # simulator, targets, banks, epoch count and final-weight selection stay matched.
 OFFLINE_REGULARIZATION = dict(learning_rate=2e-4, weight_decay=0.05,
     summary_dropout=0.25, inference_dropout=0.15,
@@ -113,10 +113,18 @@ class LearningRateRecord(keras.callbacks.Callback):
 
 
 def regularized_components(args):
-    if not getattr(args, "regularized_offline", False):
+    offline = getattr(args, "regularized_offline", False)
+    online = getattr(args, "regularized_online", False)
+    if not (offline or online):
         return {}, {}, {}, []
-    if getattr(args, "online", False) or args.patience:
+    if offline and online:
+        raise ValueError("Select only one regularization profile")
+    if offline and getattr(args, "online", False):
         raise ValueError("Regularized offline profile requires offline training without early stopping")
+    if online and not getattr(args, "online", False):
+        raise ValueError("Regularized online profile requires online training")
+    if args.patience:
+        raise ValueError("Regularized profiles require final weights without early stopping")
     settings = OFFLINE_REGULARIZATION
     optimizer = keras.optimizers.AdamW(learning_rate=settings["learning_rate"],
         weight_decay=settings["weight_decay"], clipnorm=1.5)
@@ -149,8 +157,8 @@ def manifest(variant, budget, args):
                "posterior": BASE.seed + 300000, "diagnostics": BASE.seed + 400000},
         sampling_design="batches of 5, seed=posterior seed + first dataset index" if getattr(args, "matched", False) else "batch size 25, shared seed generator",
         training_design=("fresh online simulations; shared validation and test banks" if getattr(args, "online", False) else "nested fixed training banks; shared independent validation and test banks"),
-        regularization=OFFLINE_REGULARIZATION if getattr(args, "regularized_offline", False) else None,
-        optimizer=("Explicit AdamW with validation-plateau LR reductions" if getattr(args, "regularized_offline", False) else "BayesFlow online default Adam" if getattr(args, "online", False) else "BayesFlow offline default AdamW, weight decay 0.005, cosine schedule, 5% warmup"),
+        regularization=OFFLINE_REGULARIZATION if (getattr(args, "regularized_offline", False) or getattr(args, "regularized_online", False)) else None,
+        optimizer=("Explicit AdamW with validation-plateau LR reductions" if (getattr(args, "regularized_offline", False) or getattr(args, "regularized_online", False)) else "BayesFlow online default Adam" if getattr(args, "online", False) else "BayesFlow offline default AdamW, weight decay 0.005, cosine schedule, 5% warmup"),
         nrmse_normalization="prior", diagnostics_aggregation="BayesFlow default median",
         packages={p: importlib.metadata.version(p) for p in
                   ("bayesflow", "keras", "jax", "jaxlib", "numpy", "numba", "matplotlib", "pandas")},

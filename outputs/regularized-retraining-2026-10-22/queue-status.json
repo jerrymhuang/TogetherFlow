@@ -1,0 +1,60 @@
+{
+  "started_utc": "2026-10-22T22:01:46.399496+00:00",
+  "stage": "complete",
+  "arms": {
+    "transformer-flow_matching": {
+      "status": "complete",
+      "pid": 767216,
+      "gpu": 1,
+      "command": [
+        "/home/jerry/Documents/research/projects/TogetherFlow/.venv/bin/python",
+        "experiments/run_matched_retraining.py",
+        "transformer-flow_matching",
+        "--regularized-online",
+        "--epochs",
+        "300",
+        "--banks",
+        "/home/jerry/Documents/research/projects/TogetherFlow/outputs/regularized-retraining-2026-10-22/banks",
+        "--output",
+        "/home/jerry/Documents/research/projects/TogetherFlow/outputs/regularized-retraining-2026-10-22"
+      ],
+      "returncode": 0
+    },
+    "offline-3000": {
+      "status": "complete",
+      "pid": 767217,
+      "gpu": 0,
+      "command": [
+        "/home/jerry/Documents/research/projects/TogetherFlow/.venv/bin/python",
+        "experiments/run_matched_retraining.py",
+        "offline-3000",
+        "--regularized-offline",
+        "--epochs",
+        "300",
+        "--banks",
+        "/home/jerry/Documents/research/projects/TogetherFlow/outputs/regularized-retraining-2026-10-22/banks",
+        "--output",
+        "/home/jerry/Documents/research/projects/TogetherFlow/outputs/regularized-retraining-2026-10-22"
+      ],
+      "returncode": 0
+    },
+    "offline-30000": {
+      "status": "complete",
+      "pid": 780956,
+      "gpu": 0,
+      "command": [
+        "/home/jerry/Documents/research/projects/TogetherFlow/.venv/bin/python",
+        "experiments/run_matched_retraining.py",
+        "offline-30000",
+        "--regularized-offline",
+        "--epochs",
+        "300",
+        "--banks",
+        "/home/jerry/Documents/research/projects/TogetherFlow/outputs/regularized-retraining-2026-10-22/banks",
+        "--output",
+        "/home/jerry/Documents/research/projects/TogetherFlow/outputs/regularized-retraining-2026-10-22"
+      ],
+      "returncode": 0
+    }
+  }
+}
