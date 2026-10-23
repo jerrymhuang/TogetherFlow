@@ -290,9 +290,18 @@ def run_budget(variant, budget, train, validation, test, directory, args):
         test_data=test, samples=samples, variable_keys=list(variant.infer),
         root_mean_squared_error_kwargs={"normalize": "range"})
     metrics_range.to_csv(directory / "metrics_range_normalized.csv")
+    # Budget-specific colors for offline diagnostics (RGB 71/181/255 and 105/105/255).
+    offline_color = {3000: "#47b5ff", 30000: "#6969ff"}.get(budget) if not args.online else None
+    plot_colors = {} if offline_color is None else {
+        "loss_kwargs": {"train_color": offline_color},
+        "recovery_kwargs": {"color": offline_color},
+        "coverage_kwargs": {"color": offline_color},
+        "calibration_ecdf_kwargs": {"rank_ecdf_color": offline_color},
+        "z_score_contraction_kwargs": {"color": offline_color},
+    }
     figures = workflow.plot_default_diagnostics(
         test_data=test, samples=samples, variable_keys=list(variant.infer),
-        variable_names=[LATEX_NAMES[k] for k in variant.infer])
+        variable_names=[LATEX_NAMES[k] for k in variant.infer], **plot_colors)
     for name, fig in figures.items():
         path = directory / FIGURE_NAMES.get(name, name + ".png")
         fig.savefig(path, dpi=180, bbox_inches="tight")
